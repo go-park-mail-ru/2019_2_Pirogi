@@ -18,3 +18,7 @@ Coming soon..
 
 ### Репозиторий фронтенда
 [Тут](https://github.com/frontend-park-mail-ru/2019_2_Pirogi)
+
+### Тулзы
+ - [golangci](https://github.com/golangci/golangci-lint)
+ - precommit: `go mod tidy && go fmt ./... && goimports -w .`
