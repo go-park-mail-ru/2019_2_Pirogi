@@ -1,0 +1,578 @@
+---
+swagger: "2.0"
+info:
+  description: Films-search service
+  version: 1.0.0
+  title: Cinsear
+  contact:
+    email: i@artbakulev.com
+  license:
+    name: nginx 1.17.3
+host: cinsear.com
+basePath: /api
+schemes:
+  - https
+consumes:
+  - application/json
+produces:
+  - application/json
+tags:
+  - name: admins
+    description: Операции доступные администраторам
+  - name: developers
+    description: Операции доступные разработчикам
+  - name: films
+    description: Операции для работы с фильмами
+  - name: users
+    description: Операции для работы с пользователями
+  - name: reviews
+    description: Операции для работы с рецензиями
+  - name: likes
+    description: Операции для работы с оценками
+
+paths:
+  /films/{film_id}:
+    get:
+      tags:
+        - developers
+        - films
+      summary: получить информацию о фильме
+      parameters:
+        - in: path
+          name: film_id
+          required: true
+          type: integer
+          description: ID необходимого фильма
+      responses:
+        200:
+          description: отдает объект фильма
+          schema:
+            $ref: '#/definitions/Film'
+        400:
+          description: Неверный формат ID фильма
+        404:
+          description: Фильма с данным ID не существует
+  /films/:
+    get:
+      tags:
+        - developers
+        - films
+      summary: получить список фильмов
+      parameters:
+        - in: query
+          name: sort
+          type: string
+          default: popular
+        - in: query
+          name: max
+          type: integer
+          default: 20
+        - in: query
+          name: offset
+          type: integer
+          default: 0
+        - in: query
+          name: year
+          type: integer
+        - in: query
+          name: genre
+          type: string
+        - in: query
+          name: actor
+          type: string
+        - in: query
+          name: director
+          type: string
+      responses:
+        200:
+          description: возвращает список фильмов нужного типа
+          schema:
+            type: array
+            items: 
+              $ref: '#/definitions/Film'
+        400:
+          description: невалидный запрос
+        404:
+          description: нет подходящих фильмов
+        500:
+          description: ошибка сервера
+    post:
+      tags:
+        - admins
+        - films
+      summary: добавить новый фильм
+      parameters:
+        - in: body
+          name: film
+          description: фильм для добавления
+          schema:
+            $ref: '#/definitions/Film'
+      responses:
+        200:
+          description: новый фильм добавлен
+          schema:
+            type: object
+            properties:
+              film_id:
+                type: integer
+                example: 22
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: недостаточно прав для добавления фильма
+        500:
+          description: ошибка сервера
+    delete:
+      tags:
+        - admins
+        - films
+      summary: удалить фильм
+      parameters:
+        - in: query
+          name: film_id
+          type: integer
+          required: true
+      responses:
+        200:
+          description: фильм удален
+        404:
+          description: нет фильма с таким ID
+        500:
+          description: ошибка сервера
+  /reviews/:
+    get:
+      tags:
+        - developers
+        - reviews
+      summary: получить рецензии на фильм или рецензии пользователя
+      parameters:
+        - in: query
+          name: id
+          required: true
+          type: integer
+          description: ID фильма или пользователя
+        - in: query
+          name: type
+          type: string
+          description: на что нужны рецензии (film | user)
+          default: film
+        - in: query
+          name: max
+          type: integer
+          default: 20
+          description: максимум возвращаемых рецензий
+        - in: query
+          name: offset
+          type: integer
+          description: добавить оффсет для рецензий
+          default: 0
+      responses:
+        200:
+          description: список рецензий
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Review'
+        400:
+          description: невалидный запрос
+        404:
+          description: такого фильма или пользователя не существует
+        500:
+          description: ошибка сервера
+    post:
+      tags:
+        - developers
+        - reviews
+      summary: добавить новую рецензию
+      parameters:
+        - in: body
+          name: review
+          description: рецензия для добавления
+          schema:
+            $ref: '#/definitions/Review'
+      responses:
+        200:
+          description: новая рецензия добавлена
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: необходима авторизация
+        500:
+          description: ошибка сервера
+    delete:
+      tags:
+        - admins
+        - reviews
+      summary: удалить рецензию
+      parameters:
+        - in: query
+          name: review_id
+          type: integer
+          required: true
+      responses:
+        200:
+          description: рецензия удалена
+        404:
+          description: нет рецензии с таким ID
+        500:
+          description: ошибка сервера
+  /users/{user_id}:
+    get:
+      tags:
+        - developers
+        - users
+      summary: получить данные о пользователе
+      parameters:
+        - in: path
+          name: user_id
+          description: ID нужного пользователя
+          required: true
+          type: integer
+        - in: query
+          name: need_full
+          description: запрос полной или частичной информации
+          type: boolean
+          default: false
+      responses:
+        200:
+          description: данные о пользователе
+          schema:
+            $ref: '#/definitions/User'
+        400: 
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error' 
+        404:
+          description: пользователя с таким ID не существует
+        500:
+          description: ошибка сервера
+  /users/:
+    put:
+      tags:
+        - developers
+        - users
+      summary: обновить информацию пользователя
+      parameters:
+        - in: body
+          name: body
+          description: новые данные пользователя
+          required: true
+          schema:
+            type: object
+      responses:
+        200:
+          description: информация обновлена
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: пользователь не авторизован
+        404:
+          description: пользователь не найден
+        
+    post:
+      tags:
+        - developers
+        - users
+      summary: добавить нового пользователя
+      parameters:
+        - in: body
+          name: user
+          description: пользователь для добавления
+          schema:
+            $ref: '#/definitions/User'
+      responses:
+        200:
+          description: новый пользователь добавлен
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        500:
+          description: ошибка сервера
+    delete:
+      tags:
+        - admins
+        - users
+      summary: удалить пользователя
+      parameters:
+        - in: query
+          name: user_id
+          type: integer
+          required: true
+      responses:
+        200:
+          description: пользователь удален
+        404:
+          description: нет пользователя с таким ID
+        500:
+          description: ошибка сервера
+  /likes/:
+    post:
+      tags:
+        - likes
+        - developers
+      summary: поставить оценку
+      parameters:
+        - in: body
+          name: like
+          description: оценка
+          schema:
+            $ref: '#/definitions/Like'
+      responses:
+        200:
+          description: оценка поставлена
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        401:
+          description: требуется авторизация
+        403:
+          description: недостаточно прав
+        404:
+          description: объект не найден
+        500:
+          description: ошибка сервера
+          
+    put:
+      tags:
+        - developers
+        - likes
+      summary: обновить оценку
+      parameters:
+        - in: query
+          name: like_id
+          type: integer
+          required: true
+        - in: query
+          name: value
+          type: number
+          required: true
+          description: новое значение оценки
+      responses:
+        200:
+          description: оценка обновлена
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        403:
+          description: необходима авторизация
+        404:
+          description: оценка не найдена
+    delete:
+      tags:
+        - admins
+        - likes
+      summary: удалить оценку
+      parameters:
+        - in: query
+          name: like_id
+          type: integer
+          required: true
+      responses:
+        200:
+          description: оценка удалена
+        404:
+          description: нет оценки с таким ID
+        500:
+          description: ошибка сервера
+        
+  /search/:
+    get:
+      tags:
+        - developers
+        - films
+      summary: найти фильмы
+      parameters:
+        - in: query
+          name: request
+          type: string
+          description: поисковое выражение, которое ввел пользователь
+        - in: query
+          name: genre
+          type: string
+        - in: query
+          name: year
+          type: integer
+        - in: query
+          name: directors
+          type: array
+          items:
+            type: string
+          description: список режиссеров
+        - in: query
+          name: actors
+          type: array
+          items:
+            type: string
+          description: список актеров
+        - in: query
+          name: rating
+          type: number
+          description: минимальный рейтинг фильма
+        - in: query
+          name: max
+          type: integer
+          description: максимальное число возвращаемых фильмов
+          default: 20
+        - in: query
+          name: offset
+          type: integer
+          description: оффсет для результатов
+          default: 0
+      responses:
+        200:
+          description: список найденных фильмов
+          schema:
+            type: array
+            items:
+              $ref: '#/definitions/Film'
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: фильмы по данным критериям не найдены
+  /login/:
+    post:
+      tags:
+        - users
+        - developers
+      summary: авторизовать пользователя
+      parameters:
+        - in: body
+          name: user
+          description: пользователь
+          schema:
+            type: object
+            properties:
+              email:
+                type: string
+                example: i@artbakulev.com
+              password:
+                type: string
+                example: B696CE5395E58492A8B79E5411091E34
+      responses:
+        200:
+          description: пользователь авторизован
+        400:
+          description: невалидный запрос
+          schema:
+            $ref: '#/definitions/Error'
+        404:
+          description: пользователь не существует
+        500:
+          description: ошибка сервера
+definitions:
+  User:
+    type: object
+    properties:
+      id:
+        type: integer
+        example: 123
+      name:
+        type: string
+        example: Артем
+      email:
+        type: string
+        example: i@artbakulev.com
+      password:
+        type: string
+        example: B696CE5395E58492A8B79E5411091E34
+      rating:
+        type: number
+        example: 8.4
+  Film:
+    type: object
+    properties:
+      title:
+        type: string
+        example: Назад в будущее
+      description:
+        type: string
+        example: Описание фильма
+      genres:
+        type: array
+        items: 
+          type: string
+          example: [киберпанк, фэнтези]
+      date:
+        type: string
+        example: '2019-01-26'
+      actors:
+        type: array
+        items:
+          type: string
+          example: [Киану Ривз, Кэрри-Энн Мосс]
+      directors:
+          type: array
+          items:
+            type: string
+            example: [Лана Вачовски, Лилли Вачовски]
+      rating:
+          type: number
+          example: 8.4
+      reviews:
+          type: object
+          properties:
+            total:
+              type: integer
+              example: 100
+            positive:
+              type: integer
+              example: 92
+            negative:
+              type: integer
+              example: 82
+  Review:
+    type: object
+    properties:
+      film_id:
+        type: integer
+        example: 2
+      user-id:
+        type: integer
+        example: 3
+      datetime:
+        type: string
+        example: '2019-01-26T13:51:50'
+      title:
+        type: string
+        example: Рецензия на фильм
+      description:
+        type: string
+        example: Текст рецензии
+  Error:
+    type: object
+    properties:
+      error:
+        type: string
+        example: объект уже существует
+      details:
+        type: object
+  Like:
+    type: object
+    properties:
+      type:
+        type: string
+        example: user | film | review
+      user_id:
+        type: integer
+        example: 67
+      object_id:
+        type: integer
+        example: 23
+      like:
+        type: number
+        example: 8.9
+      
+      
+      
+      
