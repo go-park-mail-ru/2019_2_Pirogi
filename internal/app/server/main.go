@@ -23,8 +23,8 @@ func New(port string) Server {
 func (s *Server) Init() {
 	apiRouter := mux.NewRouter()
 
-	apiRouter.HandleFunc("/api/users/{user_id}", handlers.HandleUser)
-	apiRouter.HandleFunc("/api/users/", handlers.HandleUsers)
+	apiRouter.HandleFunc("/api/users/{user_id}", handlers.HandleUser).Methods(http.MethodGet)
+	apiRouter.HandleFunc("/api/users/", handlers.HandleUsers).Methods(http.MethodPost, http.MethodPut, http.MethodDelete)
 	apiRouter.HandleFunc("/", handlers.HandleDefault)
 
 	s.handler = *apiRouter
