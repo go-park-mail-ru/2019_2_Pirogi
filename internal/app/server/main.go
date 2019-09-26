@@ -2,6 +2,7 @@ package server
 
 import (
 	"../../pkg/handlers"
+	"../../pkg/inmemory"
 	"github.com/gorilla/mux"
 	"net/http"
 	"time"
@@ -21,10 +22,13 @@ func New(port string) Server {
 }
 
 func (s *Server) Init() {
+	db := inmemory.Init()
+	db.FakeFillDB()
+
 	apiRouter := mux.NewRouter()
 
-	apiRouter.HandleFunc("/api/users/{user_id}", handlers.HandleUser).Methods(http.MethodGet)
-	apiRouter.HandleFunc("/api/users/", handlers.HandleUsers).Methods(http.MethodPost, http.MethodPut, http.MethodDelete)
+	apiRouter.HandleFunc("/api/users/{user_id}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
+	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/", handlers.HandleDefault)
 
 	s.handler = *apiRouter

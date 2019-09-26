@@ -7,21 +7,21 @@ import (
 )
 
 type DB struct {
-	users map[int]user.User
+	usersNumber int
+	users       map[int]user.User
 }
 
-func Init() DB {
+func Init() *DB {
 	users := make(map[int]user.User, 0)
 	db := DB{users: users}
-	return db
+	return &db
 }
 
 func (db *DB) Insert(in interface{}) error {
-	if u, ok := in.(user.User); ok {
-		if _, ok := db.users[u.ID]; ok {
-			return errors.New("use with the ID is already existed")
-		}
-		db.users[u.ID] = u
+	if u, ok := in.(*user.User); ok {
+		(*u).ID = db.usersNumber
+		db.users[db.usersNumber] = *u
+		db.usersNumber++
 		return nil
 	}
 	return errors.New("can not insert this type of object")
@@ -39,10 +39,11 @@ func (db *DB) Get(id int, t string) (interface{}, error) {
 }
 
 func (db *DB) FakeFillDB() {
-	oleg, _ := user.CreateUser(1, "oleg@mail.ru", "Oleg", user.GetMD5Hash("qwerty123"), "oleg.jpg", 7.3)
-	anton, _ := user.CreateUser(2, "anton@mail.ru", "Anton", user.GetMD5Hash("qwe523"), "anton.jpg", 8.3)
-	yura, _ := user.CreateUser(3, "yura@gmail.com", "Yura", user.GetMD5Hash("12312312"), "yura.jpg", 9.5)
+	oleg, _ := user.CreateUser(0, "oleg@mail.ru", "Oleg", user.GetMD5Hash("qwerty123"), "oleg.jpg", 7.3)
+	anton, _ := user.CreateUser(1, "anton@mail.ru", "Anton", user.GetMD5Hash("qwe523"), "anton.jpg", 8.3)
+	yura, _ := user.CreateUser(2, "yura@gmail.com", "Yura", user.GetMD5Hash("12312312"), "yura.jpg", 9.5)
 	db.users[oleg.ID] = oleg
 	db.users[anton.ID] = anton
 	db.users[yura.ID] = yura
+	db.usersNumber = 3
 }

@@ -119,7 +119,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         403:
           description: недостаточно прав для добавления фильма
         500:
@@ -198,7 +198,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         403:
           description: необходима авторизация
         500:
@@ -245,7 +245,7 @@ paths:
         400: 
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error' 
+            $ref: '#/definitions/error'
         404:
           description: пользователя с таким ID не существует
         500:
@@ -269,7 +269,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         403:
           description: пользователь не авторизован
         404:
@@ -292,7 +292,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         500:
           description: ошибка сервера
     delete:
@@ -330,7 +330,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         401:
           description: требуется авторизация
         403:
@@ -361,7 +361,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         403:
           description: необходима авторизация
         404:
@@ -437,7 +437,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         404:
           description: фильмы по данным критериям не найдены
   /login/:
@@ -465,7 +465,7 @@ paths:
         400:
           description: невалидный запрос
           schema:
-            $ref: '#/definitions/Error'
+            $ref: '#/definitions/error'
         404:
           description: пользователь не существует
         500:
