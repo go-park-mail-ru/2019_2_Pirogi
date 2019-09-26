@@ -1,10 +1,11 @@
 package auth
 
 import (
-	"../inmemory"
 	"errors"
 	"net/http"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 )
 
 func Auth(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, password string) error {

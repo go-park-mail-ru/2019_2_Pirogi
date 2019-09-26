@@ -1,10 +1,11 @@
 package user
 
 import (
-	"../validators"
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 )
 
 type User struct {

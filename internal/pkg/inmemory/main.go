@@ -1,10 +1,11 @@
 package inmemory
 
 import (
-	"../user"
 	"errors"
 	"net/http"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
 type DB struct {
@@ -51,9 +52,7 @@ func (db *DB) FakeFillDB() {
 }
 
 func (db *DB) FindByEmail(email string) (user.User, bool) {
-	println(email)
 	for k, u := range db.users {
-		println(u.Email)
 		if u.Credentials.Email == email {
 			return db.users[k], true
 		}

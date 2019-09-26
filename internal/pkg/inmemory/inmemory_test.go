@@ -1,10 +1,11 @@
 package inmemory
 
 import (
-	"../user"
-	"github.com/stretchr/testify/require"
 	"reflect"
 	"testing"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/stretchr/testify/require"
 )
 
 func TestFakeFillDB(t *testing.T) {

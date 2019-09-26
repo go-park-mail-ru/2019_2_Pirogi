@@ -16,18 +16,10 @@ func Wrap(text string, err error) string {
 	return New(text + ": " + err.Error())
 }
 
-func InvalidMethod(method string) string {
-	return New("invalid method: " + method)
-}
-
 func InvalidQueryArgument(key string) string {
 	return New("invalid method: " + key)
 }
 
 func NotFound() string {
 	return New("not found")
-}
-
-func InvalidJSON() string {
-	return New("invalid json")
 }

@@ -1,9 +1,10 @@
 package main
 
 import (
-	"../../internal/app/server"
 	"flag"
 	"log"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/app/server"
 )
 
 func main() {

@@ -1,18 +1,19 @@
 package handlers
 
 import (
-	"../auth"
-	"../error"
-	"../inmemory"
-	"../user"
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/gorilla/mux"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"io/ioutil"
 	"log"
 	"net/http"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/gorilla/mux"
 )
 
 func getObjectFromRequest(r *http.Request, t string) (interface{}, error) {
@@ -60,6 +61,12 @@ func GetHandlerLogout(db *inmemory.DB) func(w http.ResponseWriter, r *http.Reque
 		if err != nil {
 			_, _ = fmt.Fprint(w, err.Error())
 		}
+	}
+}
+
+func GetHandlerImages(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+
 	}
 }
 
