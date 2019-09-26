@@ -8,12 +8,16 @@ import (
 )
 
 type User struct {
+	Credentials
 	ID         int     `json:"user_id"`
-	Email      string  `json:"email"`
 	Name       string  `json:"name"`
-	Password   string  `json:"password"`
 	Rating     float32 `json:"rating"`
 	AvatarLink string  `json:"avatar_link"`
+}
+
+type Credentials struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
 }
 
 func CreateUser(id int, email, name, password, avatarLink string, rating float32) (User, error) {
@@ -24,10 +28,12 @@ func CreateUser(id int, email, name, password, avatarLink string, rating float32
 	// TODO: add validators
 
 	user := User{
+		Credentials: Credentials{
+			Email:    email,
+			Password: password,
+		},
 		ID:         id,
-		Email:      email,
 		Name:       name,
-		Password:   password,
 		Rating:     rating,
 		AvatarLink: avatarLink,
 	}

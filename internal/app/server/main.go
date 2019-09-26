@@ -26,9 +26,10 @@ func (s *Server) Init() {
 	db.FakeFillDB()
 
 	apiRouter := mux.NewRouter()
-
-	apiRouter.HandleFunc("/api/users/{user_id}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
 	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
+	apiRouter.HandleFunc("/api/users/{user_id:[0-9]+}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
+	apiRouter.HandleFunc("/api/login/", handlers.GetHandlerLogin(db)).Methods(http.MethodGet, http.MethodPost)
+	apiRouter.HandleFunc("/api/logout/", handlers.GetHandlerLogout(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/", handlers.HandleDefault)
 
 	s.handler = *apiRouter

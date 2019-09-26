@@ -3,12 +3,14 @@ package inmemory
 import (
 	"../user"
 	"errors"
+	"net/http"
 	"strconv"
 )
 
 type DB struct {
-	usersNumber int
-	users       map[int]user.User
+	usersNumber      int
+	users            map[int]user.User
+	usersAuthCookies map[int]http.Cookie
 }
 
 func Init() *DB {
@@ -46,4 +48,33 @@ func (db *DB) FakeFillDB() {
 	db.users[anton.ID] = anton
 	db.users[yura.ID] = yura
 	db.usersNumber = 3
+}
+
+func (db *DB) FindByEmail(email string) (user.User, bool) {
+	println(email)
+	for k, u := range db.users {
+		println(u.Email)
+		if u.Credentials.Email == email {
+			return db.users[k], true
+		}
+	}
+	return user.User{}, false
+}
+
+func (db *DB) CheckCookie(userID int, cookie http.Cookie) bool {
+	if c, ok := db.usersAuthCookies[userID]; ok {
+		if c.Value == cookie.Value {
+			return true
+		}
+	}
+	return false
+}
+
+func (db *DB) DeleteCookie(cookie *http.Cookie) {
+	for k, v := range db.usersAuthCookies {
+		if v.Value == cookie.Value {
+			delete(db.usersAuthCookies, k)
+			break
+		}
+	}
 }

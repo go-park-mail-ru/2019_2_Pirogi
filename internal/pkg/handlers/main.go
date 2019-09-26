@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"../auth"
 	"../error"
 	"../inmemory"
 	"../user"
@@ -22,6 +23,8 @@ func getObjectFromRequest(r *http.Request, t string) (interface{}, error) {
 	switch t {
 	case "user":
 		obj = new(user.User)
+	case "credentials":
+		obj = new(user.Credentials)
 	}
 
 	err := json.Unmarshal(rawBody, &obj)
@@ -31,15 +34,38 @@ func getObjectFromRequest(r *http.Request, t string) (interface{}, error) {
 	return obj, nil
 }
 
+func GetHandlerLogin(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("content-type", "application/json")
+		jsonBody, err := getObjectFromRequest(r, "credentials")
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = fmt.Fprint(w, Error.Wrap("invalid json", err))
+			return
+		}
+		u := jsonBody.(*user.Credentials)
+		err = auth.Auth(w, r, db, u.Email, u.Password)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = fmt.Fprint(w, Error.Wrap("invalid credentials", err))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	}
+}
+
+func GetHandlerLogout(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		err := auth.Logout(w, r, db)
+		if err != nil {
+			_, _ = fmt.Fprint(w, err.Error())
+		}
+	}
+}
+
 func GetHandlerUser(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
-
-		if r.Method != http.MethodGet {
-			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprint(w, Error.InvalidMethod(r.Method))
-			return
-		}
 		id, err := strconv.Atoi(mux.Vars(r)["user_id"])
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -52,7 +78,8 @@ func GetHandlerUser(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request
 			_, _ = fmt.Fprint(w, Error.NotFound())
 			return
 		}
-		_, err = fmt.Fprint(w, obj, "\n")
+		jsonBody, _ := json.Marshal(obj)
+		_, err = fmt.Fprint(w, string(jsonBody), "\n")
 		if err != nil {
 			log.Fatal(err)
 		}
@@ -76,6 +103,12 @@ func GetHandlerUsersCreate(db *inmemory.DB) func(w http.ResponseWriter, r *http.
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = fmt.Fprint(w, Error.Wrap("can not create user", err))
+		}
+
+		err = auth.Auth(w, r, db, jsonBody.(*user.User).Email, jsonBody.(*user.User).Password)
+		if err != nil {
+			w.WriteHeader(http.StatusBadRequest)
+			_, _ = fmt.Fprint(w, Error.Wrap("can not auth", err))
 		}
 		return
 	}
