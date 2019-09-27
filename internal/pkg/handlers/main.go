@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -35,7 +36,7 @@ func getObjectFromRequest(r *http.Request, t string) (interface{}, error) {
 	return obj, nil
 }
 
-func GetHandlerLogin(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		jsonBody, err := getObjectFromRequest(r, "credentials")
@@ -55,7 +56,7 @@ func GetHandlerLogin(db *inmemory.DB) func(w http.ResponseWriter, r *http.Reques
 	}
 }
 
-func GetHandlerLogout(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+func GetHandlerLogout(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := auth.Logout(w, r, db)
 		if err != nil {
@@ -64,13 +65,7 @@ func GetHandlerLogout(db *inmemory.DB) func(w http.ResponseWriter, r *http.Reque
 	}
 }
 
-func GetHandlerImages(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
-	return func(w http.ResponseWriter, r *http.Request) {
-
-	}
-}
-
-func GetHandlerUser(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+func GetHandlerUser(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("content-type", "application/json")
 		id, err := strconv.Atoi(mux.Vars(r)["user_id"])
@@ -93,7 +88,7 @@ func GetHandlerUser(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request
 	}
 }
 
-func GetHandlerUsersCreate(db *inmemory.DB) func(w http.ResponseWriter, r *http.Request) {
+func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Content-type", "application/json")
 
@@ -111,7 +106,6 @@ func GetHandlerUsersCreate(db *inmemory.DB) func(w http.ResponseWriter, r *http.
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = fmt.Fprint(w, Error.Wrap("can not create user", err))
 		}
-
 		err = auth.Auth(w, r, db, jsonBody.(*user.User).Email, jsonBody.(*user.User).Password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
@@ -121,6 +115,50 @@ func GetHandlerUsersCreate(db *inmemory.DB) func(w http.ResponseWriter, r *http.
 	}
 }
 
-func HandleDefault(w http.ResponseWriter, r *http.Request) {
-	log.Print(r.URL)
+func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
+	ID, loadTarget, err := images.GetFields(r)
+	if err != nil {
+		Error.Render(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	r.Body = http.MaxBytesReader(w, r.Body, images.MaxUploadSize)
+	if err := r.ParseMultipartForm(images.MaxUploadSize); err != nil {
+		Error.Render(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	file, _, err := r.FormFile("uploadFile")
+	if err != nil {
+		Error.Render(w, http.StatusBadRequest, err.Error())
+		return
+	}
+	defer file.Close()
+
+	fileBytes, err := ioutil.ReadAll(file)
+	if err != nil {
+		Error.Render(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	ending, err := images.DetectContentType(fileBytes)
+	if err != nil {
+		Error.Render(w, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	var uploadPath string
+	switch loadTarget {
+	case "user":
+		uploadPath = images.UploadUsersPath
+	default:
+		Error.Render(w, http.StatusBadRequest, "set the target")
+
+	}
+	fileName := images.GenerateFilename(loadTarget, ID, ending)
+	err = images.WriteFile(fileBytes, fileName, uploadPath)
+	if err != nil {
+		Error.Render(w, http.StatusBadRequest, err.Error())
+		return
+	}
 }

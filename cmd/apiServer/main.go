@@ -1,27 +1,19 @@
-package server
+package main
 
 import (
-	"net/http"
-	"time"
-
+	"flag"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/gorilla/mux"
+	"log"
+	"net/http"
 )
 
-const timeout = 10
+func main() {
+	port := flag.String("p", "8080", "port for server")
+	flag.Parse()
 
-type Server struct {
-	port    string
-	handler mux.Router
-}
-
-func New(port string) Server {
-	s := Server{port: port}
-	return s
-}
-
-func (s *Server) Init() {
 	db := inmemory.Init()
 	db.FakeFillDB()
 
@@ -31,21 +23,13 @@ func (s *Server) Init() {
 	apiRouter.HandleFunc("/api/login/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/api/logout/", handlers.GetHandlerLogout(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/api/images/", handlers.GetHandlerLogout(db)).Methods(http.MethodPost)
-	apiRouter.HandleFunc("/", handlers.HandleDefault)
 
-	s.handler = *apiRouter
-}
+	s := server.New(*port)
+	s.Init(db, apiRouter)
 
-func (s *Server) Run() error {
-	server := &http.Server{
-		Addr:         ":" + s.port,
-		Handler:      &s.handler,
-		ReadTimeout:  timeout * time.Second,
-		WriteTimeout: timeout * time.Second,
-	}
-	err := server.ListenAndServe()
+	log.Printf("Starting api server at port :%s...", *port)
+	err := s.Run()
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
 }

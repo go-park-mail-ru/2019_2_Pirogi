@@ -2,6 +2,7 @@ package inmemory
 
 import (
 	"errors"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"net/http"
 	"strconv"
 
@@ -22,6 +23,8 @@ func Init() *DB {
 
 func (db *DB) Insert(in interface{}) error {
 	if u, ok := in.(*user.User); ok {
+		u.Rating = 0.0
+		u.AvatarLink = images.GenerateFilename("user", strconv.Itoa(u.ID), ".jpeg")
 		(*u).ID = db.usersNumber
 		db.users[db.usersNumber] = *u
 		db.usersNumber++

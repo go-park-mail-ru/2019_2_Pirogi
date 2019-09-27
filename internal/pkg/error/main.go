@@ -1,5 +1,10 @@
 package Error
 
+import (
+	"fmt"
+	"net/http"
+)
+
 type JSONError struct {
 	Error string `json:"error"`
 }
@@ -8,8 +13,16 @@ func (e *JSONError) String() string {
 	return e.Error
 }
 
-func New(details string) string {
-	return "{\"error\":\"" + details + "\"}\n"
+func New(details ...string) string {
+	var s string
+	for _, v := range details {
+		s += v + " "
+	}
+	return "{\"error\":\"" + s + "\"}\n"
+}
+
+func Render(w http.ResponseWriter, statusCode int, details ...string) {
+	_, _ = fmt.Fprint(w, New(details...), statusCode)
 }
 
 func Wrap(text string, err error) string {
