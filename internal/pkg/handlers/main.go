@@ -100,6 +100,46 @@ func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 
 func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		rawBody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			Error.Render(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		updateUser := &models.UpdateUser{}
+		err = updateUser.UnmarshalJSON(rawBody)
+		if err != nil {
+			Error.Render(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		if updateUser.ActualEmail == "" {
+			Error.Render(w, http.StatusBadRequest, "need actual email")
+			return
+		}
+		user, ok := db.FindByEmail(updateUser.ActualEmail)
+		if !ok {
+			Error.Render(w, http.StatusNotFound, "no user with the email")
+			return
+		}
+
+		// я тупой и не смог сделать switch правильно. Признаю
+		if updateUser.Name != "" {
+			user.Name = updateUser.Name
+		}
+		if updateUser.Password != "" {
+			user.Password = updateUser.Password
+		}
+		if updateUser.Email != "" {
+			user.Email = updateUser.Email
+		}
+		if updateUser.Description != "" {
+			user.Description = updateUser.Description
+		}
+
+		err = db.Insert(user)
+		if err != nil {
+			Error.Render(w, http.StatusInternalServerError, "db error: ", err.Error())
+			return
+		}
 
 	}
 }

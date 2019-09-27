@@ -25,6 +25,8 @@ func Init() *DB {
 
 func (db *DB) Insert(in interface{}) error {
 	switch in.(type) {
+
+	// при регистрации
 	case *models.NewUser:
 		newUserDetails := in.(*models.NewUser)
 		if _, ok := db.FindByEmail(newUserDetails.Email); !ok {
@@ -39,7 +41,14 @@ func (db *DB) Insert(in interface{}) error {
 			db.usersNumber++
 			return nil
 		}
-		return errors.New("user is already existed")
+	//	при обновлении информации
+	case models.User:
+		updatedUser := in.(models.User)
+		if _, ok := db.users[updatedUser.ID]; ok {
+			db.users[updatedUser.ID] = updatedUser
+			return nil
+		}
+		return errors.New("user not found")
 	case http.Cookie:
 		cookie := in.(http.Cookie)
 		if _, ok := db.usersAuthCookies[cookie.Value]; !ok {
@@ -92,9 +101,9 @@ func (db *DB) FindByEmail(email string) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) CheckCookie(email string, cookie http.Cookie) bool {
-	if c, ok := db.usersAuthCookies[email]; ok {
-		if c.Value == cookie.Value {
+func (db *DB) CheckCookie(cookie http.Cookie) bool {
+	for _, v := range db.usersAuthCookies {
+		if v.Value == cookie.Value {
 			return true
 		}
 	}
