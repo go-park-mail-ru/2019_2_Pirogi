@@ -2,10 +2,10 @@ package handlers
 
 import (
 	"encoding/json"
-	"errors"
 	"fmt"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -13,46 +13,28 @@ import (
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/gorilla/mux"
 )
 
-func getObjectFromRequest(r *http.Request, t string) (interface{}, error) {
-	rawBody, _ := ioutil.ReadAll(r.Body)
-	defer func() { _ = r.Body.Close() }()
-	var obj interface{}
-
-	switch t {
-	case "user":
-		obj = new(user.User)
-	case "credentials":
-		obj = new(user.Credentials)
-	}
-
-	err := json.Unmarshal(rawBody, &obj)
-	if err != nil {
-		return nil, errors.New("error while parsing json: " + err.Error())
-	}
-	return obj, nil
-}
-
 func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("content-type", "application/json")
-		jsonBody, err := getObjectFromRequest(r, "credentials")
+		rawBody, err := ioutil.ReadAll(r.Body)
+		if err != nil {
+			Error.Render(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		credentials := models.Credentials{}
+		err = credentials.UnmarshalJSON(rawBody)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = fmt.Fprint(w, Error.Wrap("invalid json", err))
 			return
 		}
-		u := jsonBody.(*user.Credentials)
-		err = auth.Login(w, r, db, u.Email, u.Password)
+		err = auth.Login(w, r, db, credentials.Email, credentials.Password)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprint(w, Error.Wrap("invalid credentials", err))
+			Error.Render(w, http.StatusBadRequest, err.Error())
 			return
 		}
-		w.WriteHeader(http.StatusOK)
 	}
 }
 
@@ -60,7 +42,7 @@ func GetHandlerLogout(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		err := auth.Logout(w, r, db)
 		if err != nil {
-			_, _ = fmt.Fprint(w, err.Error())
+			Error.Render(w, http.StatusBadRequest, err.Error())
 		}
 	}
 }
@@ -90,28 +72,35 @@ func GetHandlerUser(db *inmemory.DB) http.HandlerFunc {
 
 func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Content-type", "application/json")
-
-		jsonBody, err := getObjectFromRequest(r, "user")
-
+		rawBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprint(w, Error.Wrap("invalid json", err))
+			Error.Render(w, http.StatusBadRequest, err.Error())
+			return
+		}
+		newUser := &models.NewUser{}
+		err = newUser.UnmarshalJSON(rawBody)
+		if err != nil {
+			Error.Render(w, http.StatusBadRequest, err.Error())
 			return
 		}
 
-		err = db.Insert(jsonBody)
+		err = db.Insert(newUser)
 
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprint(w, Error.Wrap("can not create user", err))
+			Error.Render(w, http.StatusBadRequest, "not able to insert into db: ", err.Error())
+			return
 		}
-		err = auth.Login(w, r, db, jsonBody.(*user.User).Email, jsonBody.(*user.User).Password)
+		err = auth.Login(w, r, db, newUser.Email, newUser.Password)
 		if err != nil {
-			w.WriteHeader(http.StatusBadRequest)
-			_, _ = fmt.Fprint(w, Error.Wrap("can not auth", err))
+			Error.Render(w, http.StatusBadRequest, "not able to auth: ", err.Error())
+			return
 		}
-		return
+	}
+}
+
+func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+
 	}
 }
 

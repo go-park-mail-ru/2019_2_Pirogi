@@ -4,32 +4,17 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"errors"
-
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 )
 
-type User struct {
-	Credentials
-	ID         int     `json:"user_id"`
-	Name       string  `json:"name"`
-	Rating     float32 `json:"rating"`
-	AvatarLink string  `json:"avatar_link"`
-}
-
-type Credentials struct {
-	Email    string `json:"email"`
-	Password string `json:"password"`
-}
-
-func CreateUser(id int, email, name, password, avatarLink string, rating float32) (User, error) {
+func CreateUser(id int, email, name, password, avatarLink string, rating float32) (models.User, error) {
 	if !validators.ValidateEmail(email) {
-		return User{}, errors.New("email is incorrect")
+		return models.User{}, errors.New("email is incorrect")
 	}
 
-	// TODO: add validators
-
-	user := User{
-		Credentials: Credentials{
+	user := models.User{
+		Credentials: models.Credentials{
 			Email:    email,
 			Password: password,
 		},

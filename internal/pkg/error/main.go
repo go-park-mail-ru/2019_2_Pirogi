@@ -22,7 +22,8 @@ func New(details ...string) string {
 }
 
 func Render(w http.ResponseWriter, statusCode int, details ...string) {
-	_, _ = fmt.Fprint(w, New(details...), statusCode)
+	w.WriteHeader(statusCode)
+	_, _ = fmt.Fprint(w, New(details...))
 }
 
 func Wrap(text string, err error) string {

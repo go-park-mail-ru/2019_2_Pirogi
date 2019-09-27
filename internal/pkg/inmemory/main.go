@@ -3,6 +3,7 @@ package inmemory
 import (
 	"errors"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"net/http"
 	"strconv"
 
@@ -11,40 +12,65 @@ import (
 
 type DB struct {
 	usersNumber      int
-	users            map[int]user.User
-	usersAuthCookies map[int]http.Cookie
+	users            map[int]models.User
+	usersAuthCookies map[string]http.Cookie
 }
 
 func Init() *DB {
-	users := make(map[int]user.User, 0)
-	db := DB{users: users}
+	users := make(map[int]models.User, 0)
+	usersAuthCookies := make(map[string]http.Cookie, 0)
+	db := DB{users: users, usersAuthCookies: usersAuthCookies}
 	return &db
 }
 
 func (db *DB) Insert(in interface{}) error {
-	if u, ok := in.(*user.User); ok {
-		if _, ok := db.FindByEmail(u.Email); !ok {
-			u.Rating = 0.0
-			u.AvatarLink = images.GenerateFilename("user", strconv.Itoa(u.ID), ".jpeg")
-			(*u).ID = db.usersNumber
-			db.users[db.usersNumber] = *u
+	switch in.(type) {
+	case *models.NewUser:
+		newUserDetails := in.(*models.NewUser)
+		if _, ok := db.FindByEmail(newUserDetails.Email); !ok {
+			newUser := &models.User{
+				Credentials: newUserDetails.Credentials,
+				ID:          db.usersNumber,
+				Name:        newUserDetails.Name,
+				Rating:      0,
+				AvatarLink:  images.GenerateFilename("user", strconv.Itoa(db.usersNumber), ".jpeg"),
+			}
+			db.users[db.usersNumber] = *newUser
 			db.usersNumber++
 			return nil
 		}
 		return errors.New("user is already existed")
+	case http.Cookie:
+		cookie := in.(http.Cookie)
+		if _, ok := db.usersAuthCookies[cookie.Value]; !ok {
+			db.usersAuthCookies[cookie.Value] = cookie
+			return nil
+		}
+	default:
+		return errors.New("not supported type")
 	}
-	return errors.New("can not insert this type of object")
+	return nil
 }
 
-func (db *DB) Get(id int, t string) (interface{}, error) {
-	switch t {
+func (db *DB) Delete(in interface{}) {
+	switch in.(type) {
+	case http.Cookie:
+		cookie := in.(http.Cookie)
+		if _, ok := db.usersAuthCookies[cookie.Value]; !ok {
+			db.usersAuthCookies[cookie.Value] = cookie
+		}
+	}
+}
+
+func (db *DB) Get(id int, target string) (interface{}, error) {
+	switch target {
 	case "user":
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
 		return nil, errors.New("no user with id: " + strconv.Itoa(id))
 	}
-	return nil, errors.New("no such type: " + t)
+	return nil, errors.New("no such type: " + target)
 }
 
 func (db *DB) FakeFillDB() {
@@ -57,29 +83,20 @@ func (db *DB) FakeFillDB() {
 	db.usersNumber = 3
 }
 
-func (db *DB) FindByEmail(email string) (user.User, bool) {
+func (db *DB) FindByEmail(email string) (models.User, bool) {
 	for k, u := range db.users {
 		if u.Credentials.Email == email {
 			return db.users[k], true
 		}
 	}
-	return user.User{}, false
+	return models.User{}, false
 }
 
-func (db *DB) CheckCookie(userID int, cookie http.Cookie) bool {
-	if c, ok := db.usersAuthCookies[userID]; ok {
+func (db *DB) CheckCookie(email string, cookie http.Cookie) bool {
+	if c, ok := db.usersAuthCookies[email]; ok {
 		if c.Value == cookie.Value {
 			return true
 		}
 	}
 	return false
-}
-
-func (db *DB) DeleteCookie(cookie *http.Cookie) {
-	for k, v := range db.usersAuthCookies {
-		if v.Value == cookie.Value {
-			delete(db.usersAuthCookies, k)
-			break
-		}
-	}
 }

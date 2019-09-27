@@ -8,12 +8,6 @@ import (
 	"path/filepath"
 )
 
-type Image struct {
-	ID   int    `json:"id"`
-	Kind string `json:"kind"`
-	Path string `json:"path"`
-}
-
 const MaxUploadSize = 2 * 1024 * 1024
 
 // TODO: change for server

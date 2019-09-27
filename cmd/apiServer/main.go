@@ -4,6 +4,7 @@ import (
 	"flag"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/gorilla/mux"
 	"log"
@@ -18,7 +19,10 @@ func main() {
 	db.FakeFillDB()
 
 	apiRouter := mux.NewRouter()
+
+	apiRouter.Use(middleware.HeaderMiddleware)
 	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
+	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)
 	apiRouter.HandleFunc("/api/users/{user_id:[0-9]+}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
 	apiRouter.HandleFunc("/api/login/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/api/logout/", handlers.GetHandlerLogout(db)).Methods(http.MethodPost)

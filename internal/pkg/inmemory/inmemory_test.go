@@ -1,6 +1,7 @@
 package inmemory
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"reflect"
 	"testing"
 
@@ -29,6 +30,6 @@ func TestDB_Get(t *testing.T) {
 	require.NoError(t, err)
 	obj, err := db.Get(5, "user")
 	require.NoError(t, err)
-	u := obj.(user.User)
+	u := obj.(models.User)
 	require.True(t, reflect.DeepEqual(u, ksyusha))
 }
