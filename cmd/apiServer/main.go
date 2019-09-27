@@ -22,7 +22,6 @@ func main() {
 	apiRouter.HandleFunc("/api/users/{user_id:[0-9]+}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
 	apiRouter.HandleFunc("/api/login/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/api/logout/", handlers.GetHandlerLogout(db)).Methods(http.MethodPost)
-	apiRouter.HandleFunc("/api/images/", handlers.GetHandlerLogout(db)).Methods(http.MethodPost)
 
 	s := server.New(*port)
 	s.Init(db, apiRouter)

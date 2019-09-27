@@ -23,12 +23,15 @@ func Init() *DB {
 
 func (db *DB) Insert(in interface{}) error {
 	if u, ok := in.(*user.User); ok {
-		u.Rating = 0.0
-		u.AvatarLink = images.GenerateFilename("user", strconv.Itoa(u.ID), ".jpeg")
-		(*u).ID = db.usersNumber
-		db.users[db.usersNumber] = *u
-		db.usersNumber++
-		return nil
+		if _, ok := db.FindByEmail(u.Email); !ok {
+			u.Rating = 0.0
+			u.AvatarLink = images.GenerateFilename("user", strconv.Itoa(u.ID), ".jpeg")
+			(*u).ID = db.usersNumber
+			db.users[db.usersNumber] = *u
+			db.usersNumber++
+			return nil
+		}
+		return errors.New("user is already existed")
 	}
 	return errors.New("can not insert this type of object")
 }

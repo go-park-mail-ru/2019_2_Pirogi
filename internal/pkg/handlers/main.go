@@ -46,7 +46,7 @@ func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 		u := jsonBody.(*user.Credentials)
-		err = auth.Auth(w, r, db, u.Email, u.Password)
+		err = auth.Login(w, r, db, u.Email, u.Password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = fmt.Fprint(w, Error.Wrap("invalid credentials", err))
@@ -106,7 +106,7 @@ func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = fmt.Fprint(w, Error.Wrap("can not create user", err))
 		}
-		err = auth.Auth(w, r, db, jsonBody.(*user.User).Email, jsonBody.(*user.User).Password)
+		err = auth.Login(w, r, db, jsonBody.(*user.User).Email, jsonBody.(*user.User).Password)
 		if err != nil {
 			w.WriteHeader(http.StatusBadRequest)
 			_, _ = fmt.Fprint(w, Error.Wrap("can not auth", err))
