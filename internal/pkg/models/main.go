@@ -20,10 +20,20 @@ type NewUser struct {
 	Rating float32 `json:"rating"`
 }
 
-type Image struct {
-	ID     int    `json:"id"`
-	Target string `json:"target"`
-	Path   string `json:"path"`
+type ReviewsNum struct {
+	Total    int `json:"total"`
+	Positive int `json:"positive"`
+	Negative int `json:"negative"`
+}
+
+type Film struct {
+	Title       string   `json:"title"`
+	Description string   `json:"description"`
+	Date        string   `json:"date"`
+	Actors      []string `json:"actors"`
+	Directors   []string `json:"directors"`
+	Rating      float32  `json:"rating"`
+	ReviewsNum
 }
 
 type UpdateUser struct {
@@ -31,4 +41,9 @@ type UpdateUser struct {
 	Name        string `json:"name"`
 	Description string `json:"description"`
 	ActualEmail string `json:"actual_email"`
+}
+
+type Error struct {
+	Status int    `json:"status"`
+	Error  string `json:"error"`
 }

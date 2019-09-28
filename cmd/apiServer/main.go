@@ -21,6 +21,7 @@ func main() {
 	apiRouter := mux.NewRouter()
 
 	apiRouter.Use(middleware.HeaderMiddleware)
+	apiRouter.Use(middleware.LoggingMiddleware)
 	apiRouter.Use(middleware.GetCheckAuthMiddleware(db))
 	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)

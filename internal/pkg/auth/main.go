@@ -3,7 +3,9 @@ package auth
 import (
 	"errors"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"net/http"
 	"time"
@@ -32,27 +34,27 @@ func GenerateDeAuthCookie() http.Cookie {
 	return cookie
 }
 
-func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, password string) error {
+func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, password string) *models.Error {
 	_, err := r.Cookie(configs.CookieAuthName)
 	isAuth := err != http.ErrNoCookie
 	if !isAuth {
 		u, ok := db.FindByEmail(email)
 		if !ok {
-			return errors.New("no user with this email")
+			return Error.New(404, "no user with this email")
 		}
 		if u.Password != password {
-			return errors.New("incorrect password")
+			return Error.New(400, "incorrect password")
 		}
 		cookie := GenerateAuthCookie(email)
-		err = db.Insert(cookie)
+		e := db.Insert(cookie, u.ID)
 
-		if err != nil {
-			return errors.New("db error while inserting cookie: " + err.Error())
+		if e != nil {
+			return e
 		}
 		http.SetCookie(w, &cookie)
 		return nil
 	}
-	return errors.New("already logged in")
+	return Error.New(400, "already logged in")
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, db *inmemory.DB) error {

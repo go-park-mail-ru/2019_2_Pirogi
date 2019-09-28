@@ -1,7 +1,7 @@
 package inmemory
 
 import (
-	"errors"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"net/http"
@@ -13,17 +13,18 @@ import (
 type DB struct {
 	usersNumber      int
 	users            map[int]models.User
-	usersAuthCookies map[string]http.Cookie
+	usersAuthCookies map[int]http.Cookie
 }
 
 func Init() *DB {
 	users := make(map[int]models.User, 0)
-	usersAuthCookies := make(map[string]http.Cookie, 0)
+	usersAuthCookies := make(map[int]http.Cookie, 0)
 	db := DB{users: users, usersAuthCookies: usersAuthCookies}
 	return &db
 }
 
-func (db *DB) Insert(in interface{}) error {
+// пока in-memory details нужны чтобы записать куку, потом уберу
+func (db *DB) Insert(in interface{}, id int) *models.Error {
 	switch in.(type) {
 
 	// при регистрации
@@ -40,6 +41,8 @@ func (db *DB) Insert(in interface{}) error {
 			db.users[db.usersNumber] = *newUser
 			db.usersNumber++
 			return nil
+		} else {
+			return Error.New(400, "user is already exist")
 		}
 	//	при обновлении информации
 	case models.User:
@@ -48,15 +51,13 @@ func (db *DB) Insert(in interface{}) error {
 			db.users[updatedUser.ID] = updatedUser
 			return nil
 		}
-		return errors.New("user not found")
+		return Error.New(404, "user not found")
 	case http.Cookie:
 		cookie := in.(http.Cookie)
-		if _, ok := db.usersAuthCookies[cookie.Value]; !ok {
-			db.usersAuthCookies[cookie.Value] = cookie
-			return nil
-		}
+		db.usersAuthCookies[id] = cookie
+		return nil
 	default:
-		return errors.New("not supported type")
+		return Error.New(400, "not supported type")
 	}
 	return nil
 }
@@ -65,21 +66,25 @@ func (db *DB) Delete(in interface{}) {
 	switch in.(type) {
 	case http.Cookie:
 		cookie := in.(http.Cookie)
-		if _, ok := db.usersAuthCookies[cookie.Value]; !ok {
-			db.usersAuthCookies[cookie.Value] = cookie
+		u, ok := db.FindUserByCookie(cookie)
+		if !ok {
+			return
+		}
+		if _, ok := db.usersAuthCookies[u.ID]; !ok {
+			db.usersAuthCookies[u.ID] = cookie
 		}
 	}
 }
 
-func (db *DB) Get(id int, target string) (interface{}, error) {
+func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
 	switch target {
 	case "user":
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
-		return nil, errors.New("no user with id: " + strconv.Itoa(id))
+		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
 	}
-	return nil, errors.New("no such type: " + target)
+	return nil, Error.New(404, "no such type: "+target)
 }
 
 func (db *DB) FakeFillDB() {
@@ -94,7 +99,16 @@ func (db *DB) FakeFillDB() {
 
 func (db *DB) FindByEmail(email string) (models.User, bool) {
 	for k, u := range db.users {
-		if u.Credentials.Email == email {
+		if u.Email == email {
+			return db.users[k], true
+		}
+	}
+	return models.User{}, false
+}
+
+func (db *DB) FindByID(id int) (models.User, bool) {
+	for k, u := range db.users {
+		if u.ID == id {
 			return db.users[k], true
 		}
 	}
@@ -108,4 +122,17 @@ func (db *DB) CheckCookie(cookie http.Cookie) bool {
 		}
 	}
 	return false
+}
+
+func (db *DB) FindUserByCookie(cookie http.Cookie) (models.User, bool) {
+	for k, v := range db.usersAuthCookies {
+		if v.Value == cookie.Value {
+			u, ok := db.FindByID(k)
+			if !ok {
+				return models.User{}, false
+			}
+			return u, true
+		}
+	}
+	return models.User{}, false
 }

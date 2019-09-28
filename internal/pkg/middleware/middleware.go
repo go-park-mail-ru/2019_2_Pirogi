@@ -1,10 +1,26 @@
 package middleware
 
 import (
+	"fmt"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"log"
 	"net/http"
+	"os"
 )
+
+func LoggingMiddleware(next http.Handler) http.Handler {
+
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if f, err := os.OpenFile(configs.AccessLogPath+"access_log.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
+			log.Fatal("Can not open file to log: ", err.Error())
+		} else {
+			_, _ = fmt.Fprint(f, r.Method, " ", r.URL, " ", r.Host)
+		}
+		next.ServeHTTP(w, r)
+	})
+}
 
 func HeaderMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -21,7 +37,6 @@ func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handle
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// POST разрешен для анонимов разрешен только для регистрации
-
 			if r.Method == http.MethodGet || r.Method == http.MethodPost && (r.URL.Path == "/api/users/" || r.URL.Path == "/api/login/") {
 				next.ServeHTTP(w, r)
 				return
@@ -29,12 +44,12 @@ func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handle
 
 			cookie, err := r.Cookie(configs.CookieAuthName)
 			if err != nil {
-				http.Error(w, "Forbidden: no cookie", http.StatusForbidden)
+				Error.Render(w, Error.New(401, "no cookie"))
 				return
 			}
 			ok := db.CheckCookie(*cookie)
 			if !ok {
-				http.Error(w, "Forbidden: no cookie in db", http.StatusForbidden)
+				Error.Render(w, Error.New(401, "no cookie in db"))
 				return
 			}
 			next.ServeHTTP(w, r)

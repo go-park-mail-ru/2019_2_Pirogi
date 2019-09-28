@@ -18,18 +18,18 @@ func TestFakeFillDB(t *testing.T) {
 func TestDB_Insert(t *testing.T) {
 	db := Init()
 	ksyusha, _ := user.CreateUser(5, "ksyushag@mail.ru", "Ksyusha", user.GetMD5Hash("qwerty123"), "ksyuha.jpg", 8.3)
-	err := db.Insert(ksyusha)
-	require.NoError(t, err)
+	err := db.Insert(ksyusha, 0)
+	require.Nil(t, err)
 	require.True(t, reflect.DeepEqual(db.users[5], ksyusha))
 }
 
 func TestDB_Get(t *testing.T) {
 	db := Init()
 	ksyusha, _ := user.CreateUser(5, "ksyushag@mail.ru", "Ksyusha", user.GetMD5Hash("qwerty123"), "ksyuha.jpg", 8.3)
-	err := db.Insert(ksyusha)
-	require.NoError(t, err)
+	err := db.Insert(ksyusha, 0)
+	require.Nil(t, err)
 	obj, err := db.Get(5, "user")
-	require.NoError(t, err)
+	require.Nil(t, err)
 	u := obj.(models.User)
 	require.True(t, reflect.DeepEqual(u, ksyusha))
 }

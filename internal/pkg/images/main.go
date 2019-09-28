@@ -1,7 +1,9 @@
 package images
 
 import (
-	"errors"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"mime"
 	"net/http"
 	"os"
@@ -10,10 +12,7 @@ import (
 
 const MaxUploadSize = 2 * 1024 * 1024
 
-// TODO: change for server
-const UploadUsersPath = "/Users/artyombakulev/Projects/2019_2_Pirogi/media/users/"
-
-func DetectContentType(data []byte) (ending string, err error) {
+func DetectContentType(data []byte) (ending string, error *models.Error) {
 	fileType := http.DetectContentType(data)
 	switch fileType {
 	case "image/jpeg", "image/jpg":
@@ -21,37 +20,40 @@ func DetectContentType(data []byte) (ending string, err error) {
 	case "application/pdf":
 		break
 	default:
-		return "", errors.New("unsupported type of file")
+		return "", Error.New(400, "unsupported type of file")
 	}
 	endings, err := mime.ExtensionsByType(fileType)
+	if err != nil {
+		return "", Error.New(400, "can not define extension")
+	}
 	return endings[0], nil
 }
 
 func GenerateFilename(target, userID, ending string) string {
-	return target + "_" + userID + ending
+	return user.GetMD5Hash(target+userID) + ending
 }
 
-func WriteFile(fileBytes []byte, filename, path string) error {
+func WriteFile(fileBytes []byte, filename, path string) *models.Error {
 	newPath := filepath.Join(path, filename)
 	newFile, err := os.Create(newPath)
 	if err != nil {
-		return err
+		return Error.New(500, "can not create file")
 	}
 	if _, err := newFile.Write(fileBytes); err != nil || newFile.Close() != nil {
-		return err
+		return Error.New(500, "can not open file for writing")
 	}
 	return nil
 }
 
-func GetFields(r *http.Request) (ID, loadTarget string, err error) {
+func GetFields(r *http.Request) (ID, loadTarget string, error *models.Error) {
 	ID = r.PostFormValue("id")
 	if ID == "" {
-		return "", "", errors.New("specify ID")
+		return "", "", Error.New(400, "specify ID")
 	}
 
 	loadTarget = r.PostFormValue("target")
 	if loadTarget == "" {
-		return "", "", errors.New("set the load target")
+		return "", "", Error.New(400, "set the load target")
 	}
 	return ID, loadTarget, nil
 }
