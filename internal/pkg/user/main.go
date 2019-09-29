@@ -8,12 +8,13 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 )
 
-func CreateUser(email, name, password, avatarLink string, rating float32) (models.User, error) {
+func CreateUser(id int, email, name, password, avatarLink string, rating float32) (models.User, error) {
 	if !validators.ValidateEmail(email) {
 		return models.User{}, errors.New("email is incorrect")
 	}
 
 	user := models.User{
+		ID: id,
 		Credentials: models.Credentials{
 			Email:    email,
 			Password: password,
