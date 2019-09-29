@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"log"
 	"net/http"
 	"os"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {

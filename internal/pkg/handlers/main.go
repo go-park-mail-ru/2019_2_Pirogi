@@ -3,6 +3,11 @@ package handlers
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -10,10 +15,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/gorilla/mux"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"strconv"
 )
 
 func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
@@ -164,18 +165,15 @@ func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 
-		// я тупой и не смог сделать switch правильно. Признаю
-		if updateUser.Name != "" {
+		switch {
+		case updateUser.Name != "":
 			user.Name = updateUser.Name
-		}
-		if updateUser.Password != "" {
+		case updateUser.Password != "":
 			user.Password = updateUser.Password
-		}
-		if updateUser.Email != "" {
+		case updateUser.Email != "":
 			user.Email = updateUser.Email
 			db.Insert(session, user.ID)
-		}
-		if updateUser.Description != "" {
+		case updateUser.Description != "":
 			user.Description = updateUser.Description
 		}
 

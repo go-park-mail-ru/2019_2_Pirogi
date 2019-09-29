@@ -1,10 +1,11 @@
 package server
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
-	"github.com/gorilla/mux"
 	"net/http"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/gorilla/mux"
 )
 
 const timeout = 10
