@@ -31,9 +31,11 @@ type Film struct {
 	Description string   `json:"description"`
 	Date        string   `json:"date"`
 	Actors      []string `json:"actors"`
+	Genres      []string `json:"genres"`
 	Directors   []string `json:"directors"`
 	Rating      float32  `json:"rating"`
 	ReviewsNum
+	ImagePath string `json:"image_path"`
 }
 
 type UpdateUser struct {

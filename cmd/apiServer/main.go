@@ -23,6 +23,7 @@ func main() {
 	apiRouter.Use(middleware.HeaderMiddleware)
 	apiRouter.Use(middleware.LoggingMiddleware)
 	apiRouter.Use(middleware.GetCheckAuthMiddleware(db))
+	apiRouter.HandleFunc("/api/films/{film_id:[0-9]+}", handlers.GetHandlerFilm(db)).Methods(http.MethodGet)
 	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
 	apiRouter.HandleFunc("/api/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)
 	apiRouter.HandleFunc("/api/users/{user_id:[0-9]+}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)

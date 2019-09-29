@@ -35,7 +35,6 @@ func (s *Server) Run() error {
 
 func (s *Server) Init(db *inmemory.DB, router *mux.Router) {
 	db = inmemory.Init()
-	db.FakeFillDB()
 	apiRouter := router
 
 	s.handler = *apiRouter

@@ -16,6 +16,27 @@ import (
 	"strconv"
 )
 
+func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		id, err := strconv.Atoi(mux.Vars(r)["film_id"])
+		if err != nil {
+			Error.Render(w, Error.New(404, "no film with the id", err.Error()))
+			return
+		}
+		obj, e := db.Get(id, "film")
+		if e != nil {
+			Error.Render(w, e)
+			return
+		}
+		film := obj.(models.Film)
+		jsonBody, _ := film.MarshalJSON()
+		_, err = fmt.Fprint(w, string(jsonBody), "\n")
+		if err != nil {
+			Error.Render(w, Error.New(500, "error while marshalling json", err.Error()))
+		}
+	}
+}
+
 func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rawBody, err := ioutil.ReadAll(r.Body)
