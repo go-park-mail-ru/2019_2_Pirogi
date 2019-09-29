@@ -1,12 +1,13 @@
 package inmemory
 
 import (
+	"net/http"
+	"strconv"
+
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"net/http"
-	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )

@@ -2,13 +2,14 @@ package auth
 
 import (
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
-	"net/http"
-	"time"
 )
 
 func GenerateAuthCookie(value string) http.Cookie {

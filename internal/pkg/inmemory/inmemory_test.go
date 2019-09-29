@@ -1,9 +1,10 @@
 package inmemory
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"reflect"
 	"testing"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/stretchr/testify/require"

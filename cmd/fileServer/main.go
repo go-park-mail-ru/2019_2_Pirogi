@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
+	"github.com/gorilla/mux"
 )
 
 func main() {
