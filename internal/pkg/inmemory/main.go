@@ -93,9 +93,12 @@ func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
 }
 
 func (db *DB) FakeFillDB() {
-	db.users[len(db.users)], _ = user.CreateUser("oleg@mail.ru", "Oleg", user.GetMD5Hash("qwerty123"), "oleg.jpg", 7.3)
-	db.users[len(db.users)], _ = user.CreateUser("anton@mail.ru", "Anton", user.GetMD5Hash("qwe523"), "anton.jpg", 8.3)
-	db.users[len(db.users)], _ = user.CreateUser("yura@gmail.com", "Yura", user.GetMD5Hash("12312312"), "yura.jpg", 9.5)
+	newUser, _ := user.CreateUser("oleg@mail.ru", "Oleg", user.GetMD5Hash("qwerty123"), "oleg.jpg", 7.3)
+	db.Insert(newUser, 0)
+	newUser, _ = user.CreateUser("anton@mail.ru", "Anton", user.GetMD5Hash("qwe523"), "anton.jpg", 8.3)
+	db.Insert(newUser, 0)
+	newUser, _ = user.CreateUser("yura@gmail.com", "Yura", user.GetMD5Hash("12312312"), "yura.jpg", 9.5)
+	db.Insert(newUser, 0)
 
 	fightClub, _ := film.CreateFilm("Бойцовский клуб", "Терзаемый хронической бессонницей и отчаянно"+
 		"пытающийся вырваться из мучительно скучной жизни клерк встречает некоего Тайлера Дардена, харизматического "+
@@ -106,6 +109,8 @@ func (db *DB) FakeFillDB() {
 		" бесконечном сне обреченного человечества. Холодный мир будущего, в котором люди — всего лишь батарейки в"+
 		" компьютерных системах.", []string{"Фэнтези"}, []string{"Киану Ривз", "Кэрри-Энн Мосс"},
 		[]string{"Лана Вачовски", "Лилли Вачовски"})
+
+	// не сделал insert для фильмов
 	db.films[len(db.films)] = fightClub
 	db.films[len(db.films)] = matrix
 
