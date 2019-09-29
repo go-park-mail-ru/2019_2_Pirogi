@@ -37,6 +37,17 @@ func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
+func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		ok := auth.LoginCheck(w, r, db)
+		if ok {
+			w.WriteHeader(200)
+			return
+		}
+		w.WriteHeader(401)
+	}
+}
+
 func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rawBody, err := ioutil.ReadAll(r.Body)
@@ -191,7 +202,7 @@ func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	file, _, err := r.FormFile("uploadFile")
+	file, _, err := r.FormFile("upload_file")
 	if err != nil {
 		Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
 		return
