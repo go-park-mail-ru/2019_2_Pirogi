@@ -114,7 +114,7 @@ func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
 			Error.Render(w, Error.New(401, "no user with the cookie"))
 		}
 		jsonBody, _ := user.MarshalJSON()
-		_, err = fmt.Fprint(w, string(jsonBody), "\n")
+		_, err = fmt.Fprint(w, string(jsonBody))
 		if err != nil {
 			log.Fatal(err)
 		}
