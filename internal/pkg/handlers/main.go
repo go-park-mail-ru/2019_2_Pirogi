@@ -40,25 +40,12 @@ func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
 
 func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		userId := auth.LoginCheck(w, r, db)
-
-		if userId != -1 {
-			js, err := json.Marshal(map[string]int{"user_id": userId})
-			if err != nil {
-				Error.Render(w, Error.New(500, err.Error()))
-				return
-			}
-
-			w.WriteHeader(200)
-			w.Header().Set("Content-Type", "application/json")
-
-			_, err = w.Write(js)
-			if err != nil {
-				Error.Render(w, Error.New(500, err.Error()))
-			}
-		} else {
+		ok := auth.LoginCheck(w, r, db)
+		if !ok {
 			w.WriteHeader(401)
+			return
 		}
+		w.WriteHeader(200)
 	}
 }
 
@@ -107,6 +94,26 @@ func GetHandlerUser(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 		jsonBody, _ := json.Marshal(obj)
+		_, err = fmt.Fprint(w, string(jsonBody), "\n")
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+}
+
+func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := r.Cookie(configs.CookieAuthName)
+		if err != nil {
+			Error.Render(w, Error.New(401, "no cookie"))
+			return
+		}
+		user, ok := db.FindUserByCookie(*session)
+		user.Password = ""
+		if !ok {
+			Error.Render(w, Error.New(401, "no user with the cookie"))
+		}
+		jsonBody, _ := user.MarshalJSON()
 		_, err = fmt.Fprint(w, string(jsonBody), "\n")
 		if err != nil {
 			log.Fatal(err)
@@ -181,11 +188,14 @@ func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
 		switch {
 		case updateUser.Name != "":
 			user.Name = updateUser.Name
+			fallthrough
 		case updateUser.Password != "":
 			user.Password = updateUser.Password
+			fallthrough
 		case updateUser.Email != "":
 			user.Email = updateUser.Email
 			db.Insert(session, user.ID)
+			fallthrough
 		case updateUser.Description != "":
 			user.Description = updateUser.Description
 		}
