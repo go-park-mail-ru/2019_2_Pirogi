@@ -43,7 +43,7 @@ func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
 		userId := auth.LoginCheck(w, r, db)
 
 		if userId != -1 {
-			js, err := json.Marshal(map[string]int{"User_id": userId})
+			js, err := json.Marshal(map[string]int{"user_id": userId})
 			if err != nil {
 				Error.Render(w, Error.New(500, err.Error()))
 				return
