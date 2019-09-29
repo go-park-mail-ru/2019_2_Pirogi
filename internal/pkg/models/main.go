@@ -16,8 +16,7 @@ type User struct {
 
 type NewUser struct {
 	Credentials
-	Name   string  `json:"name"`
-	Rating float32 `json:"rating"`
+	Name string `json:"name"`
 }
 
 type ReviewsNum struct {
