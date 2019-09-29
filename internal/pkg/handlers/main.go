@@ -40,12 +40,25 @@ func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
 
 func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		ok := auth.LoginCheck(w, r, db)
-		if ok {
+		userId := auth.LoginCheck(w, r, db)
+
+		if userId != -1 {
+			js, err := json.Marshal(map[string]int{"User_id": userId})
+			if err != nil {
+				Error.Render(w, Error.New(500, err.Error()))
+				return
+			}
+
 			w.WriteHeader(200)
-			return
+			w.Header().Set("Content-Type", "application/json")
+
+			_, err = w.Write(js)
+			if err != nil {
+				Error.Render(w, Error.New(500, err.Error()))
+			}
+		} else {
+			w.WriteHeader(401)
 		}
-		w.WriteHeader(401)
 	}
 }
 

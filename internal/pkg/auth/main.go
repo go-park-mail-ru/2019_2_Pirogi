@@ -58,13 +58,16 @@ func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, passw
 	return Error.New(400, "already logged in")
 }
 
-func LoginCheck(w http.ResponseWriter, r *http.Request, db *inmemory.DB) bool {
+func LoginCheck(w http.ResponseWriter, r *http.Request, db *inmemory.DB) int {
 	session, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
-		return false
+		return -1
 	}
-	_, ok := db.FindUserByCookie(*session)
-	return ok
+	u, ok := db.FindUserByCookie(*session)
+	if !ok {
+		return -1
+	}
+	return u.ID
 }
 
 func Logout(w http.ResponseWriter, r *http.Request, db *inmemory.DB) error {
