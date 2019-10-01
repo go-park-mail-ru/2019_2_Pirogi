@@ -227,7 +227,7 @@ func TestGetUsersUpdate(t *testing.T) {
 
 	for caseNum, item := range cases {
 		url := "http://167.71.5.55/api/users/"
-		req := httptest.NewRequest("POST", url, item.Body)
+		req := httptest.NewRequest("PUT", url, item.Body)
 		req.AddCookie(&item.Cookie)
 		w := httptest.NewRecorder()
 
