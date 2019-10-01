@@ -153,7 +153,6 @@ func TestGetUsersCreate(t *testing.T) {
 
 	cases := []TestCase{
 		{
-			Cookie:       http.Cookie{},
 			ResponsePart: `"error":"EOF"`,
 			StatusCode:   http.StatusBadRequest,
 		},
@@ -198,6 +197,10 @@ func TestGetUsersUpdate(t *testing.T) {
 
 	cases := []TestCase{
 		{
+			ResponsePart: `"error":"EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
 			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
 			ResponsePart: `"error":"EOF"`,
 			StatusCode:   http.StatusBadRequest,
@@ -232,6 +235,38 @@ func TestGetUsersUpdate(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		handler := GetHandlerUsersUpdate(db)
+		handler(w, req)
+
+		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
+	}
+}
+
+func TestLoginCheck(t *testing.T) {
+	db := InitDatabase()
+	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
+	db.InsertCookie(cookie, 0)
+
+	cases := []TestCase{
+		{
+			StatusCode: http.StatusUnauthorized,
+		},
+		{
+			Cookie:     http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			StatusCode: http.StatusUnauthorized,
+		},
+		{
+			Cookie:     cookie,
+			StatusCode: http.StatusOK,
+		},
+	}
+
+	for caseNum, item := range cases {
+		url := "http://167.71.5.55/api/sessions/"
+		req := httptest.NewRequest("GET", url, item.Body)
+		req.AddCookie(&item.Cookie)
+		w := httptest.NewRecorder()
+
+		handler := GetHandlerLoginCheck(db)
 		handler(w, req)
 
 		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
