@@ -78,7 +78,7 @@ func TestGetUser(t *testing.T) {
     cases := []TestCaseGetById{
         {
             ID:           "1",
-            ResponsePart: `"user_id":1`,
+            ResponsePart: `"username":"Anton"`,
             StatusCode:   http.StatusOK,
         },
         {
@@ -111,7 +111,7 @@ type TestCaseGetUsers struct {
 func TestGetUsers(t *testing.T) {
     db := InitDatabase()
     cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-    db.Insert(cookie, 1)
+    db.Insert(cookie)
 
     cases := []TestCaseGetUsers{
         {
@@ -121,12 +121,12 @@ func TestGetUsers(t *testing.T) {
         },
         {
             Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
-            ResponsePart: `"error":"no user with the cookie"`,
+            ResponsePart: `"error":"invalid cookie"`,
             StatusCode:   http.StatusUnauthorized,
         },
         {
             Cookie:       cookie,
-            ResponsePart: `"user_id":1`,
+            ResponsePart: `"username":"Oleg","email":"oleg@mail.ru"`,
             StatusCode:   http.StatusOK,
         },
     }
