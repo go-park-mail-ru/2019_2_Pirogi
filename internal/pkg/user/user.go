@@ -24,7 +24,7 @@ func CreateNewUser(id int, newUser models.NewUser) (models.User, *models.Error) 
 			Username:    newUser.Username,
 			Rating:      0,
 			Description: "",
-			Image:       "",
+			Image:       "default.jpg",
 		},
 	}
 	return user, nil

@@ -18,7 +18,7 @@ func CreateAPIServer(port string, db *inmemory.DB) server.Server {
 	router.Use(middleware.LoggingMiddleware)
 	router.Use(middleware.GetCheckAuthMiddleware(db))
 
-	router.HandleFunc("/api/films/{film_id:[0-9]+}", handlers.GetHandlerFilm(db)).Methods(http.MethodGet)
+	router.HandleFunc("/api/films/{film_id:[0-9]+}/", handlers.GetHandlerFilm(db)).Methods(http.MethodGet)
 
 	router.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
 	router.HandleFunc("/api/users/", handlers.GetHandlerUsers(db)).Methods(http.MethodGet)

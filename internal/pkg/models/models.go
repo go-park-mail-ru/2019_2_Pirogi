@@ -6,11 +6,11 @@ type Credentials struct {
 }
 
 type UserInfo struct {
-	ID          int     `json:"-"`
-	Username    string  `json:"username,omitempty"`
-	Rating      float32 `json:"rating,omitempty"`
-	Description string  `json:"description,omitempty"`
-	Image       string  `json:"image,omitempty"`
+	ID          int     `json:"id"`
+	Username    string  `json:"username"`
+	Rating      float32 `json:"rating"`
+	Description string  `json:"description"`
+	Image       string  `json:"image"`
 }
 
 type User struct {
@@ -20,7 +20,12 @@ type User struct {
 
 type NewUser struct {
 	Credentials
-	Username string `json:"name"`
+	Username string `json:"username"`
+}
+
+type UpdateUser struct {
+	Username    string `json:"username,omitempty"`
+	Description string `json:"description,omitempty"`
 }
 
 type ReviewsNum struct {
