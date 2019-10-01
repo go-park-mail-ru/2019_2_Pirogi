@@ -117,6 +117,7 @@ func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
 		user, ok := db.FindUserByCookie(*session)
 		if !ok {
 			Error.Render(w, Error.New(401, "invalid cookie"))
+			return
 		}
 		rawUser, err := user.MarshalJSON()
 		if err != nil {
@@ -126,6 +127,7 @@ func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
 		_, err = w.Write(rawUser)
 		if err != nil {
 			Error.Render(w, Error.New(500, err.Error()))
+			return
 		}
 	}
 }

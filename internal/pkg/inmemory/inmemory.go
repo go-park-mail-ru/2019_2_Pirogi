@@ -37,6 +37,11 @@ func (db *DB) GetID(target string) int {
 	}
 }
 
+func (db *DB) InsertCookie(cookie http.Cookie, id int) *models.Error {
+	db.usersAuthCookies[id] = cookie
+	return nil
+}
+
 // затирает старые записи
 func (db *DB) Insert(in interface{}) *models.Error {
 	switch in.(type) {
@@ -79,10 +84,6 @@ func (db *DB) Insert(in interface{}) *models.Error {
 			return nil
 		}
 		return Error.New(404, "film not found")
-	case http.Cookie:
-		cookie := in.(http.Cookie)
-		db.usersAuthCookies[db.GetID("auth_cookie")] = cookie
-		return nil
 	default:
 		return Error.New(400, "not supported type")
 	}

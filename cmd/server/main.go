@@ -22,7 +22,7 @@ func CreateAPIServer(port string, db *inmemory.DB) server.Server {
 
 	router.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
 	router.HandleFunc("/api/users/", handlers.GetHandlerUsers(db)).Methods(http.MethodGet)
-	router.HandleFunc("/api/users/{user_id:[0-9]+}", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
+	router.HandleFunc("/api/users/{user_id:[0-9]+}/", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
 	router.HandleFunc("/api/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)
 
 	router.HandleFunc("/api/sessions/", handlers.GetHandlerLoginCheck(db)).Methods(http.MethodGet)
