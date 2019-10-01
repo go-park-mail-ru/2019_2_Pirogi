@@ -167,6 +167,7 @@ func (db *DB) FindFilmByTitle(title string) (models.Film, bool) {
 	return models.Film{}, false
 }
 
+// TODO: insert cookie for each user
 func (db *DB) FakeFillDB() {
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
