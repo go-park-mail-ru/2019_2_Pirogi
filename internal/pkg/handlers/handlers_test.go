@@ -114,11 +114,10 @@ func TestGetUser(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 	db := InitDatabase()
 	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-	db.Insert(cookie)
+	db.InsertCookie(cookie, 0)
 
 	cases := []TestCase{
 		{
-			Cookie:       http.Cookie{},
 			ResponsePart: `"error":"no cookie"`,
 			StatusCode:   http.StatusUnauthorized,
 		},
@@ -150,7 +149,7 @@ func TestGetUsers(t *testing.T) {
 func TestGetUsersCreate(t *testing.T) {
 	db := InitDatabase()
 	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-	db.Insert(cookie)
+	db.InsertCookie(cookie, 0)
 
 	cases := []TestCase{
 		{
@@ -195,7 +194,7 @@ func TestGetUsersCreate(t *testing.T) {
 func TestGetUsersUpdate(t *testing.T) {
 	db := InitDatabase()
 	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-	db.Insert(cookie)
+	db.InsertCookie(cookie, 0)
 
 	cases := []TestCase{
 		{
