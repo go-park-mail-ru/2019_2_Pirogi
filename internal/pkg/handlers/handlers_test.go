@@ -174,9 +174,8 @@ func TestGetUsersCreate(t *testing.T) {
 			StatusCode:   http.StatusBadRequest,
 		},
 		{
-			Body:         strings.NewReader(`{"email":"katya@mail.ru"}`),
-			ResponsePart: ``,
-			StatusCode:   http.StatusOK,
+			Body:       strings.NewReader(`{"email":"katya@mail.ru","password":"qwerty!23"}`),
+			StatusCode: http.StatusOK,
 		},
 	}
 
@@ -187,6 +186,53 @@ func TestGetUsersCreate(t *testing.T) {
 		w := httptest.NewRecorder()
 
 		handler := GetHandlerUsersCreate(db)
+		handler(w, req)
+
+		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
+	}
+}
+
+func TestGetUsersUpdate(t *testing.T) {
+	db := InitDatabase()
+	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
+	db.Insert(cookie)
+
+	cases := []TestCase{
+		{
+			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			ResponsePart: `"error":"EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Cookie:       cookie,
+			ResponsePart: `"error":"EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Body:         strings.NewReader(`{"Username":"OLEG"}`),
+			ResponsePart: `"error":"no user with the cookie"`,
+			StatusCode:   http.StatusUnauthorized,
+		},
+		{
+			Body:         strings.NewReader(`{"Username":"OLEG"}`),
+			ResponsePart: `"error":"http: named cookie not present"`,
+			StatusCode:   http.StatusUnauthorized,
+		},
+		{
+			Cookie:     cookie,
+			Body:       strings.NewReader(`{"username":"OLEG"}`),
+			StatusCode: http.StatusOK,
+		},
+	}
+
+	for caseNum, item := range cases {
+		url := "http://167.71.5.55/api/users/"
+		req := httptest.NewRequest("POST", url, item.Body)
+		req.AddCookie(&item.Cookie)
+		w := httptest.NewRecorder()
+
+		handler := GetHandlerUsersUpdate(db)
 		handler(w, req)
 
 		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
