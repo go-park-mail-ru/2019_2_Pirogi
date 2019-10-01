@@ -1,7 +1,9 @@
 package server
 
 import (
+	"log"
 	"net/http"
+	"sync"
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
@@ -20,7 +22,8 @@ func New(port string) Server {
 	return s
 }
 
-func (s *Server) Run() error {
+func (s *Server) Run(wg *sync.WaitGroup) {
+	defer wg.Done()
 	server := &http.Server{
 		Addr:         ":" + s.port,
 		Handler:      &s.handler,
@@ -29,9 +32,8 @@ func (s *Server) Run() error {
 	}
 	err := server.ListenAndServe()
 	if err != nil {
-		return err
+		log.Fatal(err)
 	}
-	return nil
 }
 
 func (s *Server) Init(db *inmemory.DB, router *mux.Router) {

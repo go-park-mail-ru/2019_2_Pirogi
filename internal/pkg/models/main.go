@@ -2,21 +2,25 @@ package models
 
 type Credentials struct {
 	Email    string `json:"email"`
-	Password string `json:"password"`
+	Password string `json:"-"`
+}
+
+type UserInfo struct {
+	ID          int     `json:"-"`
+	Username    string  `json:"username,omitempty"`
+	Rating      float32 `json:"rating,omitempty"`
+	Description string  `json:"description,omitempty"`
+	Image       string  `json:"image,omitempty"`
 }
 
 type User struct {
 	Credentials
-	ID          int     `json:"user_id"`
-	Name        string  `json:"name"`
-	Rating      float32 `json:"rating"`
-	Description string  `json:"description"`
-	AvatarLink  string  `json:"avatar_link"`
+	UserInfo
 }
 
 type NewUser struct {
 	Credentials
-	Name string `json:"name"`
+	Username string `json:"name"`
 }
 
 type ReviewsNum struct {
@@ -33,15 +37,8 @@ type Film struct {
 	Genres      []string `json:"genres"`
 	Directors   []string `json:"directors"`
 	Rating      float32  `json:"rating"`
+	Image       string   `json:"image"`
 	ReviewsNum
-	ImagePath string `json:"image_path"`
-}
-
-type UpdateUser struct {
-	Credentials
-	Name        string `json:"name"`
-	Description string `json:"description"`
-	ActualEmail string `json:"actual_email"`
 }
 
 type Error struct {

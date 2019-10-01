@@ -30,8 +30,8 @@ func DetectContentType(data []byte) (ending string, error *models.Error) {
 	return endings[0], nil
 }
 
-func GenerateFilename(target, userID, ending string) string {
-	return user.GetMD5Hash(target+userID) + ending
+func GenerateFilename(salt, userID, ending string) string {
+	return user.GetMD5Hash(salt+userID) + ending
 }
 
 func WriteFile(fileBytes []byte, filename, path string) *models.Error {
@@ -44,17 +44,4 @@ func WriteFile(fileBytes []byte, filename, path string) *models.Error {
 		return Error.New(500, "can not open file for writing")
 	}
 	return nil
-}
-
-func GetFields(r *http.Request) (ID, loadTarget string, error *models.Error) {
-	ID = r.PostFormValue("id")
-	if ID == "" {
-		return "", "", Error.New(400, "specify ID")
-	}
-
-	loadTarget = r.PostFormValue("target")
-	if loadTarget == "" {
-		return "", "", Error.New(400, "set the load target")
-	}
-	return ID, loadTarget, nil
 }

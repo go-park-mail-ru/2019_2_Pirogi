@@ -1,13 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
-	"net/http"
-	"strconv"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -15,6 +8,10 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/gorilla/mux"
+	"io/ioutil"
+	"net/http"
+	"strconv"
+	"time"
 )
 
 func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
@@ -30,10 +27,15 @@ func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 		film := obj.(models.Film)
-		jsonBody, _ := film.MarshalJSON()
-		_, err = fmt.Fprint(w, string(jsonBody), "\n")
+		jsonBody, err := film.MarshalJSON()
 		if err != nil {
 			Error.Render(w, Error.New(500, "error while marshalling json", err.Error()))
+			return
+		}
+		_, err = w.Write(jsonBody)
+		if err != nil {
+			Error.Render(w, Error.New(500, "error while writing response", err.Error()))
+			return
 		}
 	}
 }
@@ -45,7 +47,6 @@ func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
 			w.WriteHeader(401)
 			return
 		}
-		w.WriteHeader(200)
 	}
 }
 
@@ -57,11 +58,10 @@ func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 		defer r.Body.Close()
-
 		credentials := models.Credentials{}
 		err = credentials.UnmarshalJSON(rawBody)
 		if err != nil {
-			_, _ = fmt.Fprint(w, Error.New(400, "invalid json", err.Error()))
+			Error.Render(w, Error.New(400, "invalid json", err.Error()))
 			return
 		}
 		e := auth.Login(w, r, db, credentials.Email, credentials.Password)
@@ -74,9 +74,9 @@ func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 
 func GetHandlerLogout(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		err := auth.Logout(w, r, db)
-		if err != nil {
-			Error.Render(w, Error.New(400, err.Error()))
+		e := auth.Logout(w, r, db)
+		if e != nil {
+			Error.Render(w, e)
 		}
 	}
 }
@@ -93,10 +93,15 @@ func GetHandlerUser(db *inmemory.DB) http.HandlerFunc {
 			Error.Render(w, e)
 			return
 		}
-		jsonBody, _ := json.Marshal(obj)
-		_, err = fmt.Fprint(w, string(jsonBody), "\n")
+		user := obj.(models.User)
+		userInfo := user.UserInfo
+		jsonBody, err := userInfo.MarshalJSON()
 		if err != nil {
-			log.Fatal(err)
+			Error.Render(w, Error.New(500, err.Error()))
+		}
+		_, err = w.Write(jsonBody)
+		if err != nil {
+			Error.Render(w, Error.New(500, err.Error()))
 		}
 	}
 }
@@ -109,37 +114,41 @@ func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 		user, ok := db.FindUserByCookie(*session)
-		user.Password = ""
 		if !ok {
-			Error.Render(w, Error.New(401, "no user with the cookie"))
+			Error.Render(w, Error.New(401, "invalid cookie"))
 		}
-		jsonBody, _ := user.MarshalJSON()
-		_, err = fmt.Fprint(w, string(jsonBody), "\n")
+		rawUser, err := user.MarshalJSON()
 		if err != nil {
-			log.Fatal(err)
+			Error.Render(w, Error.New(500, err.Error()))
+			return
+		}
+		_, err = w.Write(rawUser)
+		if err != nil {
+			Error.Render(w, Error.New(500, err.Error()))
 		}
 	}
 }
 
 func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
+		_, err := r.Cookie(configs.CookieAuthName)
+		if err == nil {
+			Error.Render(w, Error.New(403, "user is already logged in"))
+			return
+		}
 		rawBody, err := ioutil.ReadAll(r.Body)
-
 		if err != nil {
 			Error.Render(w, Error.New(400, err.Error()))
 			return
 		}
 		defer r.Body.Close()
-
-		newUser := &models.NewUser{}
+		newUser := models.NewUser{}
 		err = newUser.UnmarshalJSON(rawBody)
 		if err != nil {
 			Error.Render(w, Error.New(400, err.Error()))
 			return
 		}
-
-		e := db.Insert(newUser, 0)
-
+		e := db.Insert(newUser)
 		if e != nil {
 			Error.Render(w, e)
 			return
@@ -156,104 +165,91 @@ func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rawBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
-			Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
+			Error.Render(w, Error.New(400, err.Error()))
 			return
 		}
 		defer r.Body.Close()
-
-		updateUser := &models.UpdateUser{}
+		updateUser := &models.UserInfo{}
 		err = updateUser.UnmarshalJSON(rawBody)
 		if err != nil {
-			Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
+			Error.Render(w, Error.New(400, err.Error()))
 			return
 		}
-
 		session, err := r.Cookie(configs.CookieAuthName)
 		if err != nil {
 			Error.Render(w, Error.New(401, err.Error()))
 			return
 		}
-		userForCookie, ok := db.FindUserByCookie(*session)
+		user, ok := db.FindUserByCookie(*session)
 		if !ok {
 			Error.Render(w, Error.New(401, "no user with the cookie"))
 			return
 		}
-		updateUser.ActualEmail = userForCookie.Email
-		user, ok := db.FindByEmail(updateUser.ActualEmail)
-		if !ok {
-			Error.Render(w, Error.New(http.StatusNotFound, "no user with the email"))
-			return
-		}
-
 		switch {
-		case updateUser.Name != "":
-			user.Name = updateUser.Name
-			fallthrough
-		case updateUser.Password != "":
-			user.Password = updateUser.Password
-			fallthrough
-		case updateUser.Email != "":
-			user.Email = updateUser.Email
-			db.Insert(session, user.ID)
+		case updateUser.Username != "":
+			user.Username = updateUser.Username
 			fallthrough
 		case updateUser.Description != "":
 			user.Description = updateUser.Description
 		}
+		e := db.Insert(user)
+		if e != nil {
+			Error.Render(w, e)
+			return
+		}
+	}
+}
 
-		e := db.Insert(user, 0)
+func GetUploadUsersImageHandler(db *inmemory.DB) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		session, err := r.Cookie(configs.CookieAuthName)
+		if err != nil {
+			Error.Render(w, Error.New(401, err.Error()))
+			return
+		}
+		user, ok := db.FindUserByCookie(*session)
+		if !ok {
+			Error.Render(w, Error.New(401, "invalid cookie"))
+			return
+		}
+
+		r.Body = http.MaxBytesReader(w, r.Body, images.MaxUploadSize)
+		if err := r.ParseMultipartForm(images.MaxUploadSize); err != nil {
+			Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
+			return
+		}
+		defer r.Body.Close()
+
+		file, _, err := r.FormFile("file")
+		if err != nil {
+			Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
+			return
+		}
+		defer file.Close()
+
+		fileBytes, err := ioutil.ReadAll(file)
+		if err != nil {
+			Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
+			return
+		}
+
+		ending, e := images.DetectContentType(fileBytes)
 		if e != nil {
 			Error.Render(w, e)
 			return
 		}
 
-	}
-}
-
-func UploadImageHandler(w http.ResponseWriter, r *http.Request) {
-	ID, loadTarget, e := images.GetFields(r)
-	if e != nil {
-		Error.Render(w, e)
-		return
-	}
-
-	r.Body = http.MaxBytesReader(w, r.Body, images.MaxUploadSize)
-	if err := r.ParseMultipartForm(images.MaxUploadSize); err != nil {
-		Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
-		return
-	}
-	defer r.Body.Close()
-
-	file, _, err := r.FormFile("upload_file")
-	if err != nil {
-		Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
-		return
-	}
-	defer file.Close()
-
-	fileBytes, err := ioutil.ReadAll(file)
-	if err != nil {
-		Error.Render(w, Error.New(http.StatusBadRequest, err.Error()))
-		return
-	}
-
-	ending, e := images.DetectContentType(fileBytes)
-	if e != nil {
-		Error.Render(w, e)
-		return
-	}
-
-	var uploadPath string
-	switch loadTarget {
-	case "user":
-		uploadPath = configs.ImageUploadPath
-	default:
-		Error.Render(w, e)
-
-	}
-	fileName := images.GenerateFilename(loadTarget, ID, ending)
-	e = images.WriteFile(fileBytes, fileName, uploadPath)
-	if e != nil {
-		Error.Render(w, e)
-		return
+		fileName := images.GenerateFilename(time.Now().String(), strconv.Itoa(user.ID), ending)
+		e = images.WriteFile(fileBytes, fileName, configs.UsersImageUploadPath)
+		if e != nil {
+			Error.Render(w, e)
+			return
+		}
+		user.Image = fileName
+		e = db.Insert(user)
+		if e != nil {
+			Error.Render(w, e)
+			return
+		}
 	}
 }
