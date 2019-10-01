@@ -1,15 +1,11 @@
 package inmemory
 
 import (
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"net/http"
 	"strconv"
-
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
 type DB struct {
@@ -26,37 +22,44 @@ func Init() *DB {
 	return &db
 }
 
-// пока in-memory details нужны чтобы записать куку, потом уберу
-func (db *DB) Insert(in interface{}, id int) *models.Error {
-	switch in.(type) {
+func (db *DB) GetID(target string) int {
+	switch target {
+	case "user":
+		return len(db.users)
+	case "film":
+		return len(db.films)
+	case "auth_cookie":
+		return len(db.usersAuthCookies)
+	default:
+		return 0
+	}
+}
 
-	// при регистрации
-	case *models.NewUser:
-		newUserDetails := in.(*models.NewUser)
-		if _, ok := db.FindByEmail(newUserDetails.Email); !ok {
-			newUser := &models.User{
-				Credentials: newUserDetails.Credentials,
-				ID:          len(db.users),
-				Name:        newUserDetails.Name,
-				Rating:      0,
-				AvatarLink:  images.GenerateFilename("user", strconv.Itoa(len(db.users)), ".jpeg"),
-			}
-			db.users[len(db.users)] = *newUser
-			return nil
-		} else {
-			return Error.New(400, "user is already exist")
+// затирает старые записи
+func (db *DB) Insert(in interface{}) *models.Error {
+	switch in.(type) {
+	case models.NewUser:
+		newUser := in.(models.NewUser)
+		_, ok := db.FindByEmail(newUser.Email)
+		if ok {
+			return Error.New(400, "user with the email is already existed")
 		}
-	//	при обновлении информации
+		u, e := user.CreateNewUser(db.GetID("user"), newUser)
+		if e != nil {
+			return e
+		}
+		db.users[db.GetID("user")] = u
+		return nil
 	case models.User:
-		updatedUser := in.(models.User)
-		if _, ok := db.users[updatedUser.ID]; ok {
-			db.users[updatedUser.ID] = updatedUser
+		u := in.(models.User)
+		if _, ok := db.users[u.ID]; ok {
+			db.users[u.ID] = u
 			return nil
 		}
 		return Error.New(404, "user not found")
 	case http.Cookie:
 		cookie := in.(http.Cookie)
-		db.usersAuthCookies[id] = cookie
+		db.usersAuthCookies[db.GetID("auth_cookie")] = cookie
 		return nil
 	default:
 		return Error.New(400, "not supported type")
@@ -90,31 +93,7 @@ func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
 		}
 		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, Error.New(404, "no such type: "+target)
-}
-
-func (db *DB) FakeFillDB() {
-	newUser, _ := user.CreateUser(len(db.users), "oleg@mail.ru", "Oleg", user.GetMD5Hash("qwerty123"), "oleg.jpg", 7.3)
-	db.users[len(db.users)] = newUser
-	newUser, _ = user.CreateUser(len(db.users), "anton@mail.ru", "Anton", user.GetMD5Hash("qwe523"), "anton.jpg", 8.3)
-	db.users[len(db.users)] = newUser
-	newUser, _ = user.CreateUser(len(db.users), "yura@gmail.com", "Yura", user.GetMD5Hash("12312312"), "yura.jpg", 9.5)
-	db.users[len(db.users)] = newUser
-
-	fightClub, _ := film.CreateFilm("Бойцовский клуб", "Терзаемый хронической бессонницей и отчаянно"+
-		"пытающийся вырваться из мучительно скучной жизни клерк встречает некоего Тайлера Дардена, харизматического "+
-		"торговца мылом с извращенной философией. Тайлер уверен, что самосовершенствование — удел слабых, "+
-		"а саморазрушение — единственное, ради чего стоит жить.", []string{"Драма", "Боевик"}, []string{"Брэд Питт", "Эдвард Нортон"},
-		[]string{"Дэвид Финчер"})
-	matrix, _ := film.CreateFilm("Матрица", "Мир Матрицы — это иллюзия, существующая только в"+
-		" бесконечном сне обреченного человечества. Холодный мир будущего, в котором люди — всего лишь батарейки в"+
-		" компьютерных системах.", []string{"Фэнтези"}, []string{"Киану Ривз", "Кэрри-Энн Мосс"},
-		[]string{"Лана Вачовски", "Лилли Вачовски"})
-
-	// не сделал insert для фильмов
-	db.films[len(db.films)] = fightClub
-	db.films[len(db.films)] = matrix
-
+	return nil, Error.New(404, "not supported type: "+target)
 }
 
 func (db *DB) FindByEmail(email string) (models.User, bool) {

@@ -5,6 +5,7 @@ import (
 	"log"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -14,10 +15,11 @@ import (
 func LoggingMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if f, err := os.OpenFile(configs.AccessLogPath+"access_log.txt", os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
+		// TODO: понять как не открывать файл каждый раз и проверять его наличие
+		if f, err := os.OpenFile(configs.AccessLogPath+"access.log", os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
 			log.Fatal("Can not open file to log: ", err.Error())
 		} else {
-			_, _ = fmt.Fprint(f, r.Method, " ", r.URL, " ", r.Host)
+			_, _ = fmt.Fprintf(f, "%s %s %s %s \n", time.Now().Format("02/01 15:04:05"), r.Method, r.URL, r.Host)
 		}
 		next.ServeHTTP(w, r)
 	})
@@ -26,7 +28,7 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 func HeaderMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		w.Header().Set("Access-Control-Allow-Origin", "*")
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS")
+		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
 		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
 		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
 		w.Header().Set("Vary", "Accept-Encoding")
@@ -38,7 +40,7 @@ func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handle
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// POST разрешен для анонимов разрешен только для регистрации
-			if r.Method == http.MethodGet || r.Method == http.MethodPost && (r.URL.Path == "/api/users/" || r.URL.Path == "/api/login/") {
+			if r.Method == http.MethodGet || r.Method == http.MethodPost && (r.URL.Path == "/api/users/" || r.URL.Path == "/api/sessions/") {
 				next.ServeHTTP(w, r)
 				return
 			}

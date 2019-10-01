@@ -6,5 +6,8 @@ const CookieAuthName = "cinsear_session"
 const CookieAuthDuration = 10 * time.Hour
 
 // TODO: изменить путь для пользовательских картинок
-const ImageUploadPath = "/var/www/media/images/users/"
+//const UsersImageUploadPath = "../../media/users/"
+
+const UsersImageUploadPath = "/var/www/media/images/users/"
+const FilmsImageUploadPath = "/var/www/media/images/films/"
 const AccessLogPath = "../../"

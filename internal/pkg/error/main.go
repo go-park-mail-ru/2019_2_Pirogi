@@ -2,9 +2,12 @@ package Error
 
 import (
 	"fmt"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"log"
 	"net/http"
+	"os"
 	"strings"
+	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 )
@@ -19,7 +22,13 @@ func New(status int, details ...string) *models.Error {
 
 func Render(w http.ResponseWriter, error *models.Error) {
 	w.WriteHeader(error.Status)
-	log.Print(error.Status, " | ", error.Error)
+	// TODO: понять как не открывать файл каждый раз и проверять его наличие
+	if f, err := os.OpenFile(configs.AccessLogPath+"error.log", os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
+		log.Fatal("Can not open file to log: ", err.Error())
+	} else {
+		_, _ = fmt.Fprintf(f, "%s %d %s \n", time.Now().Format("02/01 15:04:05"), error.Status, error.Error)
+		_ = f.Close()
+	}
 	jsonError, _ := error.MarshalJSON()
 	_, _ = fmt.Fprint(w, string(jsonError))
 }

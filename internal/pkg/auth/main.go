@@ -1,7 +1,6 @@
 package auth
 
 import (
-	"errors"
 	"net/http"
 	"time"
 
@@ -12,43 +11,36 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
-func GenerateAuthCookie(value string) http.Cookie {
+// Creates cookie with value = MD5(value)
+func GenerateCookie(cookieName, value string) http.Cookie {
 	expiration := time.Now().Add(configs.CookieAuthDuration)
 	cookie := http.Cookie{
-		Name:     configs.CookieAuthName,
+		Name:     cookieName,
 		Value:    user.GetMD5Hash(value),
 		Expires:  expiration,
 		HttpOnly: true,
 		Path:     "/",
+		SameSite: http.SameSiteStrictMode,
 	}
 	return cookie
 }
 
-func GenerateDeAuthCookie() http.Cookie {
-	cookie := http.Cookie{
-		Name:     configs.CookieAuthName,
-		Value:    "",
-		Path:     "/",
-		Expires:  time.Unix(0, 0),
-		HttpOnly: true,
-	}
-	return cookie
+func ExpireCookie(cookie *http.Cookie) {
+	// TODO: понять, почему кука просрачивается только при таких параметрах
+	cookie.Expires = time.Unix(0, 0)
+	cookie.Path = "/"
+	cookie.HttpOnly = true
 }
 
 func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, password string) *models.Error {
 	_, err := r.Cookie(configs.CookieAuthName)
-	isAuth := err != http.ErrNoCookie
-	if !isAuth {
+	if err != nil {
 		u, ok := db.FindByEmail(email)
-		if !ok {
-			return Error.New(404, "no user with this email")
+		if !ok || u.Password != password {
+			return Error.New(400, "invalid credentials")
 		}
-		if u.Password != password {
-			return Error.New(400, "incorrect password")
-		}
-		cookie := GenerateAuthCookie(email)
-		e := db.Insert(cookie, u.ID)
-
+		cookie := GenerateCookie("cinsear_session", email)
+		e := db.Insert(cookie)
 		if e != nil {
 			return e
 		}
@@ -58,29 +50,22 @@ func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, passw
 	return Error.New(400, "already logged in")
 }
 
-func LoginCheck(w http.ResponseWriter, r *http.Request, db *inmemory.DB) bool {
+func LoginCheck(_ http.ResponseWriter, r *http.Request, db *inmemory.DB) bool {
 	session, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
 		return false
 	}
 	_, ok := db.FindUserByCookie(*session)
-	if !ok {
-		return false
-	}
-	return true
+	return ok
 }
 
-func Logout(w http.ResponseWriter, r *http.Request, db *inmemory.DB) error {
+func Logout(w http.ResponseWriter, r *http.Request, db *inmemory.DB) *models.Error {
 	session, err := r.Cookie(configs.CookieAuthName)
-	isAuth := err != http.ErrNoCookie
-	if !isAuth {
-		return errors.New("user is not authorized")
+	if err != nil {
+		return Error.New(401, "user is not authorized")
 	}
-	if err == nil {
-
-		cookie := GenerateDeAuthCookie()
-		http.SetCookie(w, &cookie)
-		db.Delete(*session)
-	}
-	return err
+	ExpireCookie(session)
+	http.SetCookie(w, session)
+	db.Delete(*session)
+	return nil
 }

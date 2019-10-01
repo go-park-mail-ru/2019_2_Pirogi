@@ -3,26 +3,28 @@ package user
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"errors"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 )
 
-func CreateUser(id int, email, name, password, avatarLink string, rating float32) (models.User, error) {
-	if !validators.ValidateEmail(email) {
-		return models.User{}, errors.New("email is incorrect")
+func CreateNewUser(id int, newUser models.NewUser) (models.User, *models.Error) {
+	if !validators.ValidateEmail(newUser.Email) {
+		return models.User{}, Error.New(400, "invalid data")
 	}
-
 	user := models.User{
-		ID: id,
 		Credentials: models.Credentials{
-			Email:    email,
-			Password: password,
+			Email:    newUser.Email,
+			Password: newUser.Password,
 		},
-		Name:       name,
-		Rating:     rating,
-		AvatarLink: avatarLink,
+		UserInfo: models.UserInfo{
+			ID:          id,
+			Username:    newUser.Username,
+			Rating:      0,
+			Description: "",
+			Image:       "",
+		},
 	}
 	return user, nil
 }
