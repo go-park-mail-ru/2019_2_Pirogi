@@ -128,7 +128,7 @@ func TestGetUsers(t *testing.T) {
 		},
 		{
 			Cookie:       cookie,
-			ResponsePart: `"username":"Oleg","email":"oleg@mail.ru"`,
+			ResponsePart: `"id":0,"username":"Oleg"`,
 			StatusCode:   http.StatusOK,
 		},
 	}
