@@ -71,6 +71,6 @@ func Logout(w http.ResponseWriter, r *http.Request, db *inmemory.DB) *models.Err
 	}
 	ExpireCookie(session)
 	http.SetCookie(w, session)
-	db.Delete(*session)
+	db.DeleteCookie(*session)
 	return nil
 }
