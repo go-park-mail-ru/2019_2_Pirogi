@@ -29,18 +29,9 @@ func CreateAPIServer(port string, db *inmemory.DB) server.Server {
 	router.HandleFunc("/api/sessions/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
 	router.HandleFunc("/api/sessions/", handlers.GetHandlerLogout(db)).Methods(http.MethodDelete)
 
-	s := server.New(port)
-	s.Init(db, router)
-	return s
-}
-
-func CreateFileServer(port string, db *inmemory.DB) server.Server {
-	router := mux.NewRouter()
-	router.Use(middleware.HeaderMiddleware)
-	router.Use(middleware.LoggingMiddleware)
-	router.Use(middleware.GetCheckAuthMiddleware(db))
 	router.HandleFunc("/api/users/images/", handlers.GetUploadImageHandler(db, "users")).Methods(http.MethodPost)
 	router.HandleFunc("/api/films/images/", handlers.GetUploadImageHandler(db, "films")).Methods(http.MethodPost)
+
 	s := server.New(port)
 	s.Init(db, router)
 	return s
@@ -48,7 +39,6 @@ func CreateFileServer(port string, db *inmemory.DB) server.Server {
 
 func main() {
 	portAPI := flag.String("api", "8000", "port for API server")
-	portFile := flag.String("file", "9000", "port for file server")
 	flag.Parse()
 
 	db := inmemory.Init()
@@ -56,10 +46,7 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 	apiServer := CreateAPIServer(*portAPI, db)
-	fileServer := CreateFileServer(*portFile, db)
-
 	wg.Add(2)
 	go apiServer.Run(wg)
-	go fileServer.Run(wg)
 	wg.Wait()
 }
