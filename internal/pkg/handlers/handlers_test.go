@@ -1,15 +1,16 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
-	"github.com/gorilla/mux"
 	"io"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/gorilla/mux"
 )
 
 func InitDatabase() *inmemory.DB {

@@ -3,6 +3,7 @@ package user
 import (
 	"crypto/md5"
 	"encoding/hex"
+
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"

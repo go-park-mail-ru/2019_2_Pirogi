@@ -1,6 +1,11 @@
 package handlers
 
 import (
+	"io/ioutil"
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -8,10 +13,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/gorilla/mux"
-	"io/ioutil"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {

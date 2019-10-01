@@ -2,12 +2,13 @@ package Error
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"log"
 	"net/http"
 	"os"
 	"strings"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 )

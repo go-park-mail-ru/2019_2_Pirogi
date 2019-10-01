@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
+	"net/http"
+	"sync"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/gorilla/mux"
-	"net/http"
-	"sync"
 )
 
 func CreateAPIServer(port string, db *inmemory.DB) server.Server {
