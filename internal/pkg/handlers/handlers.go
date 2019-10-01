@@ -246,7 +246,7 @@ func GetUploadImageHandler(db *inmemory.DB, target string) http.HandlerFunc {
 
 		var path string
 		fileName := images.GenerateFilename(time.Now().String(), strconv.Itoa(user.ID), ending)
-		if target == "films" {
+		if target == "users" {
 			path = configs.UsersImageUploadPath
 		} else {
 			path = configs.FilmsImageUploadPath

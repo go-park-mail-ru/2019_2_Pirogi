@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -22,13 +21,6 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 		} else {
 			_, _ = fmt.Fprintf(f, "%s %s %s %s \n", time.Now().Format("02/01 15:04:05"), r.Method, r.URL, r.Host)
 		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-func TrimSuffix(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		r.URL.Path = strings.TrimRight(r.URL.Path, "/")
 		next.ServeHTTP(w, r)
 	})
 }
