@@ -33,7 +33,7 @@ func ExpireCookie(cookie *http.Cookie) {
 }
 
 func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, password string) *models.Error {
-	_, err := r.Cookie(configs.CookieAuthName)
+	cookie, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
 		u, ok := db.FindByEmail(email)
 		if !ok || u.Password != password {
@@ -46,6 +46,11 @@ func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, passw
 		}
 		http.SetCookie(w, &cookie)
 		return nil
+	}
+	if cookie != nil {
+		if _, ok := db.FindUserByCookie(*cookie); !ok {
+			return Error.New(400, "invalid cookie")
+		}
 	}
 	return Error.New(400, "already logged in")
 }
