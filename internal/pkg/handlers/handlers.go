@@ -131,10 +131,12 @@ func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
 
 func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
-		_, err := r.Cookie(configs.CookieAuthName)
-		if err == nil {
-			Error.Render(w, Error.New(403, "user is already logged in"))
-			return
+		cookie, err := r.Cookie(configs.CookieAuthName)
+		if err == nil && cookie != nil {
+			if _, ok := db.FindUserByCookie(*cookie); ok {
+				Error.Render(w, Error.New(403, "user is already logged in"))
+				return
+			}
 		}
 		rawBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {

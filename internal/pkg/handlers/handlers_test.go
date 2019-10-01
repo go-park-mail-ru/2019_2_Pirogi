@@ -4,6 +4,7 @@ import (
     "github.com/go-park-mail-ru/2019_2_Pirogi/configs"
     "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
     "github.com/gorilla/mux"
+    "io"
     "io/ioutil"
     "net/http"
     "net/http/httptest"
@@ -36,8 +37,10 @@ func CheckStatusCodeAndResponse(t *testing.T, caseNumber int, w *httptest.Respon
     }
 }
 
-type TestCaseGetById struct {
+type TestCase struct {
     ID           string
+    Cookie       http.Cookie
+    Body         io.Reader
     ResponsePart string
     StatusCode   int
 }
@@ -45,7 +48,7 @@ type TestCaseGetById struct {
 func TestGetFilm(t *testing.T) {
     db := InitDatabase()
 
-    cases := []TestCaseGetById{
+    cases := []TestCase{
         {
             ID:           "1",
             ResponsePart: `"title":"Матрица"`,
@@ -60,7 +63,7 @@ func TestGetFilm(t *testing.T) {
 
     for caseNum, item := range cases {
         url := "http://167.71.5.55/api/films/" + item.ID
-        req := httptest.NewRequest("GET", url, nil)
+        req := httptest.NewRequest("GET", url, item.Body)
         w := httptest.NewRecorder()
 
         // Need to create a router that we can pass the request through so that the vars will be added to the context
@@ -75,7 +78,7 @@ func TestGetFilm(t *testing.T) {
 func TestGetUser(t *testing.T) {
     db := InitDatabase()
 
-    cases := []TestCaseGetById{
+    cases := []TestCase{
         {
             ID:           "1",
             ResponsePart: `"username":"Anton"`,
@@ -86,11 +89,16 @@ func TestGetUser(t *testing.T) {
             ResponsePart: `"error":"no user with id: 500"`,
             StatusCode:   http.StatusNotFound,
         },
+        {
+            ID:           "5a",
+            ResponsePart: `404 page not found`,
+            StatusCode:   http.StatusNotFound,
+        },
     }
 
     for caseNum, item := range cases {
         url := "http://167.71.5.55/api/users/" + item.ID
-        req := httptest.NewRequest("GET", url, nil)
+        req := httptest.NewRequest("GET", url, item.Body)
         w := httptest.NewRecorder()
 
         // Need to create a router that we can pass the request through so that the vars will be added to the context
@@ -102,18 +110,12 @@ func TestGetUser(t *testing.T) {
     }
 }
 
-type TestCaseGetUsers struct {
-    Cookie       http.Cookie
-    ResponsePart string
-    StatusCode   int
-}
-
 func TestGetUsers(t *testing.T) {
     db := InitDatabase()
     cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
     db.Insert(cookie)
 
-    cases := []TestCaseGetUsers{
+    cases := []TestCase{
         {
             Cookie:       http.Cookie{},
             ResponsePart: `"error":"no cookie"`,
@@ -133,11 +135,57 @@ func TestGetUsers(t *testing.T) {
 
     for caseNum, item := range cases {
         url := "http://167.71.5.55/api/users/"
-        req := httptest.NewRequest("GET", url, nil)
+        req := httptest.NewRequest("GET", url, item.Body)
         req.AddCookie(&item.Cookie)
         w := httptest.NewRecorder()
 
         handler := GetHandlerUsers(db)
+        handler(w, req)
+
+        CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
+    }
+}
+
+func TestGetUsersCreate(t *testing.T) {
+    db := InitDatabase()
+    cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
+    db.Insert(cookie)
+
+    cases := []TestCase{
+        {
+            Cookie:       http.Cookie{},
+            ResponsePart: `"error":"EOF"`,
+            StatusCode:   http.StatusBadRequest,
+        },
+        {
+            Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+            ResponsePart: `"error":"EOF"`,
+            StatusCode:   http.StatusBadRequest,
+        },
+        {
+            Cookie:       cookie,
+            ResponsePart: `"error":"user is already logged in"`,
+            StatusCode:   http.StatusForbidden,
+        },
+        {
+            Body: strings.NewReader(`{"email":"oleg@mail.ru"}`),
+            ResponsePart: `"error":"user with the email already exists"`,
+            StatusCode:   http.StatusBadRequest,
+        },
+        {
+            Body: strings.NewReader(`{"email":"katya@mail.ru"}`),
+            ResponsePart: ``,
+            StatusCode:   http.StatusOK,
+        },
+    }
+
+    for caseNum, item := range cases {
+        url := "http://167.71.5.55/api/users/"
+        req := httptest.NewRequest("POST", url, item.Body)
+        req.AddCookie(&item.Cookie)
+        w := httptest.NewRecorder()
+
+        handler := GetHandlerUsersCreate(db)
         handler(w, req)
 
         CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
