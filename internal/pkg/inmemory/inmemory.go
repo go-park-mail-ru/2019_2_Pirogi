@@ -169,17 +169,17 @@ func (db *DB) FindFilmByTitle(title string) (models.Film, bool) {
 func (db *DB) FakeFillDB() {
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
-		Username: "Oleg",
+		Username:    "Oleg",
 	})
 
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "anton@mail.ru", Password: user.GetMD5Hash("qwe523")},
-		Username: "Anton",
+		Username:    "Anton",
 	})
 
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "yura@gmail.com", Password: user.GetMD5Hash("12312312")},
-		Username: "Yura",
+		Username:    "Yura",
 	})
 
 	db.Insert(models.NewFilm{FilmInfo: models.FilmInfo{
