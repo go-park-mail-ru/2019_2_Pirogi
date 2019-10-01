@@ -40,7 +40,7 @@ func CreateFileServer(port string, db *inmemory.DB) server.Server {
 	router.Use(middleware.LoggingMiddleware)
 	router.Use(middleware.GetCheckAuthMiddleware(db))
 	router.HandleFunc("/api/users/images/", handlers.GetUploadImageHandler(db, "users")).Methods(http.MethodPost)
-	router.HandleFunc("/api/users/films/", handlers.GetUploadImageHandler(db, "films")).Methods(http.MethodPost)
+	router.HandleFunc("/api/films/images/", handlers.GetUploadImageHandler(db, "films")).Methods(http.MethodPost)
 	s := server.New(port)
 	s.Init(db, router)
 	return s
