@@ -51,6 +51,7 @@ func main() {
 	flag.Parse()
 
 	db := inmemory.Init()
+	db.FakeFillDB()
 
 	wg := &sync.WaitGroup{}
 	apiServer := CreateAPIServer(*portAPI, db)
