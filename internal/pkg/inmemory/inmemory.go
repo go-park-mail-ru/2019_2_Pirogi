@@ -89,7 +89,7 @@ func (db *DB) Insert(in interface{}) *models.Error {
 	}
 }
 
-func (db *DB) Delete(in interface{}) {
+func (db *DB) DeleteCookie(in interface{}) {
 	switch in.(type) {
 	case http.Cookie:
 		cookie := in.(http.Cookie)
@@ -97,8 +97,8 @@ func (db *DB) Delete(in interface{}) {
 		if !ok {
 			return
 		}
-		if _, ok := db.usersAuthCookies[u.ID]; !ok {
-			db.usersAuthCookies[u.ID] = cookie
+		if _, ok := db.usersAuthCookies[u.ID]; ok {
+			delete(db.usersAuthCookies, u.ID)
 		}
 	}
 }
