@@ -40,7 +40,7 @@ func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handle
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// POST разрешен для анонимов разрешен только для регистрации
-			if r.Method == http.MethodGet || r.Method == http.MethodPost && (r.URL.Path == "/api/users/" || r.URL.Path == "/api/login/") {
+			if r.Method == http.MethodGet || r.Method == http.MethodPost && (r.URL.Path == "/api/users/" || r.URL.Path == "/api/sessions/") {
 				next.ServeHTTP(w, r)
 				return
 			}
