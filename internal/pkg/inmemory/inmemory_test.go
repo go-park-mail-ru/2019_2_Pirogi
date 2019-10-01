@@ -1,12 +1,11 @@
 package inmemory
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"reflect"
 	"testing"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/stretchr/testify/require"
 )
 
@@ -18,19 +17,31 @@ func TestFakeFillDB(t *testing.T) {
 
 func TestDB_Insert(t *testing.T) {
 	db := Init()
-	ksyusha, _ := user.CreateUser(5, "ksyushag@mail.ru", "Ksyusha", user.GetMD5Hash("qwerty123"), "ksyuha.jpg", 8.3)
-	err := db.Insert(ksyusha, 0)
+	ksyusha := models.NewUser{
+		Credentials: models.Credentials{
+			Email:    "ksyushag@mail.ru",
+			Password: user.GetMD5Hash("qwerty123"),
+		},
+		Username: "Ksyusha",
+	}
+	err := db.Insert(ksyusha)
 	require.Nil(t, err)
-	require.True(t, reflect.DeepEqual(db.users[5], ksyusha))
+	require.True(t, reflect.DeepEqual(db.users[0].Credentials, ksyusha.Credentials))
 }
 
 func TestDB_Get(t *testing.T) {
 	db := Init()
-	ksyusha, _ := user.CreateUser(5, "ksyushag@mail.ru", "Ksyusha", user.GetMD5Hash("qwerty123"), "ksyuha.jpg", 8.3)
-	err := db.Insert(ksyusha, 0)
+	ksyusha := models.NewUser{
+		Credentials: models.Credentials{
+			Email:    "ksyushag@mail.ru",
+			Password: user.GetMD5Hash("qwerty123"),
+		},
+		Username: "Ksyusha",
+	}
+	err := db.Insert(ksyusha)
 	require.Nil(t, err)
-	obj, err := db.Get(5, "user")
+	obj, err := db.Get(0, "user")
 	require.Nil(t, err)
 	u := obj.(models.User)
-	require.True(t, reflect.DeepEqual(u, ksyusha))
+	require.True(t, reflect.DeepEqual(u.Credentials, ksyusha.Credentials))
 }

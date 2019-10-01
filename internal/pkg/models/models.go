@@ -29,7 +29,7 @@ type ReviewsNum struct {
 	Negative int `json:"negative"`
 }
 
-type Film struct {
+type FilmInfo struct {
 	Title       string   `json:"title"`
 	Description string   `json:"description"`
 	Date        string   `json:"date"`
@@ -39,6 +39,15 @@ type Film struct {
 	Rating      float32  `json:"rating"`
 	Image       string   `json:"image"`
 	ReviewsNum
+}
+
+type NewFilm struct {
+	FilmInfo
+}
+
+type Film struct {
+	ID int `json:"-"`
+	FilmInfo
 }
 
 type Error struct {
