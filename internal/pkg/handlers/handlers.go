@@ -203,7 +203,7 @@ func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetUploadUsersImageHandler(db *inmemory.DB) http.HandlerFunc {
+func GetUploadImageHandler(db *inmemory.DB, target string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := r.Cookie(configs.CookieAuthName)
 		if err != nil {
@@ -242,10 +242,19 @@ func GetUploadUsersImageHandler(db *inmemory.DB) http.HandlerFunc {
 			return
 		}
 
+		var path string
 		fileName := images.GenerateFilename(time.Now().String(), strconv.Itoa(user.ID), ending)
-		e = images.WriteFile(fileBytes, fileName, configs.UsersImageUploadPath)
+		if target == "films" {
+			path = configs.UsersImageUploadPath
+		} else {
+			path = configs.FilmsImageUploadPath
+		}
+		e = images.WriteFile(fileBytes, fileName, path)
 		if e != nil {
 			Error.Render(w, e)
+			return
+		}
+		if target != "users" {
 			return
 		}
 		user.Image = fileName
