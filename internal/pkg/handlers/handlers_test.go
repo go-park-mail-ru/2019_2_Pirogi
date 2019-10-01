@@ -3,91 +3,131 @@ package handlers
 import (
     "github.com/go-park-mail-ru/2019_2_Pirogi/configs"
     "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+    "github.com/gorilla/mux"
     "io/ioutil"
     "net/http"
     "net/http/httptest"
+    "strings"
     "testing"
 )
 
-func CheckStatusCodeAndResponse(t *testing.T, caseNumber int, w *httptest.ResponseRecorder, expectedCode int, expectedResponse string) {
+func InitDatabase() *inmemory.DB  {
+    db := inmemory.Init()
+    db.FakeFillDB()
+    return db
+}
+
+func CheckStatusCodeAndResponse(t *testing.T, caseNumber int, w *httptest.ResponseRecorder, expectedCode int, expectedRespPart string) {
     if w.Code != expectedCode {
         t.Errorf("[%d] wrong StatusCode: got %d, expected %d", caseNumber, w.Code, expectedCode)
     }
 
     resp := w.Result()
-    body, _ := ioutil.ReadAll(resp.Body)
+    body, err := ioutil.ReadAll(resp.Body)
+    if err != nil {
+        t.Errorf("[%d] an error reading response body occurred", caseNumber)
+        return
+    }
+    defer resp.Body.Close()
 
     bodyStr := string(body)
-    if bodyStr != expectedResponse {
-        t.Errorf("[%d] wrong Response: got %+v, expected %+v", caseNumber, bodyStr, expectedResponse)
+    if !strings.Contains(string(body), expectedRespPart) {
+        t.Errorf("[%d] wrong ResponsePart: got %+v\nExpected part of it: %+v", caseNumber, bodyStr, expectedRespPart)
     }
 }
 
-type TestCaseGetUser struct {
-    ID         string
-    Response   string
-    StatusCode int
+type TestCaseGetById struct {
+    ID           string
+    ResponsePart string
+    StatusCode   int
+}
+
+func TestGetFilm(t *testing.T) {
+    db := InitDatabase()
+
+    cases := []TestCaseGetById{
+        {
+            ID:           "1",
+            ResponsePart: `"title":"Матрица"`,
+            StatusCode:   http.StatusOK,
+        },
+        {
+            ID:           "500",
+            ResponsePart: `"error":"no film with the id: 500"`,
+            StatusCode:   http.StatusNotFound,
+        },
+    }
+
+    for caseNum, item := range cases {
+        url := "http://167.71.5.55/api/films/" + item.ID
+        req := httptest.NewRequest("GET", url, nil)
+        w := httptest.NewRecorder()
+
+        // Need to create a router that we can pass the request through so that the vars will be added to the context
+        router := mux.NewRouter()
+        router.HandleFunc("/api/films/{film_id:[0-9]+}", GetHandlerFilm(db))
+        router.ServeHTTP(w, req)
+
+        CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
+    }
 }
 
 func TestGetUser(t *testing.T) {
-    db := inmemory.Init()
-    db.FakeFillDB()
+    db := InitDatabase()
 
-    cases := []TestCaseGetUser{
+    cases := []TestCaseGetById{
         {
-            ID:         "1",
-            Response:   `{"status": 200, "resp": {"user": 1}}`,
-            StatusCode: http.StatusOK,
+            ID:           "1",
+            ResponsePart: `"user_id":1`,
+            StatusCode:   http.StatusOK,
         },
         {
-            ID:         "500",
-            Response:   `{"status": 500, "err": "db_error"}`,
-            StatusCode: http.StatusInternalServerError,
+            ID:           "500",
+            ResponsePart: `"error":"no user with id: 500"`,
+            StatusCode:   http.StatusNotFound,
         },
     }
 
-    // It does not work yet
     for caseNum, item := range cases {
         url := "http://167.71.5.55/api/users/" + item.ID
         req := httptest.NewRequest("GET", url, nil)
-        //ctx := context.WithValue(req.Context(), "user_id", item.ID)
         w := httptest.NewRecorder()
 
-        handler := GetHandlerUser(db)
-        handler(w, req)
-        // handler(w, req.WithContext(ctx))
+        // Need to create a router that we can pass the request through so that the vars will be added to the context
+        router := mux.NewRouter()
+        router.HandleFunc("/api/users/{user_id:[0-9]+}", GetHandlerUser(db))
+        router.ServeHTTP(w, req)
 
-        CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.Response)
+        CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
     }
 }
 
 type TestCaseGetUsers struct {
-    Cookie     http.Cookie
-    Response   string
-    StatusCode int
+    Cookie       http.Cookie
+    ResponsePart string
+    StatusCode   int
 }
 
 func TestGetUsers(t *testing.T) {
-    db := inmemory.Init()
-    db.FakeFillDB()
+    db := InitDatabase()
     cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
     db.Insert(cookie, 1)
 
     cases := []TestCaseGetUsers{
         {
-            Cookie:     http.Cookie{},
-            Response:   `{"status":401,"error":"no cookie"}`,
-            StatusCode: http.StatusUnauthorized,
+            Cookie:       http.Cookie{},
+            ResponsePart: `"error":"no cookie"`,
+            StatusCode:   http.StatusUnauthorized,
         },
         {
-            Cookie:     http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
-            Response:   `{"status":401,"error":"no user with the cookie"}{"user_id":0,"name":"","rating":0,"description":"","avatar_link":"","email":"","password":""}`,
-            StatusCode: http.StatusUnauthorized,
+            Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+            ResponsePart: `"error":"no user with the cookie"`,
+            StatusCode:   http.StatusUnauthorized,
         },
         {
-            Cookie:     cookie,
-            Response:   `{"user_id":1,"name":"Anton","rating":8.3,"description":"","avatar_link":"anton.jpg","email":"anton@mail.ru","password":""}`,
-            StatusCode: http.StatusOK,
+            Cookie:       cookie,
+            ResponsePart: `"user_id":1`,
+            StatusCode:   http.StatusOK,
         },
     }
 
@@ -100,6 +140,6 @@ func TestGetUsers(t *testing.T) {
         handler := GetHandlerUsers(db)
         handler(w, req)
 
-        CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.Response)
+        CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
     }
 }
