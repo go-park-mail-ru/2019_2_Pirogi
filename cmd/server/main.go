@@ -14,6 +14,7 @@ import (
 
 func CreateAPIServer(port string, db *inmemory.DB) server.Server {
 	router := mux.NewRouter()
+	router.Use(middleware.TrimSuffix)
 	router.Use(middleware.HeaderMiddleware)
 	router.Use(middleware.LoggingMiddleware)
 	router.Use(middleware.GetCheckAuthMiddleware(db))
