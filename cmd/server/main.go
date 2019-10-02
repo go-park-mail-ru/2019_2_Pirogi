@@ -17,20 +17,21 @@ func CreateAPIServer(port string, db *inmemory.DB) server.Server {
 	router.Use(middleware.HeaderMiddleware)
 	router.Use(middleware.LoggingMiddleware)
 	router.Use(middleware.GetCheckAuthMiddleware(db))
+	router.PathPrefix("/api")
 
-	router.HandleFunc("/api/users/images/", handlers.GetUploadImageHandler(db, "users")).Methods(http.MethodPost)
-	router.HandleFunc("/api/films/images/", handlers.GetUploadImageHandler(db, "films")).Methods(http.MethodPost)
+	router.HandleFunc("/users/images/", handlers.GetUploadImageHandler(db, "users")).Methods(http.MethodPost)
+	router.HandleFunc("/films/images/", handlers.GetUploadImageHandler(db, "films")).Methods(http.MethodPost)
 
-	router.HandleFunc("/api/films/{film_id:[0-9]+}/", handlers.GetHandlerFilm(db)).Methods(http.MethodGet)
+	router.HandleFunc("/films/{film_id:[0-9]+}/", handlers.GetHandlerFilm(db)).Methods(http.MethodGet)
 
-	router.HandleFunc("/api/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
-	router.HandleFunc("/api/users/", handlers.GetHandlerUsers(db)).Methods(http.MethodGet)
-	router.HandleFunc("/api/users/{user_id:[0-9]+}/", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
-	router.HandleFunc("/api/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)
+	router.HandleFunc("/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
+	router.HandleFunc("/users/", handlers.GetHandlerUsers(db)).Methods(http.MethodGet)
+	router.HandleFunc("/users/{user_id:[0-9]+}/", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
+	router.HandleFunc("/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)
 
-	router.HandleFunc("/api/sessions/", handlers.GetHandlerLoginCheck(db)).Methods(http.MethodGet)
-	router.HandleFunc("/api/sessions/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
-	router.HandleFunc("/api/sessions/", handlers.GetHandlerLogout(db)).Methods(http.MethodDelete)
+	router.HandleFunc("/sessions/", handlers.GetHandlerLoginCheck(db)).Methods(http.MethodGet)
+	router.HandleFunc("/sessions/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
+	router.HandleFunc("/sessions/", handlers.GetHandlerLogout(db)).Methods(http.MethodDelete)
 
 	s := server.New(port)
 	s.Init(db, router)
