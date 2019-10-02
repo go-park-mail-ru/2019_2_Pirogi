@@ -15,8 +15,7 @@ import (
 func LoggingMiddleware(next http.Handler) http.Handler {
 
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// TODO: понять как не открывать файл каждый раз и проверять его наличие
-		if f, err := os.OpenFile(configs.AccessLog, os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
+		if f, err := os.OpenFile(configs.AccessLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
 			log.Fatal("Can not open file to log: ", err.Error())
 		} else {
 			_, _ = fmt.Fprintf(f, "%s %s %s %s \n", time.Now().Format("02/01 15:04:05"), r.Method, r.URL, r.Host)
