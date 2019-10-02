@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
@@ -49,7 +49,7 @@ func (db *DB) Insert(in interface{}) *models.Error {
 		newUser := in.(models.NewUser)
 		_, ok := db.FindByEmail(newUser.Email)
 		if ok {
-			return Error.New(400, "user with the email already exists")
+			return error.New(400, "user with the email already exists")
 		}
 		u, e := user.CreateNewUser(db.GetID("user"), newUser)
 		if e != nil {
@@ -63,13 +63,13 @@ func (db *DB) Insert(in interface{}) *models.Error {
 			db.users[u.ID] = u
 			return nil
 		}
-		return Error.New(404, "user not found")
+		return error.New(404, "user not found")
 	case models.NewFilm:
 		newFilm := in.(models.NewFilm)
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(newFilm.Title)
 		if ok {
-			return Error.New(400, "film with the title already exists")
+			return error.New(400, "film with the title already exists")
 		}
 		f, e := film.CreateNewFilm(db.GetID("film"), newFilm)
 		if e != nil {
@@ -83,9 +83,9 @@ func (db *DB) Insert(in interface{}) *models.Error {
 			db.films[f.ID] = f
 			return nil
 		}
-		return Error.New(404, "film not found")
+		return error.New(404, "film not found")
 	default:
-		return Error.New(400, "not supported type")
+		return error.New(400, "not supported type")
 	}
 }
 
@@ -109,14 +109,14 @@ func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
-		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
+		return nil, error.New(404, "no user with id: "+strconv.Itoa(id))
 	case "film":
 		if f, ok := db.films[id]; ok {
 			return f, nil
 		}
-		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
+		return nil, error.New(404, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, Error.New(404, "not supported type: "+target)
+	return nil, error.New(404, "not supported type: "+target)
 }
 
 func (db *DB) FindByEmail(email string) (models.User, bool) {

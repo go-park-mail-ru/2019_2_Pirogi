@@ -4,7 +4,7 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
@@ -12,7 +12,7 @@ import (
 
 func CreateNewUser(id int, newUser models.NewUser) (models.User, *models.Error) {
 	if !validators.ValidateEmail(newUser.Email) {
-		return models.User{}, Error.New(400, "invalid data")
+		return models.User{}, error.New(400, "invalid data")
 	}
 	user := models.User{
 		Credentials: models.Credentials{
