@@ -23,9 +23,8 @@ func New(status int, details ...string) *models.Error {
 
 func Render(w http.ResponseWriter, error *models.Error) {
 	w.WriteHeader(error.Status)
-	// TODO: понять как не открывать файл каждый раз и проверять его наличие
-	if f, err := os.OpenFile(configs.ErrorLog, os.O_APPEND|os.O_WRONLY, os.ModeAppend); err != nil {
-		log.Print("Can not open file to log: ", err.Error())
+	if f, err := os.OpenFile(configs.ErrorLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
+		log.Print("Can not open or create file to log: ", err.Error())
 	} else {
 		_, _ = fmt.Fprintf(f, "%s %d %s \n", time.Now().Format("02/01 15:04:05"), error.Status, error.Error)
 		_ = f.Close()

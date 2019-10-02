@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
@@ -21,11 +21,11 @@ func DetectContentType(data []byte) (ending string, error *models.Error) {
 	case "application/pdf":
 		break
 	default:
-		return "", Error.New(400, "unsupported type of file")
+		return "", error.New(400, "unsupported type of file")
 	}
 	endings, err := mime.ExtensionsByType(fileType)
 	if err != nil {
-		return "", Error.New(400, "can not define extension")
+		return "", error.New(400, "can not define extension")
 	}
 	return endings[0], nil
 }
@@ -38,10 +38,10 @@ func WriteFile(fileBytes []byte, filename, path string) *models.Error {
 	newPath := filepath.Join(path, filename)
 	newFile, err := os.Create(newPath)
 	if err != nil {
-		return Error.New(500, "can not create file")
+		return error.New(500, "can not create file")
 	}
 	if _, err := newFile.Write(fileBytes); err != nil || newFile.Close() != nil {
-		return Error.New(500, "can not open file for writing")
+		return error.New(500, "can not open file for writing")
 	}
 	return nil
 }

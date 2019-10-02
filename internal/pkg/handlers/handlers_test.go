@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/gorilla/mux"
@@ -113,12 +115,11 @@ func TestGetUser(t *testing.T) {
 
 func TestGetUsers(t *testing.T) {
 	db := InitDatabase()
-	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-	db.Insert(cookie)
+	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
+	db.InsertCookie(cookie, 0)
 
 	cases := []TestCase{
 		{
-			Cookie:       http.Cookie{},
 			ResponsePart: `"error":"no cookie"`,
 			StatusCode:   http.StatusUnauthorized,
 		},
@@ -129,7 +130,7 @@ func TestGetUsers(t *testing.T) {
 		},
 		{
 			Cookie:       cookie,
-			ResponsePart: `"username":"Oleg","email":"oleg@mail.ru"`,
+			ResponsePart: `"id":0,"username":"Oleg"`,
 			StatusCode:   http.StatusOK,
 		},
 	}
@@ -149,12 +150,11 @@ func TestGetUsers(t *testing.T) {
 
 func TestGetUsersCreate(t *testing.T) {
 	db := InitDatabase()
-	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-	db.Insert(cookie)
+	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
+	db.InsertCookie(cookie, 0)
 
 	cases := []TestCase{
 		{
-			Cookie:       http.Cookie{},
 			ResponsePart: `"error":"EOF"`,
 			StatusCode:   http.StatusBadRequest,
 		},
@@ -194,10 +194,14 @@ func TestGetUsersCreate(t *testing.T) {
 
 func TestGetUsersUpdate(t *testing.T) {
 	db := InitDatabase()
-	cookie := http.Cookie{Name: configs.CookieAuthName, Value: "cookie"}
-	db.Insert(cookie)
+	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
+	db.InsertCookie(cookie, 0)
 
 	cases := []TestCase{
+		{
+			ResponsePart: `"error":"EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
 		{
 			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
 			ResponsePart: `"error":"EOF"`,
@@ -228,11 +232,100 @@ func TestGetUsersUpdate(t *testing.T) {
 
 	for caseNum, item := range cases {
 		url := "http://167.71.5.55/api/users/"
-		req := httptest.NewRequest("POST", url, item.Body)
+		req := httptest.NewRequest("PUT", url, item.Body)
 		req.AddCookie(&item.Cookie)
 		w := httptest.NewRecorder()
 
 		handler := GetHandlerUsersUpdate(db)
+		handler(w, req)
+
+		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
+	}
+}
+
+func TestLoginCheck(t *testing.T) {
+	db := InitDatabase()
+	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
+	db.InsertCookie(cookie, 0)
+
+	cases := []TestCase{
+		{
+			StatusCode: http.StatusUnauthorized,
+		},
+		{
+			Cookie:     http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			StatusCode: http.StatusUnauthorized,
+		},
+		{
+			Cookie:     cookie,
+			StatusCode: http.StatusOK,
+		},
+	}
+
+	for caseNum, item := range cases {
+		url := "http://167.71.5.55/api/sessions/"
+		req := httptest.NewRequest("GET", url, item.Body)
+		req.AddCookie(&item.Cookie)
+		w := httptest.NewRecorder()
+
+		handler := GetHandlerLoginCheck(db)
+		handler(w, req)
+
+		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
+	}
+}
+
+func TestLogin(t *testing.T) {
+	db := InitDatabase()
+	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
+	db.InsertCookie(cookie, 1)
+
+	cases := []TestCase{
+		{
+			ResponsePart: `"error":"invalid json; EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			ResponsePart: `"error":"invalid json; EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Cookie:       cookie,
+			ResponsePart: `"error":"invalid json; EOF"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Body:         strings.NewReader(`{"email":"anton@mail.ru","password":"qwe523"}`),
+			ResponsePart: `"error":"invalid cookie"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Cookie:       cookie,
+			Body:         strings.NewReader(`{"email":"anton@mail.ru","password":"qwe523"}`),
+			ResponsePart: `"error":"already logged in"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Body:         strings.NewReader(`{"email":"anton@mail.ru","password":"lalala"}`),
+			ResponsePart: `"error":"invalid credentials"`,
+			StatusCode:   http.StatusBadRequest,
+		},
+		{
+			Body:         strings.NewReader(`{"email":"anton@mail.ru","password":"qwe523"}`),
+			ResponsePart: `"error":"invalid credentials"`,
+			StatusCode:   http.StatusBadRequest, // TODO: must be ok
+		},
+	}
+
+	for caseNum, item := range cases {
+		url := "http://167.71.5.55/api/sessions/"
+		req := httptest.NewRequest("POST", url, item.Body)
+		req.AddCookie(&item.Cookie)
+		w := httptest.NewRecorder()
+
+		handler := GetHandlerLogin(db)
 		handler(w, req)
 
 		CheckStatusCodeAndResponse(t, caseNum, w, item.StatusCode, item.ResponsePart)
