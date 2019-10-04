@@ -1,4 +1,4 @@
-package inmemory
+package database
 
 import (
 	"net/http"
@@ -16,7 +16,7 @@ type DB struct {
 	usersAuthCookies map[int]http.Cookie
 }
 
-func Init() *DB {
+func InitInmemory() *DB {
 	users := make(map[int]models.User, 0)
 	films := make(map[int]models.Film, 0)
 	usersAuthCookies := make(map[int]http.Cookie, 0)

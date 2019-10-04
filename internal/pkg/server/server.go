@@ -6,7 +6,6 @@ import (
 	"sync"
 	"time"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/gorilla/mux"
 )
 
@@ -36,8 +35,7 @@ func (s *Server) Run(wg *sync.WaitGroup) {
 	}
 }
 
-func (s *Server) Init(db *inmemory.DB, router *mux.Router) {
-	db = inmemory.Init()
+func (s *Server) Init(router *mux.Router) {
 	apiRouter := router
 
 	s.handler = *apiRouter
