@@ -15,7 +15,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func InitDatabase() *database.DB {
+func InitDatabase() *database.InmemoryDB {
 	db := database.InitInmemory()
 	db.FakeFillDB()
 	return db

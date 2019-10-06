@@ -4,27 +4,27 @@ import (
 	"net/http"
 	"strconv"
 
-	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
-type DB struct {
+type InmemoryDB struct {
 	users            map[int]models.User
 	films            map[int]models.Film
 	usersAuthCookies map[int]http.Cookie
 }
 
-func InitInmemory() *DB {
+func InitInmemory() *InmemoryDB {
 	users := make(map[int]models.User)
 	films := make(map[int]models.Film)
 	usersAuthCookies := make(map[int]http.Cookie)
-	db := DB{users: users, usersAuthCookies: usersAuthCookies, films: films}
+	db := InmemoryDB{users: users, usersAuthCookies: usersAuthCookies, films: films}
 	return &db
 }
 
-func (db *DB) GetID(target string) int {
+func (db *InmemoryDB) GetID(target string) int {
 	switch target {
 	case "user":
 		return len(db.users)
@@ -37,13 +37,13 @@ func (db *DB) GetID(target string) int {
 	}
 }
 
-func (db *DB) InsertCookie(cookie *http.Cookie, id int) *models.Error {
+func (db *InmemoryDB) InsertCookie(cookie *http.Cookie, id int) *models.Error {
 	db.usersAuthCookies[id] = *cookie
 	return nil
 }
 
 // затирает старые записи
-func (db *DB) Insert(in interface{}) *models.Error {
+func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 	switch in := in.(type) {
 	case models.NewUser:
 		_, ok := db.FindByEmail(in.Email)
@@ -85,7 +85,7 @@ func (db *DB) Insert(in interface{}) *models.Error {
 	}
 }
 
-func (db *DB) DeleteCookie(in interface{}) {
+func (db *InmemoryDB) DeleteCookie(in interface{}) {
 	switch in := in.(type) {
 	case http.Cookie:
 		u, ok := db.FindUserByCookie(&in)
@@ -96,7 +96,7 @@ func (db *DB) DeleteCookie(in interface{}) {
 	}
 }
 
-func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
+func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 	switch target {
 	case "user":
 		if u, ok := db.users[id]; ok {
@@ -112,7 +112,7 @@ func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
 	return nil, error.New(404, "not supported type: "+target)
 }
 
-func (db *DB) FindByEmail(email string) (models.User, bool) {
+func (db *InmemoryDB) FindByEmail(email string) (models.User, bool) {
 	for k, u := range db.users {
 		if u.Email == email {
 			return db.users[k], true
@@ -121,7 +121,7 @@ func (db *DB) FindByEmail(email string) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) FindUserByID(id int) (models.User, bool) {
+func (db *InmemoryDB) FindUserByID(id int) (models.User, bool) {
 	for k, u := range db.users {
 		if u.ID == id {
 			return db.users[k], true
@@ -130,7 +130,7 @@ func (db *DB) FindUserByID(id int) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) CheckCookie(cookie *http.Cookie) bool {
+func (db *InmemoryDB) CheckCookie(cookie *http.Cookie) bool {
 	for i := range db.usersAuthCookies {
 		if db.usersAuthCookies[i].Value == cookie.Value {
 			return true
@@ -139,7 +139,7 @@ func (db *DB) CheckCookie(cookie *http.Cookie) bool {
 	return false
 }
 
-func (db *DB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
+func (db *InmemoryDB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
 	for k, v := range db.usersAuthCookies {
 		if v.Value == cookie.Value {
 			u, ok := db.FindUserByID(k)
@@ -152,7 +152,7 @@ func (db *DB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) FindFilmByTitle(title string) (models.Film, bool) {
+func (db *InmemoryDB) FindFilmByTitle(title string) (models.Film, bool) {
 	for k := range db.films {
 		if db.films[k].Title == title {
 			return db.films[k], true
@@ -162,7 +162,7 @@ func (db *DB) FindFilmByTitle(title string) (models.Film, bool) {
 }
 
 // TODO: insert cookie for each user
-func (db *DB) FakeFillDB() {
+func (db *InmemoryDB) FakeFillDB() {
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
 		Username:    "Oleg",

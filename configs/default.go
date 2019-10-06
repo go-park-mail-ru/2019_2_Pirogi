@@ -13,3 +13,9 @@ const ErrorLog = "/var/log/cinsear/error.log"
 
 const UsersImageUploadPath = "/var/www/media/images/users/"
 const FilmsImageUploadPath = "/var/www/media/images/films/"
+
+const MongoDbUri = "mongodb://127.0.0.1:27017"
+const MongoDbName = "cinsear"
+const UsersCollectionName = "users"
+const FilmsCollectionName = "films"
+const CoockiesCollectionName = "usersAuthCookies"
