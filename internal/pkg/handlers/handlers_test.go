@@ -11,12 +11,12 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/gorilla/mux"
 )
 
-func InitDatabase() *inmemory.DB {
-	db := inmemory.Init()
+func InitDatabase() *database.DB {
+	db := database.InitInmemory()
 	db.FakeFillDB()
 	return db
 }

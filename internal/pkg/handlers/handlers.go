@@ -8,14 +8,14 @@ import (
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/gorilla/mux"
 )
 
-func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerFilm(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(r)["film_id"])
 		if err != nil {
@@ -41,7 +41,7 @@ func GetHandlerFilm(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerLoginCheck(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		ok := auth.LoginCheck(w, r, db)
 		if !ok {
@@ -51,7 +51,7 @@ func GetHandlerLoginCheck(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerLogin(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rawBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -73,7 +73,7 @@ func GetHandlerLogin(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerLogout(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerLogout(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		e := auth.Logout(w, r, db)
 		if e != nil {
@@ -82,7 +82,7 @@ func GetHandlerLogout(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerUser(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerUser(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		id, err := strconv.Atoi(mux.Vars(r)["user_id"])
 		if err != nil {
@@ -107,7 +107,7 @@ func GetHandlerUser(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerUsers(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := r.Cookie(configs.CookieAuthName)
 		if err != nil {
@@ -132,7 +132,7 @@ func GetHandlerUsers(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerUsersCreate(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie(configs.CookieAuthName)
 		if err == nil && cookie != nil {
@@ -166,7 +166,7 @@ func GetHandlerUsersCreate(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
+func GetHandlerUsersUpdate(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		rawBody, err := ioutil.ReadAll(r.Body)
 		if err != nil {
@@ -205,7 +205,7 @@ func GetHandlerUsersUpdate(db *inmemory.DB) http.HandlerFunc {
 	}
 }
 
-func GetUploadImageHandler(db *inmemory.DB, target string) http.HandlerFunc {
+func GetUploadImageHandler(db database.Database, target string) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		session, err := r.Cookie(configs.CookieAuthName)
 		if err != nil {

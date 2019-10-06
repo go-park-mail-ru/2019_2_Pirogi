@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {
@@ -35,7 +35,7 @@ func HeaderMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handler {
+func GetCheckAuthMiddleware(db database.Database) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// POST разрешен для анонимов разрешен только для регистрации

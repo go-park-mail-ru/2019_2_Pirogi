@@ -1,4 +1,4 @@
-package inmemory
+package database
 
 import (
 	"net/http"
@@ -12,13 +12,13 @@ import (
 )
 
 func TestFakeFillDB(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	db.FakeFillDB()
 	require.Equal(t, 3, len(db.users))
 }
 
 func TestDB_Insert(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
 			Email:    "ksyushag@mail.ru",
@@ -32,7 +32,7 @@ func TestDB_Insert(t *testing.T) {
 }
 
 func TestDB_InsertCookie(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	cookie := http.Cookie{
 		Name:  "cinsear_session",
 		Value: "value",
@@ -44,7 +44,7 @@ func TestDB_InsertCookie(t *testing.T) {
 }
 
 func TestDB_FindUserByCookie(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	cookie := http.Cookie{
 		Name:  "cinsear_session",
 		Value: "value",
@@ -67,7 +67,7 @@ func TestDB_FindUserByCookie(t *testing.T) {
 }
 
 func TestDB_CheckCookie(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	cookie := http.Cookie{
 		Name:  "cinsear_session",
 		Value: "value",
@@ -79,7 +79,7 @@ func TestDB_CheckCookie(t *testing.T) {
 }
 
 func TestDB_DeleteCookie(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
 			Email:    "ksyushag@mail.ru",
@@ -104,7 +104,7 @@ func TestDB_DeleteCookie(t *testing.T) {
 }
 
 func TestDB_FindFilmByTitle(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	film := models.NewFilm{FilmInfo: models.FilmInfo{
 		Title: "Матрица",
 		Description: "Мир Матрицы — это иллюзия, существующая только в бесконечном сне обреченного человечества. " +
@@ -125,7 +125,7 @@ func TestDB_FindFilmByTitle(t *testing.T) {
 }
 
 func TestDB_GetID(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
 			Email:    "ksyushag@mail.ru",
@@ -140,7 +140,7 @@ func TestDB_GetID(t *testing.T) {
 }
 
 func TestDB_FindByEmail(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
 			Email:    "ksyushag@mail.ru",
@@ -156,7 +156,7 @@ func TestDB_FindByEmail(t *testing.T) {
 }
 
 func TestDB_Get(t *testing.T) {
-	db := Init()
+	db := InitInmemory()
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
 			Email:    "ksyushag@mail.ru",
