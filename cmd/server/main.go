@@ -48,7 +48,5 @@ func main() {
 
 	wg := &sync.WaitGroup{}
 	apiServer := CreateAPIServer(*portAPI, db)
-	wg.Add(2)
-	go apiServer.Run(wg)
-	wg.Wait()
+	apiServer.Run(wg)
 }

@@ -5,7 +5,7 @@ import (
 	"net/http"
 	"sync"
 	"time"
-
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/gorilla/mux"
 )
@@ -30,7 +30,7 @@ func (s *Server) Run(wg *sync.WaitGroup) {
 		ReadTimeout:  timeout * time.Second,
 		WriteTimeout: timeout * time.Second,
 	}
-	err := server.ListenAndServe()
+	err := server.ListenAndServeTLS(configs.CertFile, configs.KeyFile)
 	if err != nil {
 		log.Fatal(err)
 	}
