@@ -30,7 +30,7 @@ func GetHandlerFilm(db database.Database) http.HandlerFunc {
 		film := obj.(models.Film)
 		jsonBody, err := film.MarshalJSON()
 		if err != nil {
-			error.Render(w, error.New(500, "error while marshalling json", err.Error()))
+			error.Render(w, error.New(500, "error while marshaling json", err.Error()))
 			return
 		}
 		_, err = w.Write(jsonBody)
@@ -114,7 +114,7 @@ func GetHandlerUsers(db database.Database) http.HandlerFunc {
 			error.Render(w, error.New(401, "no cookie"))
 			return
 		}
-		user, ok := db.FindUserByCookie(*session)
+		user, ok := db.FindUserByCookie(session)
 		if !ok {
 			error.Render(w, error.New(401, "invalid cookie"))
 			return
@@ -136,7 +136,7 @@ func GetHandlerUsersCreate(db database.Database) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		cookie, err := r.Cookie(configs.CookieAuthName)
 		if err == nil && cookie != nil {
-			if _, ok := db.FindUserByCookie(*cookie); ok {
+			if _, ok := db.FindUserByCookie(cookie); ok {
 				error.Render(w, error.New(403, "user is already logged in"))
 				return
 			}
@@ -185,7 +185,7 @@ func GetHandlerUsersUpdate(db database.Database) http.HandlerFunc {
 			error.Render(w, error.New(401, err.Error()))
 			return
 		}
-		user, ok := db.FindUserByCookie(*session)
+		user, ok := db.FindUserByCookie(session)
 		if !ok {
 			error.Render(w, error.New(401, "no user with the cookie"))
 			return
@@ -212,14 +212,14 @@ func GetUploadImageHandler(db database.Database, target string) http.HandlerFunc
 			error.Render(w, error.New(401, err.Error()))
 			return
 		}
-		user, ok := db.FindUserByCookie(*session)
+		user, ok := db.FindUserByCookie(session)
 		if !ok {
 			error.Render(w, error.New(401, "invalid cookie"))
 			return
 		}
 
 		r.Body = http.MaxBytesReader(w, r.Body, images.MaxUploadSize)
-		if err := r.ParseMultipartForm(images.MaxUploadSize); err != nil {
+		if err = r.ParseMultipartForm(images.MaxUploadSize); err != nil {
 			error.Render(w, error.New(http.StatusBadRequest, err.Error()))
 			return
 		}

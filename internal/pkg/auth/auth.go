@@ -40,7 +40,7 @@ func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, 
 			return error.New(400, "invalid credentials")
 		}
 		cookie := GenerateCookie("cinsear_session", email)
-		e := db.InsertCookie(cookie, u.ID)
+		e := db.InsertCookie(&cookie, u.ID)
 		if e != nil {
 			return e
 		}
@@ -48,7 +48,7 @@ func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, 
 		return nil
 	}
 	if cookie != nil {
-		if _, ok := db.FindUserByCookie(*cookie); !ok {
+		if _, ok := db.FindUserByCookie(cookie); !ok {
 			return error.New(400, "invalid cookie")
 		}
 	}
@@ -60,7 +60,7 @@ func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bo
 	if err != nil {
 		return false
 	}
-	_, ok := db.FindUserByCookie(*session)
+	_, ok := db.FindUserByCookie(session)
 	return ok
 }
 

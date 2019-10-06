@@ -13,7 +13,6 @@ import (
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if f, err := os.OpenFile(configs.AccessLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
 			log.Fatal("Can not open file to log: ", err.Error())
@@ -49,7 +48,7 @@ func GetCheckAuthMiddleware(db database.Database) func(next http.Handler) http.H
 				error.Render(w, error.New(401, "no cookie"))
 				return
 			}
-			ok := db.CheckCookie(*cookie)
+			ok := db.CheckCookie(cookie)
 			if !ok {
 				error.Render(w, error.New(401, "no cookie in db"))
 				return

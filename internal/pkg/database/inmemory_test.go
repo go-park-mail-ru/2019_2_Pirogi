@@ -38,7 +38,7 @@ func TestDB_InsertCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(cookie, 0)
+	err := db.InsertCookie(&cookie, 0)
 	require.Nil(t, err)
 	require.True(t, reflect.DeepEqual(cookie, db.usersAuthCookies[0]))
 }
@@ -50,7 +50,7 @@ func TestDB_FindUserByCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(cookie, 0)
+	err := db.InsertCookie(&cookie, 0)
 	require.Nil(t, err)
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
@@ -61,7 +61,7 @@ func TestDB_FindUserByCookie(t *testing.T) {
 	}
 	err = db.Insert(ksyusha)
 	require.Nil(t, err)
-	foundUser, ok := db.FindUserByCookie(cookie)
+	foundUser, ok := db.FindUserByCookie(&cookie)
 	require.True(t, ok)
 	require.Equal(t, ksyusha.Email, foundUser.Email)
 }
@@ -73,9 +73,9 @@ func TestDB_CheckCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(cookie, 0)
+	err := db.InsertCookie(&cookie, 0)
 	require.Nil(t, err)
-	require.True(t, db.CheckCookie(cookie))
+	require.True(t, db.CheckCookie(&cookie))
 }
 
 func TestDB_DeleteCookie(t *testing.T) {
@@ -94,12 +94,12 @@ func TestDB_DeleteCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(cookie, 0)
+	err := db.InsertCookie(&cookie, 0)
 	require.Nil(t, err)
-	ok := db.CheckCookie(cookie)
+	ok := db.CheckCookie(&cookie)
 	require.True(t, ok)
 	db.DeleteCookie(cookie)
-	ok = db.CheckCookie(cookie)
+	ok = db.CheckCookie(&cookie)
 	require.False(t, ok)
 }
 

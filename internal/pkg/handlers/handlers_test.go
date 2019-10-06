@@ -116,7 +116,7 @@ func TestGetUser(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	db.InsertCookie(&cookie, 0)
 
 	cases := []TestCase{
 		{
@@ -151,7 +151,7 @@ func TestGetUsers(t *testing.T) {
 func TestGetUsersCreate(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	db.InsertCookie(&cookie, 0)
 
 	cases := []TestCase{
 		{
@@ -195,7 +195,7 @@ func TestGetUsersCreate(t *testing.T) {
 func TestGetUsersUpdate(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	db.InsertCookie(&cookie, 0)
 
 	cases := []TestCase{
 		{
@@ -246,7 +246,7 @@ func TestGetUsersUpdate(t *testing.T) {
 func TestLoginCheck(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	db.InsertCookie(&cookie, 0)
 
 	cases := []TestCase{
 		{
@@ -278,7 +278,7 @@ func TestLoginCheck(t *testing.T) {
 func TestLogin(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 1)
+	db.InsertCookie(&cookie, 1)
 
 	cases := []TestCase{
 		{

@@ -17,9 +17,9 @@ type DB struct {
 }
 
 func InitInmemory() *DB {
-	users := make(map[int]models.User, 0)
-	films := make(map[int]models.Film, 0)
-	usersAuthCookies := make(map[int]http.Cookie, 0)
+	users := make(map[int]models.User)
+	films := make(map[int]models.Film)
+	usersAuthCookies := make(map[int]http.Cookie)
 	db := DB{users: users, usersAuthCookies: usersAuthCookies, films: films}
 	return &db
 }
@@ -37,50 +37,46 @@ func (db *DB) GetID(target string) int {
 	}
 }
 
-func (db *DB) InsertCookie(cookie http.Cookie, id int) *models.Error {
-	db.usersAuthCookies[id] = cookie
+func (db *DB) InsertCookie(cookie *http.Cookie, id int) *models.Error {
+	db.usersAuthCookies[id] = *cookie
 	return nil
 }
 
 // затирает старые записи
 func (db *DB) Insert(in interface{}) *models.Error {
-	switch in.(type) {
+	switch in := in.(type) {
 	case models.NewUser:
-		newUser := in.(models.NewUser)
-		_, ok := db.FindByEmail(newUser.Email)
+		_, ok := db.FindByEmail(in.Email)
 		if ok {
 			return error.New(400, "user with the email already exists")
 		}
-		u, e := user.CreateNewUser(db.GetID("user"), newUser)
+		u, e := user.CreateNewUser(db.GetID("user"), in)
 		if e != nil {
 			return e
 		}
 		db.users[db.GetID("user")] = u
 		return nil
 	case models.User:
-		u := in.(models.User)
-		if _, ok := db.users[u.ID]; ok {
-			db.users[u.ID] = u
+		if _, ok := db.users[in.ID]; ok {
+			db.users[in.ID] = in
 			return nil
 		}
 		return error.New(404, "user not found")
 	case models.NewFilm:
-		newFilm := in.(models.NewFilm)
 		// It is supposed that there cannot be films with the same title
-		_, ok := db.FindFilmByTitle(newFilm.Title)
+		_, ok := db.FindFilmByTitle(in.Title)
 		if ok {
 			return error.New(400, "film with the title already exists")
 		}
-		f, e := film.CreateNewFilm(db.GetID("film"), newFilm)
+		f, e := film.CreateNewFilm(db.GetID("film"), &in)
 		if e != nil {
 			return e
 		}
 		db.films[db.GetID("film")] = f
 		return nil
 	case models.Film:
-		f := in.(models.Film)
-		if _, ok := db.users[f.ID]; ok {
-			db.films[f.ID] = f
+		if _, ok := db.users[in.ID]; ok {
+			db.films[in.ID] = in
 			return nil
 		}
 		return error.New(404, "film not found")
@@ -90,16 +86,13 @@ func (db *DB) Insert(in interface{}) *models.Error {
 }
 
 func (db *DB) DeleteCookie(in interface{}) {
-	switch in.(type) {
+	switch in := in.(type) {
 	case http.Cookie:
-		cookie := in.(http.Cookie)
-		u, ok := db.FindUserByCookie(cookie)
+		u, ok := db.FindUserByCookie(&in)
 		if !ok {
 			return
 		}
-		if _, ok := db.usersAuthCookies[u.ID]; ok {
-			delete(db.usersAuthCookies, u.ID)
-		}
+		delete(db.usersAuthCookies, u.ID)
 	}
 }
 
@@ -137,16 +130,16 @@ func (db *DB) FindUserByID(id int) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) CheckCookie(cookie http.Cookie) bool {
-	for _, v := range db.usersAuthCookies {
-		if v.Value == cookie.Value {
+func (db *DB) CheckCookie(cookie *http.Cookie) bool {
+	for i := range db.usersAuthCookies {
+		if db.usersAuthCookies[i].Value == cookie.Value {
 			return true
 		}
 	}
 	return false
 }
 
-func (db *DB) FindUserByCookie(cookie http.Cookie) (models.User, bool) {
+func (db *DB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
 	for k, v := range db.usersAuthCookies {
 		if v.Value == cookie.Value {
 			u, ok := db.FindUserByID(k)
@@ -160,8 +153,8 @@ func (db *DB) FindUserByCookie(cookie http.Cookie) (models.User, bool) {
 }
 
 func (db *DB) FindFilmByTitle(title string) (models.Film, bool) {
-	for k, f := range db.films {
-		if f.Title == title {
+	for k := range db.films {
+		if db.films[k].Title == title {
 			return db.films[k], true
 		}
 	}
