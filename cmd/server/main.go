@@ -2,6 +2,8 @@ package main
 
 import (
 	"flag"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"net/http"
 	"sync"
 
@@ -43,7 +45,11 @@ func main() {
 	portAPI := flag.String("api", "8000", "port for API server")
 	flag.Parse()
 
-	database.InitMongo()
+	conn := database.InitMongo()
+	conn.Insert(models.NewUser{
+		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
+		Username:    "Oleg",
+	})
 	db := database.InitInmemory()
 	db.FakeFillDB()
 
