@@ -24,8 +24,19 @@ type MongoConnection struct {
 	cookiesSize      int
 }
 
+func getMongoClient() (*mongo.Client, error) {
+	credentials := &options.Credential{
+		Username: configs.MongoUser,
+		Password: configs.MongoPwd,
+	}
+	clientOpt := &options.ClientOptions{Auth: credentials}
+	clientOpt.ApplyURI(configs.MongoHost)
+	client, err := mongo.NewClient(clientOpt)
+	return client, err
+}
+
 func InitMongo() *MongoConnection {
-	client, err := mongo.NewClient(options.Client().ApplyURI(configs.MongoDbUri))
+	client, err := getMongoClient()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -87,7 +98,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		filter := bson.D{{"id", in.ID}}
 		update := bson.M{
 			"$set": bson.M{
-				"id": "ObjectRocket UPDATED!!",
+				"id":        "ObjectRocket UPDATED!!",
 				"fieldbool": false,
 			},
 		}

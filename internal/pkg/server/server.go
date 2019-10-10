@@ -3,7 +3,6 @@ package server
 import (
 	"log"
 	"net/http"
-	"sync"
 	"time"
 
 	"github.com/gorilla/mux"
@@ -21,8 +20,7 @@ func New(port string) Server {
 	return s
 }
 
-func (s *Server) Run(wg *sync.WaitGroup) {
-	defer wg.Done()
+func (s *Server) Run() {
 	server := &http.Server{
 		Addr:         ":" + s.port,
 		Handler:      &s.handler,
@@ -37,6 +35,5 @@ func (s *Server) Run(wg *sync.WaitGroup) {
 
 func (s *Server) Init(router *mux.Router) {
 	apiRouter := router
-
 	s.handler = *apiRouter
 }
