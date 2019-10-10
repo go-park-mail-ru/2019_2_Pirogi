@@ -14,21 +14,20 @@ import (
 )
 
 func New(status int, details ...string) *models.Error {
-	newError := models.Error{
+	return &models.Error{
 		Status: status,
 		Error:  strings.Join(details, "; "),
 	}
-	return &newError
 }
 
-func Render(w http.ResponseWriter, error *models.Error) {
-	w.WriteHeader(error.Status)
-	if f, err := os.OpenFile(configs.ErrorLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
-		log.Print("Can not open or create file to log: ", err.Error())
+func Render(w http.ResponseWriter, err *models.Error) {
+	w.WriteHeader(err.Status)
+	if f, e := os.OpenFile(configs.ErrorLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); e != nil {
+		log.Print("Can not open or create file to log: ", e.Error())
 	} else {
-		_, _ = fmt.Fprintf(f, "%s %d %s \n", time.Now().Format("02/01 15:04:05"), error.Status, error.Error)
+		_, _ = fmt.Fprintf(f, "%s %d %s \n", time.Now().Format("02/01 15:04:05"), err.Status, err.Error)
 		_ = f.Close()
 	}
-	jsonError, _ := error.MarshalJSON()
+	jsonError, _ := err.MarshalJSON()
 	_, _ = fmt.Fprint(w, string(jsonError))
 }

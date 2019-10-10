@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
@@ -32,7 +32,7 @@ func ExpireCookie(cookie *http.Cookie) {
 	cookie.HttpOnly = true
 }
 
-func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, password string) *models.Error {
+func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, password string) *models.Error {
 	cookie, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
 		u, ok := db.FindByEmail(email)
@@ -40,7 +40,7 @@ func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, passw
 			return error.New(400, "invalid credentials")
 		}
 		cookie := GenerateCookie("cinsear_session", email)
-		e := db.InsertCookie(cookie, u.ID)
+		e := db.InsertCookie(&cookie, u.ID)
 		if e != nil {
 			return e
 		}
@@ -48,23 +48,23 @@ func Login(w http.ResponseWriter, r *http.Request, db *inmemory.DB, email, passw
 		return nil
 	}
 	if cookie != nil {
-		if _, ok := db.FindUserByCookie(*cookie); !ok {
+		if _, ok := db.FindUserByCookie(cookie); !ok {
 			return error.New(400, "invalid cookie")
 		}
 	}
 	return error.New(400, "already logged in")
 }
 
-func LoginCheck(_ http.ResponseWriter, r *http.Request, db *inmemory.DB) bool {
+func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bool {
 	session, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
 		return false
 	}
-	_, ok := db.FindUserByCookie(*session)
+	_, ok := db.FindUserByCookie(session)
 	return ok
 }
 
-func Logout(w http.ResponseWriter, r *http.Request, db *inmemory.DB) *models.Error {
+func Logout(w http.ResponseWriter, r *http.Request, db database.Database) *models.Error {
 	session, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
 		return error.New(401, "user is not authorized")

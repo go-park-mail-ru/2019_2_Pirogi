@@ -8,12 +8,11 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {
-
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if f, err := os.OpenFile(configs.AccessLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
 			log.Fatal("Can not open file to log: ", err.Error())
@@ -35,7 +34,7 @@ func HeaderMiddleware(next http.Handler) http.Handler {
 	})
 }
 
-func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handler {
+func GetCheckAuthMiddleware(db database.Database) func(next http.Handler) http.Handler {
 	return func(next http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 			// POST разрешен для анонимов разрешен только для регистрации
@@ -49,7 +48,7 @@ func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handle
 				error.Render(w, error.New(401, "no cookie"))
 				return
 			}
-			ok := db.CheckCookie(*cookie)
+			ok := db.CheckCookie(cookie)
 			if !ok {
 				error.Render(w, error.New(401, "no cookie in db"))
 				return
