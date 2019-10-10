@@ -19,3 +19,5 @@ const MongoDbName = "cinsear"
 const UsersCollectionName = "users"
 const FilmsCollectionName = "films"
 const CoockiesCollectionName = "usersAuthCookies"
+
+const APIPort = ":8000"

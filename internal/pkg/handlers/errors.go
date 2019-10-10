@@ -7,6 +7,7 @@ import (
 	"github.com/labstack/echo"
 	"net/http"
 	"os"
+	"strconv"
 )
 
 func HTTPErrorHandler(err error, ctx echo.Context) {
@@ -14,7 +15,12 @@ func HTTPErrorHandler(err error, ctx echo.Context) {
 	message := "internal server error"
 	if he, ok := err.(*echo.HTTPError); ok {
 		code = he.Code
-		message = he.Message.(string)
+		switch he.Message.(type) {
+		case string:
+			message = he.Message.(string)
+		case int:
+			message = strconv.Itoa(he.Message.(int))
+		}
 	}
 	ctx.Logger().Error(ctx.Request().URL, code, err)
 	file, err := getErrorLogFile()

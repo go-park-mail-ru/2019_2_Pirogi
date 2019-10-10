@@ -12,13 +12,9 @@ import (
 
 func GetHandlerUsers(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		session, err := ctx.Request().Cookie(configs.CookieAuthName)
-		if err != nil {
-			return echo.NewHTTPError(401, "no cookie")
-		}
-		user, ok := conn.FindUserByCookie(session)
+		user, ok := auth.GetUserByRequest(ctx.Request(), conn)
 		if !ok {
-			return echo.NewHTTPError(401, "invalid cookie")
+			return echo.NewHTTPError(401, "no auth")
 		}
 		rawUser, err := user.MarshalJSON()
 		if err != nil {
@@ -58,11 +54,9 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		cookie, err := ctx.Request().Cookie(configs.CookieAuthName)
-		if err == nil && cookie != nil {
-			if _, ok := conn.FindUserByCookie(cookie); ok {
-				return echo.NewHTTPError(400, "already logged in")
-			}
+		_, err := ctx.Request().Cookie(configs.CookieAuthName)
+		if err == nil {
+			return echo.NewHTTPError(400, "already logged in")
 		}
 		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
 		if err != nil {
@@ -78,7 +72,7 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
-		e = auth.Login(ctx.Response(), ctx.Request(), conn, newUser.Email, newUser.Password)
+		e = auth.Login(ctx, conn, newUser.Email, newUser.Password)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
