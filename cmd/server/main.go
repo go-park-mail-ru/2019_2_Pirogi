@@ -4,53 +4,52 @@ import (
 	"flag"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
-	"github.com/gorilla/mux"
-	"net/http"
+	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
 )
 
-func CreateAPIServer(port string, db database.Database) server.Server {
-	router := mux.NewRouter()
-	router.Use(middleware.HeaderMiddleware)
-	router.Use(middleware.LoggingMiddleware)
-	router.Use(middleware.GetCheckAuthMiddleware(db))
+func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
+	e := echo.New()
 
-	subrouter := router.PathPrefix("/api").Subrouter()
+	e.Logger.SetLevel(log.WARN)
+	e.HTTPErrorHandler = handlers.HTTPErrorHandler
+	api := e.Group("/api")
+	users := api.Group("/users")
+	users.GET("/", handlers.GetHandlerUsers(conn))
+	users.GET("/:user_id", handlers.GetHandlerUser(conn))
+	users.POST("/", handlers.GetHandlerUsersCreate(conn))
+	users.PUT("/", handlers.GetHandlerUsersUpdate(conn))
+	//router.Use(middleware.HeaderMiddleware)
+	//router.Use(middleware.LoggingMiddleware)
+	//router.Use(middleware.GetCheckAuthMiddleware(conn))
 
-	subrouter.HandleFunc("/users/images/", handlers.GetUploadImageHandler(db, "users")).Methods(http.MethodPost)
-	subrouter.HandleFunc("/films/images/", handlers.GetUploadImageHandler(db, "films")).Methods(http.MethodPost)
+	//subrouter.HandleFunc("/users/images/", handlers.GetUploadImageHandler(conn, "users")).Methods(http.MethodPost)
+	//subrouter.HandleFunc("/films/images/", handlers.GetUploadImageHandler(conn, "films")).Methods(http.MethodPost)
+	//
+	//subrouter.HandleFunc("/films/{film_id:[0-9]+}/", handlers.GetHandlerFilm(conn)).Methods(http.MethodGet)
+	//
+	//subrouter.HandleFunc("/sessions/", handlers.GetHandlerLoginCheck(conn)).Methods(http.MethodGet)
+	//subrouter.HandleFunc("/sessions/", handlers.GetHandlerLogin(conn)).Methods(http.MethodPost)
+	//subrouter.HandleFunc("/sessions/", handlers.GetHandlerLogout(conn)).Methods(http.MethodDelete)
 
-	subrouter.HandleFunc("/films/{film_id:[0-9]+}/", handlers.GetHandlerFilm(db)).Methods(http.MethodGet)
-
-	subrouter.HandleFunc("/users/", handlers.GetHandlerUsersCreate(db)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/users/", handlers.GetHandlerUsers(db)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/users/{user_id:[0-9]+}/", handlers.GetHandlerUser(db)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/users/", handlers.GetHandlerUsersUpdate(db)).Methods(http.MethodPut)
-
-	subrouter.HandleFunc("/sessions/", handlers.GetHandlerLoginCheck(db)).Methods(http.MethodGet)
-	subrouter.HandleFunc("/sessions/", handlers.GetHandlerLogin(db)).Methods(http.MethodPost)
-	subrouter.HandleFunc("/sessions/", handlers.GetHandlerLogout(db)).Methods(http.MethodDelete)
-
-	s := server.New(port)
-	s.Init(router)
-	return s
+	return e, nil
 }
 
 func main() {
 	portAPI := flag.String("api", "8000", "port for API server")
 	flag.Parse()
 
-	conn := database.InitMongo()
-	conn.Insert(models.NewUser{
-		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
-		Username:    "Oleg",
-	})
-	db := database.InitInmemory()
-	db.FakeFillDB()
+	conn, err := database.InitInmemory()
+	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+	conn.FakeFillDB()
 
-	apiServer := CreateAPIServer(*portAPI, db)
-	apiServer.Run()
+	apiServer, err := CreateAPIServer(conn)
+	if err != nil {
+		log.Fatal(err.Error())
+		return
+	}
+	log.Fatal(apiServer.Start("127.0.0.1:" + *portAPI))
 }

@@ -34,21 +34,21 @@ func getMongoClient() (*mongo.Client, error) {
 	return client, err
 }
 
-func InitMongo() *MongoConnection {
+func InitMongo() (*MongoConnection, error) {
 	client, err := getMongoClient()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	err = client.Connect(context.TODO())
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Check the connection
 	err = client.Ping(context.TODO(), nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	conn := MongoConnection{
@@ -60,7 +60,7 @@ func InitMongo() *MongoConnection {
 		usersAuthCookies: client.Database(configs.MongoDbName).Collection(configs.CoockiesCollectionName),
 		cookiesSize:      0,
 	}
-	return &conn
+	return &conn, nil
 }
 
 func (conn *MongoConnection) GetID(target string) int {

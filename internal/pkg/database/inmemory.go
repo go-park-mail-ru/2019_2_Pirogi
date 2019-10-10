@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"strconv"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
@@ -16,12 +16,12 @@ type InmemoryDB struct {
 	usersAuthCookies map[int]http.Cookie
 }
 
-func InitInmemory() *InmemoryDB {
+func InitInmemory() (*InmemoryDB, error) {
 	users := make(map[int]models.User)
 	films := make(map[int]models.Film)
 	usersAuthCookies := make(map[int]http.Cookie)
 	db := InmemoryDB{users: users, usersAuthCookies: usersAuthCookies, films: films}
-	return &db
+	return &db, nil
 }
 
 func (db *InmemoryDB) GetID(target string) int {
@@ -48,7 +48,7 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 	case models.NewUser:
 		_, ok := db.FindByEmail(in.Email)
 		if ok {
-			return error.New(400, "user with the email already exists")
+			return Error.New(400, "user with the email already exists")
 		}
 		u, e := user.CreateNewUser(db.GetID("user"), in)
 		if e != nil {
@@ -61,12 +61,12 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 			db.users[in.ID] = in
 			return nil
 		}
-		return error.New(404, "user not found")
+		return Error.New(404, "user not found")
 	case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(in.Title)
 		if ok {
-			return error.New(400, "film with the title already exists")
+			return Error.New(400, "film with the title already exists")
 		}
 		f, e := film.CreateNewFilm(db.GetID("film"), &in)
 		if e != nil {
@@ -79,9 +79,9 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 			db.films[in.ID] = in
 			return nil
 		}
-		return error.New(404, "film not found")
+		return Error.New(404, "film not found")
 	default:
-		return error.New(400, "not supported type")
+		return Error.New(400, "not supported type")
 	}
 }
 
@@ -102,14 +102,14 @@ func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
-		return nil, error.New(404, "no user with id: "+strconv.Itoa(id))
+		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
 	case "film":
 		if f, ok := db.films[id]; ok {
 			return f, nil
 		}
-		return nil, error.New(404, "no film with the id: "+strconv.Itoa(id))
+		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, error.New(404, "not supported type: "+target)
+	return nil, Error.New(404, "not supported type: "+target)
 }
 
 func (db *InmemoryDB) FindByEmail(email string) (models.User, bool) {
