@@ -2,10 +2,11 @@ package main
 
 import (
 	"flag"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"net/http"
 	"sync"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"

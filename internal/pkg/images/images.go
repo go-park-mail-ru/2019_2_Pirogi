@@ -6,7 +6,7 @@ import (
 	"os"
 	"path/filepath"
 
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/Error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )

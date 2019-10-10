@@ -2,11 +2,12 @@ package database
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"log"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/Error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
-	"log"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -78,7 +79,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		}
 		_, err := conn.users.InsertOne(context.TODO(), u)
 		if err != nil {
-			return error.New(500, "cannot insert user in database")
+			return Error.New(500, "cannot insert user in database")
 		}
 		conn.usersSize++
 		return nil
@@ -94,7 +95,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			log.Fatal(err)
 		}
-		return error.New(404, "user not found")
+		return Error.New(404, "user not found")
 	/*case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(in.Title)
@@ -114,7 +115,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		}
 		return error.New(404, "film not found")*/
 	default:
-		return error.New(400, "not supported type")
+		return Error.New(400, "not supported type")
 	}
 }
 

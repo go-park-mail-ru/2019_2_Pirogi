@@ -8,8 +8,8 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/Error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 )
 
 func LoggingMiddleware(next http.Handler) http.Handler {
@@ -45,12 +45,12 @@ func GetCheckAuthMiddleware(db database.Database) func(next http.Handler) http.H
 
 			cookie, err := r.Cookie(configs.CookieAuthName)
 			if err != nil {
-				error.Render(w, error.New(401, "no cookie"))
+				Error.Render(w, Error.New(401, "no cookie"))
 				return
 			}
 			ok := db.CheckCookie(cookie)
 			if !ok {
-				error.Render(w, error.New(401, "no cookie in db"))
+				Error.Render(w, Error.New(401, "no cookie in db"))
 				return
 			}
 			next.ServeHTTP(w, r)

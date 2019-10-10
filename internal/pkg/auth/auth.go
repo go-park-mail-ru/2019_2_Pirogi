@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/Error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
@@ -37,7 +37,7 @@ func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, 
 	if err != nil {
 		u, ok := db.FindByEmail(email)
 		if !ok || u.Password != password {
-			return error.New(400, "invalid credentials")
+			return Error.New(400, "invalid credentials")
 		}
 		cookie := GenerateCookie("cinsear_session", email)
 		e := db.InsertCookie(&cookie, u.ID)
@@ -49,10 +49,10 @@ func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, 
 	}
 	if cookie != nil {
 		if _, ok := db.FindUserByCookie(cookie); !ok {
-			return error.New(400, "invalid cookie")
+			return Error.New(400, "invalid cookie")
 		}
 	}
-	return error.New(400, "already logged in")
+	return Error.New(400, "already logged in")
 }
 
 func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bool {
@@ -67,7 +67,7 @@ func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bo
 func Logout(w http.ResponseWriter, r *http.Request, db database.Database) *models.Error {
 	session, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
-		return error.New(401, "user is not authorized")
+		return Error.New(401, "user is not authorized")
 	}
 	ExpireCookie(session)
 	http.SetCookie(w, session)
