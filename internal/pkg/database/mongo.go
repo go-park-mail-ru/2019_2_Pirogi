@@ -4,7 +4,7 @@ import (
 	"context"
 	"log"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/Error"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
@@ -82,7 +82,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	case models.NewUser:
 		/*_, ok := conn.FindByEmail(in.Email)
 		if ok {
-			return error.New(400, "user with the email already exists")
+			return Error.New(400, "user with the email already exists")
 		}*/
 		u, e := user.CreateNewUser(conn.GetID("user"), in)
 		if e != nil {
@@ -111,7 +111,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(in.Title)
 		if ok {
-			return error.New(400, "film with the title already exists")
+			return Error.New(400, "film with the title already exists")
 		}
 		f, e := film.CreateNewFilm(db.GetID("film"), &in)
 		if e != nil {
@@ -124,7 +124,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 			db.films[in.ID] = in
 			return nil
 		}
-		return error.New(404, "film not found")*/
+		return Error.New(404, "film not found")*/
 	default:
 		return Error.New(400, "not supported type")
 	}

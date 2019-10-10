@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/Error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/gorilla/mux"
