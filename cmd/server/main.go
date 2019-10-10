@@ -2,16 +2,14 @@ package main
 
 import (
 	"flag"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
-	"net/http"
-	"sync"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/gorilla/mux"
+	"net/http"
 )
 
 func CreateAPIServer(port string, db database.Database) server.Server {
@@ -53,7 +51,6 @@ func main() {
 	db := database.InitInmemory()
 	db.FakeFillDB()
 
-	wg := &sync.WaitGroup{}
 	apiServer := CreateAPIServer(*portAPI, db)
-	apiServer.Run(wg)
+	apiServer.Run()
 }

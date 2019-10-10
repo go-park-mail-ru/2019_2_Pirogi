@@ -2,7 +2,7 @@ package database
 
 import (
 	"context"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
@@ -23,8 +23,19 @@ type MongoConnection struct {
 	cookiesSize      int
 }
 
+func getMongoClient() (*mongo.Client, error) {
+	credentials := &options.Credential{
+		Username: configs.MongoUser,
+		Password: configs.MongoPwd,
+	}
+	clientOpt := &options.ClientOptions{Auth: credentials}
+	clientOpt.ApplyURI(configs.MongoHost)
+	client, err := mongo.NewClient(clientOpt)
+	return client, err
+}
+
 func InitMongo() *MongoConnection {
-	client, err := mongo.NewClient(options.Client().ApplyURI(configs.MongoDbUri))
+	client, err := getMongoClient()
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -78,7 +89,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		}
 		_, err := conn.users.InsertOne(context.TODO(), u)
 		if err != nil {
-			return error.New(500, "cannot insert user in database")
+			return Error.New(500, "cannot insert user in database")
 		}
 		conn.usersSize++
 		return nil
@@ -86,7 +97,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		filter := bson.D{{"id", in.ID}}
 		update := bson.M{
 			"$set": bson.M{
-				"id": "ObjectRocket UPDATED!!",
+				"id":        "ObjectRocket UPDATED!!",
 				"fieldbool": false,
 			},
 		}
@@ -94,7 +105,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			log.Fatal(err)
 		}
-		return error.New(404, "user not found")
+		return Error.New(404, "user not found")
 	/*case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(in.Title)
@@ -114,7 +125,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		}
 		return error.New(404, "film not found")*/
 	default:
-		return error.New(400, "not supported type")
+		return Error.New(400, "not supported type")
 	}
 }
 
