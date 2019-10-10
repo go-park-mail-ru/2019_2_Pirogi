@@ -21,3 +21,5 @@ const FilmsCollectionName = "films"
 const CoockiesCollectionName = "usersAuthCookies"
 
 const APIPort = ":8000"
+const CertFile = "/cinsear/ssl/cert.pem"
+const KeyFile = "/cinsear/ssl/privkey.pem"

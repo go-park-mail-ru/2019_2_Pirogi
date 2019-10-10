@@ -19,5 +19,5 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
-	log.Fatal(apiServer.Start(configs.APIPort))
+	log.Fatal(apiServer.Server.ListenAndServeTLS(configs.CertFile, configs.KeyFile))
 }

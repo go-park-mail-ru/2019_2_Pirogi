@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
@@ -11,6 +12,7 @@ import (
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e := echo.New()
+	e.Server.Addr = configs.APIPort
 	e.Logger.SetLevel(log.WARN)
 	e.HTTPErrorHandler = handlers.HTTPErrorHandler
 
