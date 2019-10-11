@@ -160,6 +160,23 @@ func (conn *MongoConnection) Get(id int, target string) (interface{}, *models.Er
 	return nil, Error.New(404, "not supported type: "+target)
 }
 
+func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
+	foundCookie := models.UserCookie{}
+	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
+	return err == nil
+}
+
+func (conn *MongoConnection) DeleteCookie(in interface{}) {
+	switch in := in.(type) {
+	case http.Cookie:
+		u, ok := conn.FindUserByCookie(&in)
+		if !ok {
+			return
+		}
+		_, _ = conn.cookies.DeleteOne(conn.context, bson.M{"_id": u.ID})
+	}
+}
+
 func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
 	result := models.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"credentials.email": email}).Decode(&result)
