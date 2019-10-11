@@ -165,7 +165,7 @@ func TestDB_Get(t *testing.T) {
 	}
 	err := db.Insert(ksyusha)
 	require.Nil(t, err)
-	obj, err := db.Get(0, "user")
+	obj, err := db.Get(0, configs.UserTargetName)
 	require.Nil(t, err)
 	u := obj.(models.User)
 	require.True(t, reflect.DeepEqual(u.Credentials, ksyusha.Credentials))

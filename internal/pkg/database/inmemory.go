@@ -83,17 +83,6 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 	return nil
 }
 
-func (db *InmemoryDB) DeleteCookie(in interface{}) {
-	switch in := in.(type) {
-	case http.Cookie:
-		u, ok := db.FindUserByCookie(&in)
-		if !ok {
-			return
-		}
-		delete(db.usersAuthCookies, u.ID)
-	}
-}
-
 func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 	switch target {
 	case "user":
@@ -108,6 +97,26 @@ func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
 	}
 	return nil, Error.New(404, "not supported type: "+target)
+}
+
+func (db *InmemoryDB) CheckCookie(cookie *http.Cookie) bool {
+	for i := range db.usersAuthCookies {
+		if db.usersAuthCookies[i].Value == cookie.Value {
+			return true
+		}
+	}
+	return false
+}
+
+func (db *InmemoryDB) DeleteCookie(in interface{}) {
+	switch in := in.(type) {
+	case http.Cookie:
+		u, ok := db.FindUserByCookie(&in)
+		if !ok {
+			return
+		}
+		delete(db.usersAuthCookies, u.ID)
+	}
 }
 
 func (db *InmemoryDB) FindUserByEmail(email string) (models.User, bool) {
@@ -128,23 +137,10 @@ func (db *InmemoryDB) FindUserByID(id int) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *InmemoryDB) CheckCookie(cookie *http.Cookie) bool {
-	for i := range db.usersAuthCookies {
-		if db.usersAuthCookies[i].Value == cookie.Value {
-			return true
-		}
-	}
-	return false
-}
-
 func (db *InmemoryDB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
 	for k, v := range db.usersAuthCookies {
 		if v.Value == cookie.Value {
-			u, ok := db.FindUserByID(k)
-			if !ok {
-				return models.User{}, false
-			}
-			return u, true
+			return db.FindUserByID(k)
 		}
 	}
 	return models.User{}, false
@@ -153,6 +149,15 @@ func (db *InmemoryDB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) 
 func (db *InmemoryDB) FindFilmByTitle(title string) (models.Film, bool) {
 	for k := range db.films {
 		if db.films[k].Title == title {
+			return db.films[k], true
+		}
+	}
+	return models.Film{}, false
+}
+
+func (db *InmemoryDB) FindFilmByID(id int) (models.Film, bool) {
+	for k, f := range db.films {
+		if f.ID == id {
 			return db.films[k], true
 		}
 	}

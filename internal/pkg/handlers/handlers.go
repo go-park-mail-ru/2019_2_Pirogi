@@ -22,7 +22,7 @@ func GetHandlerFilm(db database.Database) http.HandlerFunc {
 			Error.Render(w, Error.New(404, "no film with the id", err.Error()))
 			return
 		}
-		obj, e := db.Get(id, "film")
+		obj, e := db.Get(id, configs.FilmTargetName)
 		if e != nil {
 			Error.Render(w, e)
 			return
@@ -89,7 +89,7 @@ func GetHandlerUser(db database.Database) http.HandlerFunc {
 			Error.Render(w, Error.New(400, "invalid id", err.Error()))
 			return
 		}
-		obj, e := db.Get(id, "user")
+		obj, e := db.Get(id, configs.UserTargetName)
 		if e != nil {
 			Error.Render(w, e)
 			return

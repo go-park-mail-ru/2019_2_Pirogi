@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"net/http"
+	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -77,6 +79,7 @@ func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
 	return result.Seq, err
 }
 
+// затирает старые записи
 func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	switch in := in.(type) {
 	case models.NewUser:
@@ -139,14 +142,53 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	return nil
 }
 
+func (conn *MongoConnection) Get(id int, target string) (interface{}, *models.Error) {
+	switch target {
+	case configs.UserTargetName:
+		u, ok := conn.FindUserByID(id)
+		if ok {
+			return u, nil
+		}
+		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
+	case configs.FilmTargetName:
+		f, ok := conn.FindFilmByID(id)
+		if ok {
+			return f, nil
+		}
+		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
+	}
+	return nil, Error.New(404, "not supported type: "+target)
+}
+
 func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
 	result := models.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"credentials.email": email}).Decode(&result)
 	return result, err == nil
 }
 
+func (conn *MongoConnection) FindUserByID(id int) (models.User, bool) {
+	result := models.User{}
+	err := conn.users.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
+	foundCookie := models.UserCookie{}
+	err := conn.cookies.FindOne(conn.context, bson.M{"cookie": cookie}).Decode(&foundCookie)
+	if err != nil {
+		return models.User{}, false
+	}
+	return conn.FindUserByID(foundCookie.UserID)
+}
+
 func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
 	result := models.Film{}
 	err := conn.films.FindOne(conn.context, bson.M{"filminfo.title": title}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindFilmByID(id int) (models.Film, bool) {
+	result := models.Film{}
+	err := conn.films.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
