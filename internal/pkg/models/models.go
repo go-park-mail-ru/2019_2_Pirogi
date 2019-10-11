@@ -6,7 +6,6 @@ type Credentials struct {
 }
 
 type UserInfo struct {
-	ID          int     `json:"id"`
 	Username    string  `json:"username"`
 	Rating      float32 `json:"rating"`
 	Description string  `json:"description"`
@@ -14,6 +13,7 @@ type UserInfo struct {
 }
 
 type User struct {
+	ID int `json:"id" bson:"_id"`
 	Credentials
 	UserInfo
 }
@@ -51,7 +51,7 @@ type NewFilm struct {
 }
 
 type Film struct {
-	ID int `json:"-"`
+	ID int `json:"id" bson:"_id"`
 	FilmInfo
 }
 

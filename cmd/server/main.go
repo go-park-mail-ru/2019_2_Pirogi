@@ -5,10 +5,9 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/gorilla/mux"
+	"log"
 	"net/http"
 )
 
@@ -43,11 +42,10 @@ func main() {
 	portAPI := flag.String("api", "8000", "port for API server")
 	flag.Parse()
 
-	conn := database.InitMongo()
-	conn.Insert(models.NewUser{
-		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
-		Username:    "Oleg",
-	})
+	_, err := database.InitMongo()
+	if err != nil {
+		log.Fatal(err)
+	}
 	db := database.InitInmemory()
 	db.FakeFillDB()
 

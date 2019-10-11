@@ -2,26 +2,23 @@ package database
 
 import (
 	"context"
-	"log"
-
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoConnection struct {
 	client           *mongo.Client
+	context          context.Context
 	users            *mongo.Collection
-	usersSize        int
 	films            *mongo.Collection
-	filmsSize        int
 	usersAuthCookies *mongo.Collection
-	cookiesSize      int
+	counters         *mongo.Collection
 }
 
 func getMongoClient() (*mongo.Client, error) {
@@ -35,106 +32,119 @@ func getMongoClient() (*mongo.Client, error) {
 	return client, err
 }
 
-func InitMongo() *MongoConnection {
+func InitMongo() (*MongoConnection, error) {
 	client, err := getMongoClient()
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
-	err = client.Connect(context.TODO())
+	err = client.Connect(context.Background())
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	// Check the connection
-	err = client.Ping(context.TODO(), nil)
+	err = client.Ping(context.Background(), nil)
 	if err != nil {
-		log.Fatal(err)
+		return nil, err
 	}
 
 	conn := MongoConnection{
 		client:           client,
+		context:          context.Background(),
 		users:            client.Database(configs.MongoDbName).Collection(configs.UsersCollectionName),
-		usersSize:        0,
 		films:            client.Database(configs.MongoDbName).Collection(configs.FilmsCollectionName),
-		filmsSize:        0,
 		usersAuthCookies: client.Database(configs.MongoDbName).Collection(configs.CoockiesCollectionName),
-		cookiesSize:      0,
+		counters:         client.Database(configs.MongoDbName).Collection(configs.CountersCollectionName),
 	}
-	return &conn
+
+	// Do it one time
+	_, _ = conn.counters.InsertMany(conn.context, []interface{}{
+		bson.M{"_id": configs.UserTargetName, "seq": 0},
+		bson.M{"_id": configs.FilmTargetName, "seq": 0},
+		bson.M{"_id": configs.CookieTargetName, "seq": 0},
+	})
+
+	return &conn, err
 }
 
-func (conn *MongoConnection) GetID(target string) int {
-	switch target {
-	case "user":
-		return conn.usersSize
-	case "film":
-		return conn.filmsSize
-	case "auth_cookie":
-		return conn.cookiesSize
-	default:
-		return 0
-	}
+func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
+	result := struct {
+		Seq    int    `bson:"seq"`
+	}{}
+	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
+		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
+	return result.Seq, err
 }
 
 func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	switch in := in.(type) {
 	case models.NewUser:
-		/*_, ok := conn.FindByEmail(in.Email)
+		_, ok := conn.FindByEmail(in.Email)
 		if ok {
 			return Error.New(400, "user with the email already exists")
-		}*/
-		u, e := user.CreateNewUser(conn.GetID("user"), in)
-		if e != nil {
-			return e
 		}
-		_, err := conn.users.InsertOne(context.TODO(), u)
+		id, err := conn.GetNextSequence(configs.UserTargetName)
 		if err != nil {
 			return Error.New(500, "cannot insert user in database")
 		}
-		conn.usersSize++
-		return nil
-	case models.User:
-		filter := bson.D{{"id", in.ID}}
-		update := bson.M{
-			"$set": bson.M{
-				"id":        "ObjectRocket UPDATED!!",
-				"fieldbool": false,
-			},
-		}
-		_, err := conn.users.UpdateOne(context.TODO(), filter, update)
-		if err != nil {
-			log.Fatal(err)
-		}
-		return Error.New(404, "user not found")
-	/*case models.NewFilm:
-		// It is supposed that there cannot be films with the same title
-		_, ok := db.FindFilmByTitle(in.Title)
-		if ok {
-			return Error.New(400, "film with the title already exists")
-		}
-		f, e := film.CreateNewFilm(db.GetID("film"), &in)
+		u, e := user.CreateNewUser(id, in)
 		if e != nil {
 			return e
 		}
-		db.films[db.GetID("film")] = f
+		_, err = conn.users.InsertOne(conn.context, u)
+		if err != nil {
+			return Error.New(500, "cannot insert user in database")
+		}
+		return nil
+	case models.User:
+		filter := bson.M{"_id": in.ID}
+		update := bson.M{"$set": in}
+		_, err := conn.users.UpdateOne(conn.context, filter, update)
+		if err != nil {
+			return Error.New(404, "user not found")
+		}
+		return nil
+	case models.NewFilm:
+		// It is supposed that there cannot be films with the same title
+		_, ok := conn.FindFilmByTitle(in.Title)
+		if ok {
+			return Error.New(400, "film with the title already exists")
+		}
+		id, err := conn.GetNextSequence(configs.FilmTargetName)
+		if err != nil {
+			return Error.New(500, "cannot insert user in database")
+		}
+		f, e := film.CreateNewFilm(id, &in)
+		if e != nil {
+			return e
+		}
+		_, err = conn.films.InsertOne(conn.context, f)
+		if err != nil {
+			return Error.New(500, "cannot insert film in database")
+		}
 		return nil
 	case models.Film:
-		if _, ok := db.users[in.ID]; ok {
-			db.films[in.ID] = in
-			return nil
+		filter := bson.M{"_id": in.ID}
+		update := bson.M{"$set": in}
+		_, err := conn.films.UpdateOne(conn.context, filter, update)
+		if err != nil {
+			return Error.New(404, "film not found")
 		}
-		return Error.New(404, "film not found")*/
+		return nil
 	default:
 		return Error.New(400, "not supported type")
 	}
 }
 
-/*func (conn *MongoConnection) FindByEmail(email string) (models.User, bool) {
-	for k, u := range db.users {
-		if u.Email == email {
-			return db.users[k], true
-		}
-	}
-	return models.User{}, false
-}*/
+func (conn *MongoConnection) FindByEmail(email string) (models.User, bool) {
+	result := models.User{}
+	err := conn.users.FindOne(conn.context, bson.M{"credentials.email": email}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
+	result := models.Film{}
+	err := conn.films.FindOne(conn.context, bson.M{"filminfo.title": title}).Decode(&result)
+	return result, err == nil
+}

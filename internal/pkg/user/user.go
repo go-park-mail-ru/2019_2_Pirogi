@@ -15,12 +15,12 @@ func CreateNewUser(id int, newUser models.NewUser) (models.User, *models.Error) 
 		return models.User{}, Error.New(400, "invalid data")
 	}
 	user := models.User{
+		ID: id,
 		Credentials: models.Credentials{
 			Email:    newUser.Email,
 			Password: newUser.Password,
 		},
 		UserInfo: models.UserInfo{
-			ID:          id,
 			Username:    newUser.Username,
 			Rating:      0,
 			Description: "",

@@ -4,7 +4,6 @@ package models
 
 import (
 	json "encoding/json"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
@@ -37,8 +36,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels(in 
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = int(in.Int())
 		case "username":
 			out.Username = string(in.String())
 		case "rating":
@@ -62,13 +59,8 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels(out
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"id\":"
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	{
 		const prefix string = ",\"username\":"
-		out.RawString(prefix)
+		out.RawString(prefix[1:])
 		out.String(string(in.Username))
 	}
 	{
@@ -928,6 +920,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(in
 			continue
 		}
 		switch key {
+		case "id":
+			out.ID = int(in.Int())
 		case "title":
 			out.Title = string(in.String())
 		case "description":
@@ -1028,13 +1022,13 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(ou
 	first := true
 	_ = first
 	{
+		const prefix string = ",\"id\":"
+		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	{
 		const prefix string = ",\"title\":"
-		if first {
-			first = false
-			out.RawString(prefix[1:])
-		} else {
-			out.RawString(prefix)
-		}
+		out.RawString(prefix)
 		out.String(string(in.Title))
 	}
 	{
