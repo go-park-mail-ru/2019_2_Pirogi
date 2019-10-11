@@ -8,7 +8,6 @@ import (
 
 type Database interface {
 	Insert(in interface{}) *models.Error
-	InsertCookie(cookie *http.Cookie, id int) *models.Error
 	DeleteCookie(in interface{})
 	Get(id int, target string) (interface{}, *models.Error)
 	FindByEmail(email string) (models.User, bool)

@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -116,7 +118,7 @@ func TestGetUser(t *testing.T) {
 func TestGetUsers(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(&cookie, 0)
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -151,7 +153,7 @@ func TestGetUsers(t *testing.T) {
 func TestGetUsersCreate(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(&cookie, 0)
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -195,7 +197,7 @@ func TestGetUsersCreate(t *testing.T) {
 func TestGetUsersUpdate(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(&cookie, 0)
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -246,7 +248,7 @@ func TestGetUsersUpdate(t *testing.T) {
 func TestLoginCheck(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(&cookie, 0)
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -278,7 +280,7 @@ func TestLoginCheck(t *testing.T) {
 func TestLogin(t *testing.T) {
 	db := InitDatabase()
 	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(&cookie, 1)
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{

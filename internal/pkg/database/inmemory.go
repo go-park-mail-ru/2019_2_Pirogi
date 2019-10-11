@@ -4,6 +4,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
@@ -24,22 +26,17 @@ func InitInmemory() *InmemoryDB {
 	return &db
 }
 
-func (db *InmemoryDB) GetID(target string) int {
+func (db *InmemoryDB) GetIDForInsert(target string) int {
 	switch target {
-	case "user":
+	case configs.UserTargetName:
 		return len(db.users)
-	case "film":
+	case configs.FilmTargetName:
 		return len(db.films)
-	case "auth_cookie":
+	case configs.CookieTargetName:
 		return len(db.usersAuthCookies)
 	default:
 		return 0
 	}
-}
-
-func (db *InmemoryDB) InsertCookie(cookie *http.Cookie, id int) *models.Error {
-	db.usersAuthCookies[id] = *cookie
-	return nil
 }
 
 // затирает старые записи
@@ -50,12 +47,11 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(400, "user with the email already exists")
 		}
-		u, e := user.CreateNewUser(db.GetID("user"), &in)
+		u, e := user.CreateNewUser(db.GetIDForInsert(configs.UserTargetName), &in)
 		if e != nil {
 			return e
 		}
-		db.users[db.GetID("user")] = u
-		return nil
+		db.users[db.GetIDForInsert(configs.UserTargetName)] = u
 	case models.User:
 		if _, ok := db.users[in.ID]; ok {
 			db.users[in.ID] = in
@@ -68,21 +64,23 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(400, "film with the title already exists")
 		}
-		f, e := film.CreateNewFilm(db.GetID("film"), &in)
+		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.FilmTargetName), &in)
 		if e != nil {
 			return e
 		}
-		db.films[db.GetID("film")] = f
-		return nil
+		db.films[db.GetIDForInsert(configs.FilmTargetName)] = f
 	case models.Film:
 		if _, ok := db.users[in.ID]; ok {
 			db.films[in.ID] = in
 			return nil
 		}
 		return Error.New(404, "film not found")
+	case models.UserCookie:
+		db.usersAuthCookies[in.UserID] = *in.Cookie
 	default:
 		return Error.New(400, "not supported type")
 	}
+	return nil
 }
 
 func (db *InmemoryDB) DeleteCookie(in interface{}) {

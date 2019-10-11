@@ -14,12 +14,12 @@ import (
 )
 
 type MongoConnection struct {
-	client           *mongo.Client
-	context          context.Context
-	users            *mongo.Collection
-	films            *mongo.Collection
-	usersAuthCookies *mongo.Collection
-	counters         *mongo.Collection
+	client   *mongo.Client
+	context  context.Context
+	users    *mongo.Collection
+	films    *mongo.Collection
+	cookies  *mongo.Collection
+	counters *mongo.Collection
 }
 
 func getMongoClient() (*mongo.Client, error) {
@@ -51,19 +51,18 @@ func InitMongo() (*MongoConnection, error) {
 	}
 
 	conn := MongoConnection{
-		client:           client,
-		context:          context.Background(),
-		users:            client.Database(configs.MongoDbName).Collection(configs.UsersCollectionName),
-		films:            client.Database(configs.MongoDbName).Collection(configs.FilmsCollectionName),
-		usersAuthCookies: client.Database(configs.MongoDbName).Collection(configs.CoockiesCollectionName),
-		counters:         client.Database(configs.MongoDbName).Collection(configs.CountersCollectionName),
+		client:   client,
+		context:  context.Background(),
+		users:    client.Database(configs.MongoDbName).Collection(configs.UsersCollectionName),
+		films:    client.Database(configs.MongoDbName).Collection(configs.FilmsCollectionName),
+		cookies:  client.Database(configs.MongoDbName).Collection(configs.CookiesCollectionName),
+		counters: client.Database(configs.MongoDbName).Collection(configs.CountersCollectionName),
 	}
 
 	// Do it one time
 	_, _ = conn.counters.InsertMany(conn.context, []interface{}{
 		bson.M{"_id": configs.UserTargetName, "seq": 0},
 		bson.M{"_id": configs.FilmTargetName, "seq": 0},
-		bson.M{"_id": configs.CookieTargetName, "seq": 0},
 	})
 
 	return &conn, err
@@ -97,7 +96,6 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(500, "cannot insert user in database")
 		}
-		return nil
 	case models.User:
 		filter := bson.M{"_id": in.ID}
 		update := bson.M{"$set": in}
@@ -105,7 +103,6 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(404, "user not found")
 		}
-		return nil
 	case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := conn.FindFilmByTitle(in.Title)
@@ -124,7 +121,6 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(500, "cannot insert film in database")
 		}
-		return nil
 	case models.Film:
 		filter := bson.M{"_id": in.ID}
 		update := bson.M{"$set": in}
@@ -132,10 +128,15 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(404, "film not found")
 		}
-		return nil
+	case models.UserCookie:
+		_, err := conn.cookies.InsertOne(conn.context, in)
+		if err != nil {
+			return Error.New(500, "cannot insert cookie in database")
+		}
 	default:
 		return Error.New(400, "not supported type")
 	}
+	return nil
 }
 
 func (conn *MongoConnection) FindByEmail(email string) (models.User, bool) {

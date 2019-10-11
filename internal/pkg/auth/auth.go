@@ -40,7 +40,7 @@ func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, 
 			return Error.New(400, "invalid credentials")
 		}
 		cookie := GenerateCookie("cinsear_session", email)
-		e := db.InsertCookie(&cookie, u.ID)
+		e := db.Insert(models.UserCookie{UserID: u.ID, Cookie: &cookie})
 		if e != nil {
 			return e
 		}
