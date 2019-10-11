@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
+	"log"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/gorilla/mux"
-	"log"
-	"net/http"
 )
 
 func CreateAPIServer(port string, db database.Database) server.Server {

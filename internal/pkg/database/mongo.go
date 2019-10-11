@@ -2,6 +2,7 @@ package database
 
 import (
 	"context"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
@@ -70,7 +71,7 @@ func InitMongo() (*MongoConnection, error) {
 
 func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
 	result := struct {
-		Seq    int    `bson:"seq"`
+		Seq int `bson:"seq"`
 	}{}
 	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
 		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
@@ -88,7 +89,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(500, "cannot insert user in database")
 		}
-		u, e := user.CreateNewUser(id, in)
+		u, e := user.CreateNewUser(id, &in)
 		if e != nil {
 			return e
 		}

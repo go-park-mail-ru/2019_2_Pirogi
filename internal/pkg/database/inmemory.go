@@ -50,7 +50,7 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(400, "user with the email already exists")
 		}
-		u, e := user.CreateNewUser(db.GetID("user"), in)
+		u, e := user.CreateNewUser(db.GetID("user"), &in)
 		if e != nil {
 			return e
 		}
