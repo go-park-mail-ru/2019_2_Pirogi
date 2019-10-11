@@ -80,7 +80,7 @@ func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
 func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	switch in := in.(type) {
 	case models.NewUser:
-		_, ok := conn.FindByEmail(in.Email)
+		_, ok := conn.FindUserByEmail(in.Email)
 		if ok {
 			return Error.New(400, "user with the email already exists")
 		}
@@ -139,7 +139,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	return nil
 }
 
-func (conn *MongoConnection) FindByEmail(email string) (models.User, bool) {
+func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
 	result := models.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"credentials.email": email}).Decode(&result)
 	return result, err == nil

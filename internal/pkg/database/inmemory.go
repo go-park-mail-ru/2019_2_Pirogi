@@ -43,7 +43,7 @@ func (db *InmemoryDB) GetIDForInsert(target string) int {
 func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 	switch in := in.(type) {
 	case models.NewUser:
-		_, ok := db.FindByEmail(in.Email)
+		_, ok := db.FindUserByEmail(in.Email)
 		if ok {
 			return Error.New(400, "user with the email already exists")
 		}
@@ -110,7 +110,7 @@ func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 	return nil, Error.New(404, "not supported type: "+target)
 }
 
-func (db *InmemoryDB) FindByEmail(email string) (models.User, bool) {
+func (db *InmemoryDB) FindUserByEmail(email string) (models.User, bool) {
 	for k, u := range db.users {
 		if u.Email == email {
 			return db.users[k], true

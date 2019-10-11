@@ -35,7 +35,7 @@ func ExpireCookie(cookie *http.Cookie) {
 func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, password string) *models.Error {
 	cookie, err := r.Cookie(configs.CookieAuthName)
 	if err != nil {
-		u, ok := db.FindByEmail(email)
+		u, ok := db.FindUserByEmail(email)
 		if !ok || u.Password != password {
 			return Error.New(400, "invalid credentials")
 		}

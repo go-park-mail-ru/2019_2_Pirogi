@@ -149,7 +149,7 @@ func TestDB_FindByEmail(t *testing.T) {
 	}
 	e := db.Insert(ksyusha)
 	require.Nil(t, e)
-	u, ok := db.FindByEmail(ksyusha.Email)
+	u, ok := db.FindUserByEmail(ksyusha.Email)
 	require.True(t, ok)
 	require.Equal(t, ksyusha.Email, u.Email)
 }
