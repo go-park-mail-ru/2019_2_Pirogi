@@ -1,5 +1,4 @@
 FROM golang:alpine
-ENV mode=development
 RUN mkdir /cinsear
 RUN mkdir -p /media/images/users
 RUN mkdir -p /media/images/films
