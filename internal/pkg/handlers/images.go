@@ -33,7 +33,7 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 		default:
 			return echo.NewHTTPError(400, "wrong path")
 		}
-		filename, err := common.WriteFile(fileBytes, base)
+		filename, err := common.WriteFileWithGeneratedName(fileBytes, base)
 		if err != nil {
 			return err
 		}

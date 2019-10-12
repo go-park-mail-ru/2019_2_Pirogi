@@ -1,6 +1,7 @@
 package common
 
 import (
+	"bufio"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"github.com/labstack/echo"
 	"math/rand"
@@ -10,13 +11,13 @@ import (
 	"time"
 )
 
-func WriteFile(fileBytes []byte, base string) (filename string, err error) {
+func WriteFileWithGeneratedName(fileBytes []byte, base string) (generatedFilename string, err error) {
 	ending, e := images.DetectContentType(fileBytes)
 	if e != nil {
 		return "", echo.NewHTTPError(e.Status, e.Error)
 	}
-	filename = images.GenerateFilename(time.Now().String(), strconv.Itoa(rand.Int()), ending)
-	newPath := filepath.Join(base, filename)
+	generatedFilename = images.GenerateFilename(time.Now().String(), strconv.Itoa(rand.Int()), ending)
+	newPath := filepath.Join(base, generatedFilename)
 	newFile, err := os.Create(newPath)
 	if err != nil {
 		return "", echo.NewHTTPError(500, "can not create file")
@@ -24,5 +25,37 @@ func WriteFile(fileBytes []byte, base string) (filename string, err error) {
 	if _, err := newFile.Write(fileBytes); err != nil || newFile.Close() != nil {
 		return "", echo.NewHTTPError(500, "can not open file for write")
 	}
-	return filename, nil
+	return generatedFilename, nil
+}
+
+func WriteBytes(data []byte, path string) error {
+	newFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0644)
+	if err != nil {
+		return err
+	}
+	defer newFile.Close()
+	_, err = newFile.Write(data)
+	if err != nil {
+		return err
+	}
+	return nil
+}
+
+func ReadLines(filename string) ([]string, error) {
+	result := make([]string, 0)
+	defer func() {
+		if e := recover(); e != nil {
+			println("recovered from ReadLines", e)
+		}
+	}()
+	file, err := os.Open(filename)
+	if err != nil {
+		return []string{}, err
+	}
+	defer file.Close()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		result = append(result, scanner.Text())
+	}
+	return result, nil
 }
