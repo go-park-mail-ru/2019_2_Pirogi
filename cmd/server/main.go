@@ -43,14 +43,14 @@ func main() {
 	portAPI := flag.String("api", "8000", "port for API server")
 	flag.Parse()
 
-	_, err := database.InitMongo()
+	conn, err := database.InitMongo()
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	db := database.InitInmemory()
-	db.FakeFillDB()
+	// Do it one time
+	conn.FakeFillDB()
 
-	apiServer := CreateAPIServer(*portAPI, db)
+	apiServer := CreateAPIServer(*portAPI, conn)
 	apiServer.Run()
 }
