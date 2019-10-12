@@ -209,3 +209,56 @@ func (conn *MongoConnection) FindFilmByID(id int) (models.Film, bool) {
 	err := conn.films.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
+
+func (conn *MongoConnection) FakeFillDB() {
+	cookie := http.Cookie{
+		Name:  "cinsear_session",
+		Value: "value",
+		Path:  "/",
+	}
+
+	conn.Insert(models.NewUser{
+		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
+		Username:    "Oleg",
+	})
+	conn.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
+
+	conn.Insert(models.NewUser{
+		Credentials: models.Credentials{Email: "anton@mail.ru", Password: user.GetMD5Hash("qwe523")},
+		Username:    "Anton",
+	})
+	conn.Insert(models.UserCookie{UserID: 1, Cookie: &cookie})
+
+	conn.Insert(models.NewUser{
+		Credentials: models.Credentials{Email: "yura@gmail.com", Password: user.GetMD5Hash("12312312")},
+		Username:    "Yura",
+	})
+	conn.Insert(models.UserCookie{UserID: 2, Cookie: &cookie})
+
+	conn.Insert(models.NewFilm{FilmInfo: models.FilmInfo{
+		Title: "Бойцовский клуб",
+		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
+			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
+			"уверен, что самосовершенствование — удел слабых, а саморазрушение — единственное, ради чего стоит жить.",
+		Date:       "1999",
+		Actors:     []string{"Брэд Питт", "Эдвард Нортон"},
+		Genres:     []string{"Драма", "Боевик"},
+		Directors:  []string{"Дэвид Финчер"},
+		Rating:     9.1,
+		Image:      "club.jpg",
+		ReviewsNum: models.ReviewsNum{Total: 100, Positive: 90, Negative: 10},
+	}})
+
+	conn.Insert(models.NewFilm{FilmInfo: models.FilmInfo{
+		Title: "Матрица",
+		Description: "Мир Матрицы — это иллюзия, существующая только в бесконечном сне обреченного человечества. " +
+			"Холодный мир будущего, в котором люди — всего лишь батарейки в компьютерных системах.",
+		Date:       "1999",
+		Actors:     []string{"Киану Ривз", "Кэрри-Энн Мосс"},
+		Genres:     []string{"Фэнтези"},
+		Directors:  []string{"Лана Вачовски", "Лилли Вачовски"},
+		Rating:     8.9,
+		Image:      "matrix.jpg",
+		ReviewsNum: models.ReviewsNum{Total: 110, Positive: 90, Negative: 20},
+	}})
+}

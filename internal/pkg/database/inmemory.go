@@ -164,22 +164,30 @@ func (db *InmemoryDB) FindFilmByID(id int) (models.Film, bool) {
 	return models.Film{}, false
 }
 
-// TODO: insert cookie for each user
 func (db *InmemoryDB) FakeFillDB() {
+	cookie := http.Cookie{
+		Name:  "cinsear_session",
+		Value: "value",
+		Path:  "/",
+	}
+
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
 		Username:    "Oleg",
 	})
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "anton@mail.ru", Password: user.GetMD5Hash("qwe523")},
 		Username:    "Anton",
 	})
+	db.Insert(models.UserCookie{UserID: 1, Cookie: &cookie})
 
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "yura@gmail.com", Password: user.GetMD5Hash("12312312")},
 		Username:    "Yura",
 	})
+	db.Insert(models.UserCookie{UserID: 2, Cookie: &cookie})
 
 	db.Insert(models.NewFilm{FilmInfo: models.FilmInfo{
 		Title: "Бойцовский клуб",
