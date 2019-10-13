@@ -1,0 +1,116 @@
+package handlers
+
+import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/labstack/echo"
+	"io/ioutil"
+	"strconv"
+)
+
+func GetHandlerUsers(conn database.Database) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		user, ok := auth.GetUserByRequest(ctx.Request(), conn)
+		if !ok {
+			return echo.NewHTTPError(401, "no auth")
+		}
+		rawUser, err := user.MarshalJSON()
+		if err != nil {
+			return echo.NewHTTPError(500, err.Error())
+		}
+		_, err = ctx.Response().Write(rawUser)
+		if err != nil {
+			return echo.NewHTTPError(500, err.Error())
+		}
+		return nil
+	}
+}
+
+func GetHandlerUser(conn database.Database) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		id, err := strconv.Atoi(ctx.Param("user_id"))
+		if err != nil {
+			return echo.NewHTTPError(400, "invalid id")
+		}
+		obj, e := conn.Get(id, "user")
+		if e != nil {
+			return echo.NewHTTPError(e.Status, e.Error)
+		}
+		user := obj.(models.User)
+		userInfo := user.UserInfo
+		jsonBody, err := userInfo.MarshalJSON()
+		if err != nil {
+			return echo.NewHTTPError(500, err.Error())
+		}
+		_, err = ctx.Response().Write(jsonBody)
+		if err != nil {
+			return echo.NewHTTPError(500, err.Error())
+		}
+		return nil
+	}
+}
+
+func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		_, err := ctx.Request().Cookie(configs.CookieAuthName)
+		if err == nil {
+			return echo.NewHTTPError(400, "already logged in")
+		}
+		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
+		if err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		defer ctx.Request().Body.Close()
+		newUser := models.NewUser{}
+		err = newUser.UnmarshalJSON(rawBody)
+		if err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		e := conn.Insert(newUser)
+		if e != nil {
+			return echo.NewHTTPError(e.Status, e.Error)
+		}
+		e = auth.Login(ctx, conn, newUser.Email, newUser.Password)
+		if e != nil {
+			return echo.NewHTTPError(e.Status, e.Error)
+		}
+		return nil
+	}
+}
+
+func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
+		if err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		defer ctx.Request().Body.Close()
+		updateUser := &models.UserInfo{}
+		err = updateUser.UnmarshalJSON(rawBody)
+		if err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		session, err := ctx.Request().Cookie(configs.CookieAuthName)
+		if err != nil {
+			return echo.NewHTTPError(401, err.Error())
+		}
+		user, ok := conn.FindUserByCookie(session)
+		if !ok {
+			return echo.NewHTTPError(401, "no user with the cookie")
+		}
+		switch {
+		case updateUser.Username != "":
+			user.Username = updateUser.Username
+			fallthrough
+		case updateUser.Description != "":
+			user.Description = updateUser.Description
+		}
+		e := conn.Insert(user)
+		if e != nil {
+			return echo.NewHTTPError(e.Status, e.Error)
+		}
+		return nil
+	}
+}

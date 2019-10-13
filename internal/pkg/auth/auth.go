@@ -1,6 +1,7 @@
 package auth
 
 import (
+	"github.com/labstack/echo"
 	"net/http"
 	"time"
 
@@ -25,15 +26,26 @@ func GenerateCookie(cookieName, value string) http.Cookie {
 	return cookie
 }
 
+func GetUserByRequest(r *http.Request, conn database.Database) (models.User, bool) {
+	session, err := r.Cookie(configs.CookieAuthName)
+	if err != nil {
+		return models.User{}, false
+	}
+	foundUser, ok := conn.FindUserByCookie(session)
+	if !ok {
+		return models.User{}, false
+	}
+	return foundUser, true
+}
+
 func ExpireCookie(cookie *http.Cookie) {
-	// TODO: понять, почему кука просрачивается только при таких параметрах
 	cookie.Expires = time.Unix(0, 0)
 	cookie.Path = "/"
 	cookie.HttpOnly = true
 }
 
-func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, password string) *models.Error {
-	cookie, err := r.Cookie(configs.CookieAuthName)
+func Login(ctx echo.Context, db database.Database, email, password string) *models.Error {
+	cookie, err := ctx.Request().Cookie(configs.CookieAuthName)
 	if err != nil {
 		u, ok := db.FindUserByEmail(email)
 		if !ok || u.Password != password {
@@ -44,7 +56,7 @@ func Login(w http.ResponseWriter, r *http.Request, db database.Database, email, 
 		if e != nil {
 			return e
 		}
-		http.SetCookie(w, &cookie)
+		http.SetCookie(ctx.Response(), &cookie)
 		return nil
 	}
 	if cookie != nil {
@@ -64,13 +76,13 @@ func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bo
 	return ok
 }
 
-func Logout(w http.ResponseWriter, r *http.Request, db database.Database) *models.Error {
-	session, err := r.Cookie(configs.CookieAuthName)
+func Logout(ctx echo.Context, db database.Database) *models.Error {
+	session, err := ctx.Request().Cookie(configs.CookieAuthName)
 	if err != nil {
 		return Error.New(401, "user is not authorized")
 	}
 	ExpireCookie(session)
-	http.SetCookie(w, session)
+	http.SetCookie(ctx.Response(), session)
 	db.DeleteCookie(*session)
 	return nil
 }

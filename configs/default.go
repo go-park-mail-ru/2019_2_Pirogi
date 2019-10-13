@@ -5,14 +5,11 @@ import "time"
 const CookieAuthName = "cinsear_session"
 const CookieAuthDuration = 10 * time.Hour
 
-// TODO: изменить путь для пользовательских картинок
-// const UsersImageUploadPath = "../../media/users/"
+const AccessLog = "/log/access.log"
+const ErrorLog = "/log/error.log"
 
-const AccessLog = "/var/log/cinsear/access.log"
-const ErrorLog = "/var/log/cinsear/error.log"
-
-const UsersImageUploadPath = "/var/www/media/images/users/"
-const FilmsImageUploadPath = "/var/www/media/images/films/"
+const UsersImageUploadPath = "/media/images/users/"
+const FilmsImageUploadPath = "/media/images/films/"
 
 const MongoHost = "mongodb://127.0.0.1:27017"
 const MongoUser = ""
@@ -22,6 +19,12 @@ const UsersCollectionName = "users"
 const FilmsCollectionName = "films"
 const CookiesCollectionName = "cookies"
 const CountersCollectionName = "counters"
+
 const UserTargetName = "user"
 const FilmTargetName = "film"
 const CookieTargetName = "cookie"
+
+const APIPort = ":8000"
+
+const CertFile = "/ssl/cert.pem"
+const KeyFile = "/ssl/privkey.pem"
