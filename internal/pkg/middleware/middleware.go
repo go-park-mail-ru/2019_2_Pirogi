@@ -2,11 +2,12 @@ package middleware
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/labstack/echo"
 	"net/http"
 	"os"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/labstack/echo"
 )
 
 func setDefaultHeaders(w http.ResponseWriter) {

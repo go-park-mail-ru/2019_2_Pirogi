@@ -1,13 +1,14 @@
 package handlers
 
 import (
+	"io/ioutil"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
-	"io/ioutil"
-	"strconv"
 )
 
 func GetHandlerUsers(conn database.Database) echo.HandlerFunc {

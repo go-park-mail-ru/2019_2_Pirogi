@@ -2,13 +2,14 @@ package common
 
 import (
 	"bufio"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
-	"github.com/labstack/echo"
 	"math/rand"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
+	"github.com/labstack/echo"
 )
 
 func WriteFileWithGeneratedName(fileBytes []byte, base string) (generatedFilename string, err error) {

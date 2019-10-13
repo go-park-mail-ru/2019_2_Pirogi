@@ -1,9 +1,10 @@
 package auth
 
 import (
-	"github.com/labstack/echo"
 	"net/http"
 	"time"
+
+	"github.com/labstack/echo"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"

@@ -1,11 +1,12 @@
 package main
 
 import (
+	"os"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/labstack/gommon/log"
-	"os"
 )
 
 func main() {
