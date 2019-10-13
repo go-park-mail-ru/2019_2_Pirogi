@@ -18,12 +18,12 @@ type InmemoryDB struct {
 	usersAuthCookies map[int]http.Cookie
 }
 
-func InitInmemory() (*InmemoryDB, error) {
+func InitInmemory() *InmemoryDB {
 	users := make(map[int]models.User)
 	films := make(map[int]models.Film)
 	usersAuthCookies := make(map[int]http.Cookie)
 	db := InmemoryDB{users: users, usersAuthCookies: usersAuthCookies, films: films}
-	return &db, nil
+	return &db
 }
 
 func (db *InmemoryDB) GetIDForInsert(target string) int {
