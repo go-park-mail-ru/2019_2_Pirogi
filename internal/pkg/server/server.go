@@ -31,6 +31,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	films := api.Group("/films")
 	films.GET("/:film_id/", handlers.GetHandlerFilm(conn))
+	films.POST("/", handlers.GetHandlerFilmCreate(conn))
 	films.POST("/images/", handlers.GetImagesHandler(conn))
 	//films.DELETE("/:film_id", handlers.GetHandlerFilmDelete(conn))
 
