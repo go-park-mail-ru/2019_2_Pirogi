@@ -10,7 +10,6 @@ import (
 )
 
 func main() {
-	mode := os.Getenv("mode")
 	conn, err := database.InitMongo()
 	if err != nil {
 		log.Fatal(err)
@@ -22,6 +21,8 @@ func main() {
 		log.Fatal(err.Error())
 		return
 	}
+
+	mode := os.Getenv("mode")
 	if mode == "production" {
 		log.Fatal(apiServer.Server.ListenAndServeTLS(configs.CertFile, configs.KeyFile))
 	} else {

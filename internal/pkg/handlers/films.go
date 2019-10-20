@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"io/ioutil"
 	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -33,6 +35,28 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		session, err := ctx.Request().Cookie(configs.CookieAuthName)
+		if err != nil {
+			return echo.NewHTTPError(401, err.Error())
+		}
+		_, ok := conn.FindUserByCookie(session)
+		if !ok {
+			return echo.NewHTTPError(403)
+		}
+		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
+		if err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		defer ctx.Request().Body.Close()
+		newFilm := models.NewFilm{}
+		err = newFilm.UnmarshalJSON(rawBody)
+		if err != nil {
+			return echo.NewHTTPError(400, err.Error())
+		}
+		e := conn.Insert(newFilm)
+		if e != nil {
+			return echo.NewHTTPError(e.Status, e.Error)
+		}
 		return nil
 	}
 }
