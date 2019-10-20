@@ -1,20 +1,21 @@
 package main
 
 import (
+	"os"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/labstack/gommon/log"
-	"os"
 )
 
 func main() {
 	mode := os.Getenv("mode")
-	conn, err := database.InitInmemory()
+	conn, err := database.InitMongo()
 	if err != nil {
-		log.Fatal(err.Error())
-		return
+		log.Fatal(err)
 	}
+	// Do it one time
 	conn.FakeFillDB()
 	apiServer, err := server.CreateAPIServer(conn)
 	if err != nil {

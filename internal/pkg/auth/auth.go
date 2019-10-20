@@ -1,13 +1,14 @@
 package auth
 
 import (
-	"github.com/labstack/echo"
 	"net/http"
 	"time"
 
+	"github.com/labstack/echo"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
@@ -47,12 +48,12 @@ func ExpireCookie(cookie *http.Cookie) {
 func Login(ctx echo.Context, db database.Database, email, password string) *models.Error {
 	cookie, err := ctx.Request().Cookie(configs.CookieAuthName)
 	if err != nil {
-		u, ok := db.FindByEmail(email)
+		u, ok := db.FindUserByEmail(email)
 		if !ok || u.Password != password {
-			return error.New(400, "invalid credentials")
+			return Error.New(400, "invalid credentials")
 		}
 		cookie := GenerateCookie("cinsear_session", email)
-		e := db.InsertCookie(&cookie, u.ID)
+		e := db.Insert(models.UserCookie{UserID: u.ID, Cookie: &cookie})
 		if e != nil {
 			return e
 		}
@@ -61,10 +62,10 @@ func Login(ctx echo.Context, db database.Database, email, password string) *mode
 	}
 	if cookie != nil {
 		if _, ok := db.FindUserByCookie(cookie); !ok {
-			return error.New(400, "invalid cookie")
+			return Error.New(400, "invalid cookie")
 		}
 	}
-	return error.New(400, "already logged in")
+	return Error.New(400, "already logged in")
 }
 
 func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bool {
@@ -79,7 +80,7 @@ func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bo
 func Logout(ctx echo.Context, db database.Database) *models.Error {
 	session, err := ctx.Request().Cookie(configs.CookieAuthName)
 	if err != nil {
-		return error.New(401, "user is not authorized")
+		return Error.New(401, "user is not authorized")
 	}
 	ExpireCookie(session)
 	http.SetCookie(ctx.Response(), session)

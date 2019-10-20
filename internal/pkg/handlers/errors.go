@@ -2,12 +2,13 @@ package handlers
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/labstack/echo"
 	"net/http"
 	"os"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/labstack/echo"
 )
 
 func HTTPErrorHandler(err error, ctx echo.Context) {

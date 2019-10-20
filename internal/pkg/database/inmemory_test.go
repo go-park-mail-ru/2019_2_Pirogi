@@ -5,6 +5,8 @@ import (
 	"reflect"
 	"testing"
 
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 
@@ -29,16 +31,13 @@ func TestDB_Insert(t *testing.T) {
 	err := db.Insert(ksyusha)
 	require.Nil(t, err)
 	require.True(t, reflect.DeepEqual(db.users[0].Credentials, ksyusha.Credentials))
-}
 
-func TestDB_InsertCookie(t *testing.T) {
-	db := InitInmemory()
 	cookie := http.Cookie{
 		Name:  "cinsear_session",
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(&cookie, 0)
+	err = db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 	require.Nil(t, err)
 	require.True(t, reflect.DeepEqual(cookie, db.usersAuthCookies[0]))
 }
@@ -50,7 +49,7 @@ func TestDB_FindUserByCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(&cookie, 0)
+	err := db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 	require.Nil(t, err)
 	ksyusha := models.NewUser{
 		Credentials: models.Credentials{
@@ -73,7 +72,7 @@ func TestDB_CheckCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(&cookie, 0)
+	err := db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 	require.Nil(t, err)
 	require.True(t, db.CheckCookie(&cookie))
 }
@@ -94,7 +93,7 @@ func TestDB_DeleteCookie(t *testing.T) {
 		Value: "value",
 		Path:  "/",
 	}
-	err := db.InsertCookie(&cookie, 0)
+	err := db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 	require.Nil(t, err)
 	ok := db.CheckCookie(&cookie)
 	require.True(t, ok)
@@ -135,8 +134,8 @@ func TestDB_GetID(t *testing.T) {
 	}
 	e := db.Insert(ksyusha)
 	require.Nil(t, e)
-	id := db.GetID("users")
-	require.Equal(t, 0, id)
+	id := db.GetIDForInsert(configs.UserTargetName)
+	require.Equal(t, 1, id)
 }
 
 func TestDB_FindByEmail(t *testing.T) {
@@ -150,7 +149,7 @@ func TestDB_FindByEmail(t *testing.T) {
 	}
 	e := db.Insert(ksyusha)
 	require.Nil(t, e)
-	u, ok := db.FindByEmail(ksyusha.Email)
+	u, ok := db.FindUserByEmail(ksyusha.Email)
 	require.True(t, ok)
 	require.Equal(t, ksyusha.Email, u.Email)
 }
@@ -166,7 +165,7 @@ func TestDB_Get(t *testing.T) {
 	}
 	err := db.Insert(ksyusha)
 	require.Nil(t, err)
-	obj, err := db.Get(0, "user")
+	obj, err := db.Get(0, configs.UserTargetName)
 	require.Nil(t, err)
 	u := obj.(models.User)
 	require.True(t, reflect.DeepEqual(u.Credentials, ksyusha.Credentials))

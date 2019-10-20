@@ -11,11 +11,18 @@ const ErrorLog = "/log/error.log"
 const UsersImageUploadPath = "/media/images/users/"
 const FilmsImageUploadPath = "/media/images/films/"
 
-const MongoDbUri = "mongodb://127.0.0.1:27017"
+const MongoHost = "mongodb://127.0.0.1:27017"
+const MongoUser = ""
+const MongoPwd = ""
 const MongoDbName = "cinsear"
 const UsersCollectionName = "users"
 const FilmsCollectionName = "films"
-const CoockiesCollectionName = "usersAuthCookies"
+const CookiesCollectionName = "cookies"
+const CountersCollectionName = "counters"
+
+const UserTargetName = "user"
+const FilmTargetName = "film"
+const CookieTargetName = "cookie"
 
 const APIPort = ":8000"
 
