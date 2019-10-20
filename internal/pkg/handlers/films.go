@@ -29,3 +29,17 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 		return nil
 	}
 }
+
+//func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
+//	return func(ctx echo.Context) error {
+//		id, err := strconv.Atoi(ctx.Param("film_id"))
+//		if err != nil {
+//			return echo.NewHTTPError(404, err.Error())
+//		}
+//		obj, e := conn.Delete(id, "film")
+//		if e != nil {
+//			return echo.NewHTTPError(500, e)
+//		}
+//		return nil
+//	}
+//}

@@ -18,6 +18,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	e.Pre(middleware.AccessLogMiddleware)
 	e.Pre(echoMid.AddTrailingSlash())
+	e.Pre(middleware.ExpireInvalidCookiesMiddleware(conn))
 
 	api := e.Group("/api")
 
@@ -30,7 +31,8 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	films := api.Group("/films")
 	films.GET("/:film_id/", handlers.GetHandlerFilm(conn))
-	users.POST("/image/s", handlers.GetImagesHandler(conn))
+	films.POST("/images/", handlers.GetImagesHandler(conn))
+	//films.DELETE("/:film_id", handlers.GetHandlerFilmDelete(conn))
 
 	sessions := api.Group("/sessions")
 	sessions.GET("/", handlers.GetHandlerLoginCheck(conn))
