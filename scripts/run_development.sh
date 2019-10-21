@@ -8,5 +8,6 @@ docker run -ti -p 8000:8000 \
         --env mode=development \
         --mount type=volume,source=media,target=/media \
         --mount type=volume,source=log,target=/log \
+        --network host \
         --name cinsear -d cinsear
 

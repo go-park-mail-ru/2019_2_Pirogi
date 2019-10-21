@@ -16,7 +16,8 @@ func main() {
 		log.Fatal(err)
 	}
 	// Do it one time
-	conn.FakeFillDB()
+	// conn.ClearDB()
+	// conn.FakeFillDB()
 	apiServer, err := server.CreateAPIServer(conn)
 	if err != nil {
 		log.Fatal(err.Error())

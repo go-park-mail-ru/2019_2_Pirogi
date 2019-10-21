@@ -132,9 +132,17 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 			return Error.New(404, "film not found")
 		}
 	case models.UserCookie:
-		_, err := conn.cookies.InsertOne(conn.context, in)
+		filter := bson.M{"_id": in.UserID}
+		foundCookie := models.UserCookie{}
+		err := conn.cookies.FindOne(conn.context, filter).Decode(&foundCookie)
 		if err != nil {
-			return Error.New(500, "cannot insert cookie in database")
+			_, err = conn.cookies.InsertOne(conn.context, in)
+		} else {
+			update := bson.M{"$set": in}
+			_, err = conn.cookies.UpdateOne(conn.context, filter, update)
+		}
+		if err != nil {
+			return Error.New(500, "cannot insert cookie in database: " + err.Error())
 		}
 	default:
 		return Error.New(400, "not supported type")
@@ -191,7 +199,7 @@ func (conn *MongoConnection) FindUserByID(id int) (models.User, bool) {
 
 func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
 	foundCookie := models.UserCookie{}
-	err := conn.cookies.FindOne(conn.context, bson.M{"cookie": cookie}).Decode(&foundCookie)
+	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
 	if err != nil {
 		return models.User{}, false
 	}
@@ -261,4 +269,11 @@ func (conn *MongoConnection) FakeFillDB() {
 		Image:      "matrix.jpg",
 		ReviewsNum: models.ReviewsNum{Total: 110, Positive: 90, Negative: 20},
 	}})
+}
+
+func (conn *MongoConnection) ClearDB() {
+	_, _ = conn.users.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.cookies.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.films.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
 }

@@ -33,7 +33,7 @@ func GetHandlerLogin(conn database.Database) echo.HandlerFunc {
 		}
 		e := auth.Login(ctx, conn, credentials.Email, credentials.Password)
 		if e != nil {
-			return echo.NewHTTPError(e.Status, e.Status)
+			return echo.NewHTTPError(e.Status, e.Error)
 		}
 		return nil
 	}
@@ -43,7 +43,7 @@ func GetHandlerLogout(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		e := auth.Logout(ctx, conn)
 		if e != nil {
-			return echo.NewHTTPError(e.Status, e.Status)
+			return echo.NewHTTPError(e.Status, e.Error)
 		}
 		return nil
 	}

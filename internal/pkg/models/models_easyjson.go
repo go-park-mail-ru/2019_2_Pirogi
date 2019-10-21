@@ -4,11 +4,10 @@ package models
 
 import (
 	json "encoding/json"
-	http "net/http"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	http "net/http"
 )
 
 // suppress unused package warning
@@ -375,6 +374,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels2(in
 			out.Image = string(in.String())
 		case "email":
 			out.Email = string(in.String())
+		case "password":
+			out.Password = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -418,6 +419,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels2(ou
 		const prefix string = ",\"email\":"
 		out.RawString(prefix)
 		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"password\":"
+		out.RawString(prefix)
+		out.String(string(in.Password))
 	}
 	out.RawByte('}')
 }
@@ -627,6 +633,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(in
 			out.Username = string(in.String())
 		case "email":
 			out.Email = string(in.String())
+		case "password":
+			out.Password = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -650,6 +658,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(ou
 		const prefix string = ",\"email\":"
 		out.RawString(prefix)
 		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"password\":"
+		out.RawString(prefix)
+		out.String(string(in.Password))
 	}
 	out.RawByte('}')
 }
@@ -1474,6 +1487,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels10(i
 		switch key {
 		case "email":
 			out.Email = string(in.String())
+		case "password":
+			out.Password = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -1492,6 +1507,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels10(o
 		const prefix string = ",\"email\":"
 		out.RawString(prefix[1:])
 		out.String(string(in.Email))
+	}
+	{
+		const prefix string = ",\"password\":"
+		out.RawString(prefix)
+		out.String(string(in.Password))
 	}
 	out.RawByte('}')
 }
