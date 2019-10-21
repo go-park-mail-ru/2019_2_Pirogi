@@ -11,10 +11,10 @@ const ErrorLog = "/log/error.log"
 const UsersImageUploadPath = "/media/images/users/"
 const FilmsImageUploadPath = "/media/images/films/"
 
-const MongoHost = "mongodb://127.0.0.1:27017"
 // Put the credentials of MongoDB user here
 const MongoUser = ""
 const MongoPwd = ""
+const MongoHost = "mongodb://127.0.0.1:27017"
 const MongoDbName = "cinsear"
 const UsersCollectionName = "users"
 const FilmsCollectionName = "films"

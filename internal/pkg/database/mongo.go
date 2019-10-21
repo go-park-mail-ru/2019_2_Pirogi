@@ -142,7 +142,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 			_, err = conn.cookies.UpdateOne(conn.context, filter, update)
 		}
 		if err != nil {
-			return Error.New(500, "cannot insert cookie in database: " + err.Error())
+			return Error.New(500, "cannot insert cookie in database: "+err.Error())
 		}
 	default:
 		return Error.New(400, "not supported type")
