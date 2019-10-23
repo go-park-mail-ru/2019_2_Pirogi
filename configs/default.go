@@ -2,30 +2,32 @@ package configs
 
 import "time"
 
-const CookieAuthName = "cinsear_session"
-const CookieAuthDuration = 10 * time.Hour
+const (
+	CookieAuthName     = "cinsear_session"
+	CookieAuthDuration = 10 * time.Hour
 
-const AccessLog = "/log/access.log"
-const ErrorLog = "/log/error.log"
+	AccessLog = "/log/access.log"
+	ErrorLog  = "/log/error.log"
 
-const UsersImageUploadPath = "/media/images/users/"
-const FilmsImageUploadPath = "/media/images/films/"
+	UsersImageUploadPath = "/media/images/users/"
+	FilmsImageUploadPath = "/media/images/films/"
 
-// Put the credentials of MongoDB user here
-const MongoUser = ""
-const MongoPwd = ""
-const MongoHost = "mongodb://127.0.0.1:27017"
-const MongoDbName = "cinsear"
-const UsersCollectionName = "users"
-const FilmsCollectionName = "films"
-const CookiesCollectionName = "cookies"
-const CountersCollectionName = "counters"
+	// Put the credentials of MongoDB user here
+	MongoUser              = ""
+	MongoPwd               = ""
+	MongoHost              = "mongodb://127.0.0.1:27017"
+	MongoDbName            = "cinsear"
+	UsersCollectionName    = "users"
+	FilmsCollectionName    = "films"
+	CookiesCollectionName  = "cookies"
+	CountersCollectionName = "counters"
 
-const UserTargetName = "user"
-const FilmTargetName = "film"
-const CookieTargetName = "cookie"
+	UserTargetName   = "user"
+	FilmTargetName   = "film"
+	CookieTargetName = "cookie"
 
-const APIPort = ":8000"
+	APIPort = ":8000"
 
-const CertFile = "/ssl/cert.pem"
-const KeyFile = "/ssl/privkey.pem"
+	CertFile = "/ssl/cert.pem"
+	KeyFile  = "/ssl/privkey.pem"
+)
