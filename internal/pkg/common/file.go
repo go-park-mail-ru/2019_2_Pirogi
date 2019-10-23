@@ -3,6 +3,7 @@ package common
 import (
 	"bufio"
 	"math/rand"
+	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
@@ -21,10 +22,10 @@ func WriteFileWithGeneratedName(fileBytes []byte, base string) (generatedFilenam
 	newPath := filepath.Join(base, generatedFilename)
 	newFile, err := os.Create(newPath)
 	if err != nil {
-		return "", echo.NewHTTPError(500, "can not create file")
+		return "", echo.NewHTTPError(http.StatusInternalServerError, "can not create file")
 	}
 	if _, err := newFile.Write(fileBytes); err != nil || newFile.Close() != nil {
-		return "", echo.NewHTTPError(500, "can not open file for write")
+		return "", echo.NewHTTPError(http.StatusInternalServerError, "can not open file for write")
 	}
 	return generatedFilename, nil
 }

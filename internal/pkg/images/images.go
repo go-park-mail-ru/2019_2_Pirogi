@@ -19,11 +19,11 @@ func DetectContentType(data []byte) (ending string, err *models.Error) {
 	case "application/pdf":
 		break
 	default:
-		return "", Error.New(400, "unsupported type of file")
+		return "", Error.New(http.StatusBadRequest, "unsupported type of file")
 	}
 	endings, e := mime.ExtensionsByType(fileType)
 	if e != nil {
-		return "", Error.New(400, "can not define extension")
+		return "", Error.New(http.StatusBadRequest, "can not define extension")
 	}
 	return endings[0], nil
 }

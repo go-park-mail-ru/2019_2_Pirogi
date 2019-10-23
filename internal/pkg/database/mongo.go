@@ -61,13 +61,15 @@ func InitMongo() (*MongoConnection, error) {
 		counters: client.Database(configs.MongoDbName).Collection(configs.CountersCollectionName),
 	}
 
-	// Do it one time
-	_, _ = conn.counters.InsertMany(conn.context, []interface{}{
+	return &conn, err
+}
+
+func (conn *MongoConnection) InitCounters() error {
+	_, err := conn.counters.InsertMany(conn.context, []interface{}{
 		bson.M{"_id": configs.UserTargetName, "seq": 0},
 		bson.M{"_id": configs.FilmTargetName, "seq": 0},
 	})
-
-	return &conn, err
+	return err
 }
 
 func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
@@ -85,11 +87,11 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 	case models.NewUser:
 		_, ok := conn.FindUserByEmail(in.Email)
 		if ok {
-			return Error.New(400, "user with the email already exists")
+			return Error.New(http.StatusBadRequest, "user with the email already exists")
 		}
 		id, err := conn.GetNextSequence(configs.UserTargetName)
 		if err != nil {
-			return Error.New(500, "cannot insert user in database")
+			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
 		}
 		u, e := user.CreateNewUser(id, &in)
 		if e != nil {
@@ -97,24 +99,24 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		}
 		_, err = conn.users.InsertOne(conn.context, u)
 		if err != nil {
-			return Error.New(500, "cannot insert user in database")
+			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
 		}
 	case models.User:
 		filter := bson.M{"_id": in.ID}
 		update := bson.M{"$set": in}
 		_, err := conn.users.UpdateOne(conn.context, filter, update)
 		if err != nil {
-			return Error.New(404, "user not found")
+			return Error.New(http.StatusNotFound, "user not found")
 		}
 	case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := conn.FindFilmByTitle(in.Title)
 		if ok {
-			return Error.New(400, "film with the title already exists")
+			return Error.New(http.StatusBadRequest, "film with the title already exists")
 		}
 		id, err := conn.GetNextSequence(configs.FilmTargetName)
 		if err != nil {
-			return Error.New(500, "cannot insert user in database")
+			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
 		}
 		f, e := film.CreateNewFilm(id, &in)
 		if e != nil {
@@ -122,14 +124,14 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		}
 		_, err = conn.films.InsertOne(conn.context, f)
 		if err != nil {
-			return Error.New(500, "cannot insert film in database")
+			return Error.New(http.StatusInternalServerError, "cannot insert film in database")
 		}
 	case models.Film:
 		filter := bson.M{"_id": in.ID}
 		update := bson.M{"$set": in}
 		_, err := conn.films.UpdateOne(conn.context, filter, update)
 		if err != nil {
-			return Error.New(404, "film not found")
+			return Error.New(http.StatusNotFound, "film not found")
 		}
 	case models.UserCookie:
 		filter := bson.M{"_id": in.UserID}
@@ -142,10 +144,10 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 			_, err = conn.cookies.UpdateOne(conn.context, filter, update)
 		}
 		if err != nil {
-			return Error.New(500, "cannot insert cookie in database: "+err.Error())
+			return Error.New(http.StatusInternalServerError, "cannot insert cookie in database: "+err.Error())
 		}
 	default:
-		return Error.New(400, "not supported type")
+		return Error.New(http.StatusBadRequest, "not supported type")
 	}
 	return nil
 }
@@ -157,15 +159,15 @@ func (conn *MongoConnection) Get(id int, target string) (interface{}, *models.Er
 		if ok {
 			return u, nil
 		}
-		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no user with id: "+strconv.Itoa(id))
 	case configs.FilmTargetName:
 		f, ok := conn.FindFilmByID(id)
 		if ok {
 			return f, nil
 		}
-		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, Error.New(404, "not supported type: "+target)
+	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
 
 func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {

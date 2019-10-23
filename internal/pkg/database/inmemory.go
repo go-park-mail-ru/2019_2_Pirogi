@@ -45,7 +45,7 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 	case models.NewUser:
 		_, ok := db.FindUserByEmail(in.Email)
 		if ok {
-			return Error.New(400, "user with the email already exists")
+			return Error.New(http.StatusBadRequest, "user with the email already exists")
 		}
 		u, e := user.CreateNewUser(db.GetIDForInsert(configs.UserTargetName), &in)
 		if e != nil {
@@ -57,12 +57,12 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 			db.users[in.ID] = in
 			return nil
 		}
-		return Error.New(404, "user not found")
+		return Error.New(http.StatusNotFound, "user not found")
 	case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(in.Title)
 		if ok {
-			return Error.New(400, "film with the title already exists")
+			return Error.New(http.StatusBadRequest, "film with the title already exists")
 		}
 		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.FilmTargetName), &in)
 		if e != nil {
@@ -74,11 +74,11 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 			db.films[in.ID] = in
 			return nil
 		}
-		return Error.New(404, "film not found")
+		return Error.New(http.StatusNotFound, "film not found")
 	case models.UserCookie:
 		db.usersAuthCookies[in.UserID] = *in.Cookie
 	default:
-		return Error.New(400, "not supported type")
+		return Error.New(http.StatusBadRequest, "not supported type")
 	}
 	return nil
 }
@@ -89,14 +89,14 @@ func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
-		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no user with id: "+strconv.Itoa(id))
 	case "film":
 		if f, ok := db.films[id]; ok {
 			return f, nil
 		}
-		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, Error.New(404, "not supported type: "+target)
+	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
 
 func (db *InmemoryDB) CheckCookie(cookie *http.Cookie) bool {

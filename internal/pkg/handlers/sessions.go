@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"io/ioutil"
+	"net/http"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -23,13 +24,13 @@ func GetHandlerLogin(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		defer ctx.Request().Body.Close()
 		credentials := models.Credentials{}
 		err = credentials.UnmarshalJSON(rawBody)
 		if err != nil {
-			return echo.NewHTTPError(400, err.Error())
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		e := auth.Login(ctx, conn, credentials.Email, credentials.Password)
 		if e != nil {

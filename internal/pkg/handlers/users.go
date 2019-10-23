@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"io/ioutil"
+	"net/http"
 	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -19,11 +20,11 @@ func GetHandlerUsers(conn database.Database) echo.HandlerFunc {
 		}
 		rawUser, err := user.MarshalJSON()
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		_, err = ctx.Response().Write(rawUser)
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		return nil
 	}
@@ -33,7 +34,7 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		id, err := strconv.Atoi(ctx.Param("user_id"))
 		if err != nil {
-			return echo.NewHTTPError(400, "invalid id")
+			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
 		}
 		obj, e := conn.Get(id, "user")
 		if e != nil {
@@ -43,11 +44,11 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 		userInfo := user.UserInfo
 		jsonBody, err := userInfo.MarshalJSON()
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		_, err = ctx.Response().Write(jsonBody)
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		return nil
 	}
@@ -57,17 +58,17 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		_, err := ctx.Request().Cookie(configs.CookieAuthName)
 		if err == nil {
-			return echo.NewHTTPError(400, "already logged in")
+			return echo.NewHTTPError(http.StatusBadRequest, "already logged in")
 		}
 		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
 		if err != nil {
-			return echo.NewHTTPError(400, err.Error())
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
 		newUser := models.NewUser{}
 		err = newUser.UnmarshalJSON(rawBody)
 		if err != nil {
-			return echo.NewHTTPError(400, err.Error())
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		e := conn.Insert(newUser)
 		if e != nil {
@@ -85,13 +86,13 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
 		if err != nil {
-			return echo.NewHTTPError(400, err.Error())
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
 		updateUser := &models.UserInfo{}
 		err = updateUser.UnmarshalJSON(rawBody)
 		if err != nil {
-			return echo.NewHTTPError(400, err.Error())
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		session, err := ctx.Request().Cookie(configs.CookieAuthName)
 		if err != nil {

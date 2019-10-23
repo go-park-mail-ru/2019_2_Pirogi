@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"net/http"
 	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -12,7 +13,7 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		id, err := strconv.Atoi(ctx.Param("film_id"))
 		if err != nil {
-			return echo.NewHTTPError(404, err.Error())
+			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
 		obj, e := conn.Get(id, "film")
 		if e != nil {
@@ -21,11 +22,11 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 		film := obj.(models.Film)
 		jsonBody, err := film.MarshalJSON()
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		_, err = ctx.Response().Write(jsonBody)
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 		return nil
 	}
