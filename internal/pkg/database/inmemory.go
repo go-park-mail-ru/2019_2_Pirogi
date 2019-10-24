@@ -28,11 +28,11 @@ func InitInmemory() *InmemoryDB {
 
 func (db *InmemoryDB) GetIDForInsert(target string) int {
 	switch target {
-	case configs.UserTargetName:
+	case configs.Default.UserTargetName:
 		return len(db.users)
-	case configs.FilmTargetName:
+	case configs.Default.FilmTargetName:
 		return len(db.films)
-	case configs.CookieTargetName:
+	case configs.Default.CookieTargetName:
 		return len(db.usersAuthCookies)
 	default:
 		return 0
@@ -47,11 +47,11 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(http.StatusBadRequest, "user with the email already exists")
 		}
-		u, e := user.CreateNewUser(db.GetIDForInsert(configs.UserTargetName), &in)
+		u, e := user.CreateNewUser(db.GetIDForInsert(configs.Default.UserTargetName), &in)
 		if e != nil {
 			return e
 		}
-		db.users[db.GetIDForInsert(configs.UserTargetName)] = u
+		db.users[db.GetIDForInsert(configs.Default.UserTargetName)] = u
 	case models.User:
 		if _, ok := db.users[in.ID]; ok {
 			db.users[in.ID] = in
@@ -64,11 +64,11 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(http.StatusBadRequest, "film with the title already exists")
 		}
-		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.FilmTargetName), &in)
+		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.Default.FilmTargetName), &in)
 		if e != nil {
 			return e
 		}
-		db.films[db.GetIDForInsert(configs.FilmTargetName)] = f
+		db.films[db.GetIDForInsert(configs.Default.FilmTargetName)] = f
 	case models.Film:
 		if _, ok := db.users[in.ID]; ok {
 			db.films[in.ID] = in

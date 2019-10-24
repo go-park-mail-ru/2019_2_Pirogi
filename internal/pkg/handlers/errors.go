@@ -46,7 +46,7 @@ func HTTPErrorHandler(err error, ctx echo.Context) {
 }
 
 func getErrorLogFile() (*os.File, error) {
-	if f, e := os.OpenFile(configs.ErrorLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); e != nil {
+	if f, e := os.OpenFile(configs.Default.ErrorLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); e != nil {
 		return nil, e
 	} else {
 		return f, nil

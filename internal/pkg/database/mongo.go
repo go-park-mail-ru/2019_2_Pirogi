@@ -26,11 +26,11 @@ type MongoConnection struct {
 
 func getMongoClient() (*mongo.Client, error) {
 	credentials := &options.Credential{
-		Username: configs.MongoUser,
-		Password: configs.MongoPwd,
+		Username: configs.Default.MongoUser,
+		Password: configs.Default.MongoPwd,
 	}
 	clientOpt := &options.ClientOptions{Auth: credentials}
-	clientOpt.ApplyURI(configs.MongoHost)
+	clientOpt.ApplyURI(configs.Default.MongoHost)
 	client, err := mongo.NewClient(clientOpt)
 	return client, err
 }
@@ -55,10 +55,10 @@ func InitMongo() (*MongoConnection, error) {
 	conn := MongoConnection{
 		client:   client,
 		context:  context.Background(),
-		users:    client.Database(configs.MongoDbName).Collection(configs.UsersCollectionName),
-		films:    client.Database(configs.MongoDbName).Collection(configs.FilmsCollectionName),
-		cookies:  client.Database(configs.MongoDbName).Collection(configs.CookiesCollectionName),
-		counters: client.Database(configs.MongoDbName).Collection(configs.CountersCollectionName),
+		users:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.UsersCollectionName),
+		films:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
+		cookies:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
+		counters: client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
 	}
 
 	return &conn, err
@@ -66,8 +66,8 @@ func InitMongo() (*MongoConnection, error) {
 
 func (conn *MongoConnection) InitCounters() error {
 	_, err := conn.counters.InsertMany(conn.context, []interface{}{
-		bson.M{"_id": configs.UserTargetName, "seq": 0},
-		bson.M{"_id": configs.FilmTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.UserTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
 	})
 	return err
 }
@@ -89,7 +89,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(http.StatusBadRequest, "user with the email already exists")
 		}
-		id, err := conn.GetNextSequence(configs.UserTargetName)
+		id, err := conn.GetNextSequence(configs.Default.UserTargetName)
 		if err != nil {
 			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
 		}
@@ -114,7 +114,7 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 		if ok {
 			return Error.New(http.StatusBadRequest, "film with the title already exists")
 		}
-		id, err := conn.GetNextSequence(configs.FilmTargetName)
+		id, err := conn.GetNextSequence(configs.Default.FilmTargetName)
 		if err != nil {
 			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
 		}
@@ -154,13 +154,13 @@ func (conn *MongoConnection) Insert(in interface{}) *models.Error {
 
 func (conn *MongoConnection) Get(id int, target string) (interface{}, *models.Error) {
 	switch target {
-	case configs.UserTargetName:
+	case configs.Default.UserTargetName:
 		u, ok := conn.FindUserByID(id)
 		if ok {
 			return u, nil
 		}
 		return nil, Error.New(http.StatusNotFound, "no user with id: "+strconv.Itoa(id))
-	case configs.FilmTargetName:
+	case configs.Default.FilmTargetName:
 		f, ok := conn.FindFilmByID(id)
 		if ok {
 			return f, nil

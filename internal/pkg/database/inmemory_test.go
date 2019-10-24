@@ -134,7 +134,7 @@ func TestDB_GetID(t *testing.T) {
 	}
 	e := db.Insert(ksyusha)
 	require.Nil(t, e)
-	id := db.GetIDForInsert(configs.UserTargetName)
+	id := db.GetIDForInsert(configs.Default.UserTargetName)
 	require.Equal(t, 1, id)
 }
 
@@ -165,7 +165,7 @@ func TestDB_Get(t *testing.T) {
 	}
 	err := db.Insert(ksyusha)
 	require.Nil(t, err)
-	obj, err := db.Get(0, configs.UserTargetName)
+	obj, err := db.Get(0, configs.Default.UserTargetName)
 	require.Nil(t, err)
 	u := obj.(models.User)
 	require.True(t, reflect.DeepEqual(u.Credentials, ksyusha.Credentials))

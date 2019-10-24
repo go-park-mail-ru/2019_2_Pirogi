@@ -12,7 +12,7 @@ import (
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e := echo.New()
-	e.Server.Addr = configs.APIPort
+	e.Server.Addr = configs.Default.APIPort
 	e.Logger.SetLevel(log.WARN)
 	e.HTTPErrorHandler = handlers.HTTPErrorHandler
 

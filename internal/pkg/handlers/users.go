@@ -56,7 +56,7 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		_, err := ctx.Request().Cookie(configs.CookieAuthName)
+		_, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 		if err == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "already logged in")
 		}
@@ -94,7 +94,7 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		session, err := ctx.Request().Cookie(configs.CookieAuthName)
+		session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 		if err != nil {
 			return echo.NewHTTPError(401, err.Error())
 		}

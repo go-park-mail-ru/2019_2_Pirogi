@@ -15,7 +15,7 @@ import (
 
 // Creates cookie with value = MD5(value)
 func GenerateCookie(cookieName, value string) http.Cookie {
-	expiration := time.Now().Add(configs.CookieAuthDuration)
+	expiration := time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour)
 	cookie := http.Cookie{
 		Name:     cookieName,
 		Value:    user.GetMD5Hash(value),
@@ -28,7 +28,7 @@ func GenerateCookie(cookieName, value string) http.Cookie {
 }
 
 func GetUserByRequest(r *http.Request, conn database.Database) (models.User, bool) {
-	session, err := r.Cookie(configs.CookieAuthName)
+	session, err := r.Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		return models.User{}, false
 	}
@@ -46,7 +46,7 @@ func ExpireCookie(cookie *http.Cookie) {
 }
 
 func Login(ctx echo.Context, db database.Database, email, password string) *models.Error {
-	cookie, err := ctx.Request().Cookie(configs.CookieAuthName)
+	cookie, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		u, ok := db.FindUserByEmail(email)
 		if !ok || u.Password != password {
@@ -69,7 +69,7 @@ func Login(ctx echo.Context, db database.Database, email, password string) *mode
 }
 
 func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bool {
-	session, err := r.Cookie(configs.CookieAuthName)
+	session, err := r.Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		return false
 	}
@@ -78,7 +78,7 @@ func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bo
 }
 
 func Logout(ctx echo.Context, db database.Database) *models.Error {
-	session, err := ctx.Request().Cookie(configs.CookieAuthName)
+	session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		return Error.New(http.StatusUnauthorized, "user is not authorized")
 	}

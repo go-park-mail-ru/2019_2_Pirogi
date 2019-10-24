@@ -28,9 +28,9 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 		var base string
 		switch {
 		case strings.Contains(ctx.Request().URL.Path, "users"):
-			base = configs.UsersImageUploadPath
+			base = configs.Default.UsersImageUploadPath
 		case strings.Contains(ctx.Request().URL.Path, "films"):
-			base = configs.FilmsImageUploadPath
+			base = configs.Default.FilmsImageUploadPath
 		default:
 			return echo.NewHTTPError(http.StatusBadRequest, "wrong path")
 		}
