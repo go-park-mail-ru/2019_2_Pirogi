@@ -10,6 +10,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -69,7 +70,7 @@ func (conn *MongoConnection) InitCounters() error {
 		bson.M{"_id": configs.Default.UserTargetName, "seq": 0},
 		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
 	})
-	return err
+	return errors.Wrap(err, "init counters collection failed")
 }
 
 func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
@@ -78,7 +79,7 @@ func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
 	}{}
 	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
 		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
-	return result.Seq, err
+	return result.Seq, errors.Wrap(err, "get next sequence failed")
 }
 
 // затирает старые записи
@@ -170,21 +171,25 @@ func (conn *MongoConnection) Get(id int, target string) (interface{}, *models.Er
 	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
 
-func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
-	foundCookie := models.UserCookie{}
-	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
-	return err == nil
-}
-
-func (conn *MongoConnection) DeleteCookie(in interface{}) {
+func (conn *MongoConnection) Delete(in interface{}) *models.Error {
 	switch in := in.(type) {
 	case http.Cookie:
 		u, ok := conn.FindUserByCookie(&in)
 		if !ok {
-			return
+			return nil
 		}
-		_, _ = conn.cookies.DeleteOne(conn.context, bson.M{"_id": u.ID})
+		_, err := conn.cookies.DeleteOne(conn.context, bson.M{"_id": u.ID})
+		if err != nil {
+			return Error.New(http.StatusInternalServerError, "cannot delete cookie from database: "+err.Error())
+		}
 	}
+	return nil
+}
+
+func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
+	foundCookie := models.UserCookie{}
+	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
+	return err == nil
 }
 
 func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
