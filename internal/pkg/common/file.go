@@ -1,7 +1,6 @@
 package common
 
 import (
-	"bufio"
 	"math/rand"
 	"os"
 	"path/filepath"
@@ -29,34 +28,34 @@ func WriteFileWithGeneratedName(fileBytes []byte, base string) (generatedFilenam
 	return generatedFilename, nil
 }
 
-func WriteBytes(data []byte, path string) error {
-	newFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0644)
-	if err != nil {
-		return err
-	}
-	defer newFile.Close()
-	_, err = newFile.Write(data)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
-func ReadLines(filename string) ([]string, error) {
-	result := make([]string, 0)
-	defer func() {
-		if e := recover(); e != nil {
-			println("recovered from ReadLines", e)
-		}
-	}()
-	file, err := os.Open(filename)
-	if err != nil {
-		return []string{}, err
-	}
-	defer file.Close()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		result = append(result, scanner.Text())
-	}
-	return result, nil
-}
+//func WriteBytes(data []byte, path string) error {
+//	newFile, err := os.OpenFile(path, os.O_WRONLY|os.O_CREATE, 0644)
+//	if err != nil {
+//		return err
+//	}
+//	defer newFile.Close()
+//	_, err = newFile.Write(data)
+//	if err != nil {
+//		return err
+//	}
+//	return nil
+//}
+//
+//func ReadLines(filename string) ([]string, error) {
+//	result := make([]string, 0)
+//	defer func() {
+//		if e := recover(); e != nil {
+//			println("recovered from ReadLines", e)
+//		}
+//	}()
+//	file, err := os.Open(filename)
+//	if err != nil {
+//		return []string{}, err
+//	}
+//	defer file.Close()
+//	scanner := bufio.NewScanner(file)
+//	for scanner.Scan() {
+//		result = append(result, scanner.Text())
+//	}
+//	return result, nil
+//}
