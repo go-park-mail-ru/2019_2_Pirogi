@@ -7,7 +7,7 @@ import (
 )
 
 type Database interface {
-	Insert(in interface{}) *models.Error
+	InsertOrUpdate(in interface{}) *models.Error
 	Get(id int, target string) (interface{}, *models.Error)
 	Delete(in interface{}) *models.Error
 	CheckCookie(cookie *http.Cookie) bool

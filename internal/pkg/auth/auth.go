@@ -52,8 +52,8 @@ func Login(ctx echo.Context, db database.Database, email, password string) *mode
 		if !ok || u.Password != password {
 			return error.New(http.StatusBadRequest, "invalid credentials")
 		}
-		cookie := GenerateCookie("cinsear_session", email)
-		e := db.Insert(models.UserCookie{UserID: u.ID, Cookie: &cookie})
+		cookie := GenerateCookie(configs.Default.CookieAuthName, email)
+		e := db.InsertOrUpdate(models.UserCookie{UserID: u.ID, Cookie: &cookie})
 		if e != nil {
 			return e
 		}
@@ -68,8 +68,8 @@ func Login(ctx echo.Context, db database.Database, email, password string) *mode
 	return error.New(http.StatusBadRequest, "already logged in")
 }
 
-func LoginCheck(_ http.ResponseWriter, r *http.Request, db database.Database) bool {
-	session, err := r.Cookie(configs.Default.CookieAuthName)
+func LoginCheck(ctx echo.Context, db database.Database) bool {
+	session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		return false
 	}

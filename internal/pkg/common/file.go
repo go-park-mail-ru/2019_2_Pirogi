@@ -2,12 +2,16 @@ package common
 
 import (
 	"bufio"
+	"gopkg.in/yaml.v2"
+	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"
 	"github.com/labstack/echo"
@@ -60,4 +64,25 @@ func ReadLines(filename string) ([]string, error) {
 		result = append(result, scanner.Text())
 	}
 	return result, nil
+}
+
+func UnmarshalConfigs() error {
+	file, err := ioutil.ReadFile("./configs/default.yaml")
+	if err != nil {
+		return err
+	}
+	err = yaml.Unmarshal(file, &configs.Default)
+	if err != nil {
+		return err
+	}
+
+	file, err = ioutil.ReadFile("./configs/headers.yaml")
+	if err != nil {
+		return err
+	}
+	err = yaml.Unmarshal(file, &configs.Headers)
+	if err != nil {
+		return err
+	}
+	return nil
 }

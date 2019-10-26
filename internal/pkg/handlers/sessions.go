@@ -12,7 +12,7 @@ import (
 
 func GetHandlerLoginCheck(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		ok := auth.LoginCheck(ctx.Response(), ctx.Request(), conn)
+		ok := auth.LoginCheck(ctx, conn)
 		if !ok {
 			return echo.NewHTTPError(401, "no auth")
 		}

@@ -1,10 +1,9 @@
 package main
 
 import (
-	"io/ioutil"
 	"os"
 
-	yaml "gopkg.in/yaml.v2"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -12,32 +11,10 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
-func UnmarshalConfigs() error {
-	file, err := ioutil.ReadFile("../../configs/default.yaml")
-	if err != nil {
-		return err
-	}
-	err = yaml.Unmarshal(file, &configs.Default)
-	if err != nil {
-		return err
-	}
-
-	file, err = ioutil.ReadFile("../../configs/headers.yaml")
-	if err != nil {
-		return err
-	}
-	err = yaml.Unmarshal(file, &configs.Headers)
-	if err != nil {
-		return err
-	}
-	return nil
-}
-
 func main() {
-	err := UnmarshalConfigs()
+	err := common.UnmarshalConfigs()
 	if err != nil {
-		log.Fatalf(err.Error())
-		return
+		log.Fatal(err.Error())
 	}
 
 	conn, err := database.InitMongo()

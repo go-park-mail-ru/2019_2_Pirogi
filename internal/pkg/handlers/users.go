@@ -70,7 +70,7 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		e := conn.Insert(newUser)
+		e := conn.InsertOrUpdate(newUser)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
@@ -109,7 +109,7 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 		case updateUser.Description != "":
 			user.Description = updateUser.Description
 		}
-		e := conn.Insert(user)
+		e := conn.InsertOrUpdate(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

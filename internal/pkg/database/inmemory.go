@@ -166,7 +166,7 @@ func (db *InmemoryDB) FindFilmByID(id int) (models.Film, bool) {
 
 func (db *InmemoryDB) FakeFillDB() {
 	cookie := http.Cookie{
-		Name:  "cinsear_session",
+		Name:  configs.Default.CookieAuthName,
 		Value: "value",
 		Path:  "/",
 	}

@@ -40,7 +40,7 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 		}
 
 		user.Image = filename
-		e := conn.Insert(user)
+		e := conn.InsertOrUpdate(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
