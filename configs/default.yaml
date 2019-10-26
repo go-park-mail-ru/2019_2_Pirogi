@@ -8,8 +8,8 @@ users_image_upload_path: "/media/images/users/"
 films_image_upload_path: "/media/images/films/"
 
 # Put the credentials of MongoDB user here
-mongo_user: ""
-mongo_pwd: ""
+mongo_user: "cinsear-user"
+mongo_pwd: "cinsear-pwd"
 mongo_host: "mongodb://127.0.0.1:27017"
 mongo_db_name: "cinsear"
 users_collection_name: "users"

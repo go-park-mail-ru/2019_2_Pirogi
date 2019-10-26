@@ -29,6 +29,7 @@ func getMongoClient() (*mongo.Client, error) {
 	credentials := &options.Credential{
 		Username: configs.Default.MongoUser,
 		Password: configs.Default.MongoPwd,
+		AuthSource: configs.Default.MongoDbName,
 	}
 	clientOpt := &options.ClientOptions{Auth: credentials}
 	clientOpt.ApplyURI(configs.Default.MongoHost)
