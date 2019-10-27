@@ -66,8 +66,15 @@ func ReadLines(filename string) ([]string, error) {
 	return result, nil
 }
 
-func UnmarshalConfigs() error {
-	file, err := ioutil.ReadFile("../../configs/default.yaml")
+func NormalizePath(path *string) {
+	if (*path)[len(*path)-1] != '/' {
+		*path += "/"
+	}
+}
+
+func UnmarshalConfigs(configsPath *string) error {
+	NormalizePath(configsPath)
+	file, err := ioutil.ReadFile(*configsPath + "default.yaml")
 	if err != nil {
 		return err
 	}
@@ -76,7 +83,7 @@ func UnmarshalConfigs() error {
 		return err
 	}
 
-	file, err = ioutil.ReadFile("../../configs/headers.yaml")
+	file, err = ioutil.ReadFile(*configsPath + "headers.yaml")
 	if err != nil {
 		return err
 	}

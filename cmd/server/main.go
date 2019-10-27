@@ -1,6 +1,7 @@
 package main
 
 import (
+	"flag"
 	"os"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
@@ -12,7 +13,10 @@ import (
 )
 
 func main() {
-	err := common.UnmarshalConfigs()
+	configsPath := flag.String("config", "../../configs/", "directory with configs")
+	flag.Parse()
+
+	err := common.UnmarshalConfigs(configsPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
