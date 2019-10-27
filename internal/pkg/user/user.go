@@ -31,7 +31,6 @@ func CreateNewUser(id int, newUser *models.NewUser) (models.User, *models.Error)
 	return user, nil
 }
 
-// temporary function
 func GetMD5Hash(text string) string {
 	hasher := md5.New()
 	hasher.Write([]byte(text))

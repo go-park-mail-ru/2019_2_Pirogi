@@ -2,13 +2,32 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	"github.com/labstack/echo"
 	"net/http"
 	"os"
 	"time"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/labstack/echo"
 )
+
+func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			session, err := c.Request().Cookie(configs.CookieAuthName)
+			if err != nil {
+				return next(c)
+			}
+			_, ok := conn.FindUserByCookie(session)
+			if !ok {
+				auth.ExpireCookie(session)
+				http.SetCookie(c.Response(), session)
+				return next(c)
+			}
+			return next(c)
+		}
+	}
+}
 
 func setDefaultHeaders(w http.ResponseWriter) {
 	for k, v := range configs.Headers.HeadersMap {

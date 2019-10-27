@@ -21,6 +21,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
+
 	conn, err := database.InitMongo()
 	if err != nil {
 		log.Fatal(err)

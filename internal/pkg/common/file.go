@@ -93,3 +93,4 @@ func UnmarshalConfigs(configsPath *string) error {
 	}
 	return nil
 }
+
