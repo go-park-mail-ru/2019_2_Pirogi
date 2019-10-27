@@ -17,22 +17,22 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, ok := auth.GetUserByRequest(ctx.Request(), conn)
 		if !ok {
-			return echo.NewHTTPError(401, "no auth")
+			return echo.NewHTTPError(http.StatusUnauthorized, "no auth")
 		}
 
 		fileBytes, err := ParseRequestAndWriteFile(ctx)
 		if err != nil {
-			return echo.NewHTTPError(500, err.Error())
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
 
 		var base string
 		switch {
 		case strings.Contains(ctx.Request().URL.Path, "users"):
-			base = configs.UsersImageUploadPath
+			base = configs.Default.UsersImageUploadPath
 		case strings.Contains(ctx.Request().URL.Path, "films"):
-			base = configs.FilmsImageUploadPath
+			base = configs.Default.FilmsImageUploadPath
 		default:
-			return echo.NewHTTPError(400, "wrong path")
+			return echo.NewHTTPError(http.StatusBadRequest, "wrong path")
 		}
 		filename, err := common.WriteFileWithGeneratedName(fileBytes, base)
 		if err != nil {
@@ -40,7 +40,7 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 		}
 
 		user.Image = filename
-		e := conn.Insert(user)
+		e := conn.InsertOrUpdate(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
@@ -51,13 +51,13 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 func ParseRequestAndWriteFile(ctx echo.Context) ([]byte, error) {
 	ctx.Request().Body = http.MaxBytesReader(ctx.Response(), ctx.Request().Body, images.MaxUploadSize)
 	if err := ctx.Request().ParseMultipartForm(images.MaxUploadSize); err != nil {
-		return []byte{}, echo.NewHTTPError(400, err.Error())
+		return []byte{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	defer ctx.Request().Body.Close()
 
 	file, _, err := ctx.Request().FormFile("file")
 	if err != nil {
-		return []byte{}, echo.NewHTTPError(400, err.Error())
+		return []byte{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	defer func() {
 		err := file.Close()
@@ -68,7 +68,7 @@ func ParseRequestAndWriteFile(ctx echo.Context) ([]byte, error) {
 
 	fileBytes, err := ioutil.ReadAll(file)
 	if err != nil {
-		return []byte{}, echo.NewHTTPError(400, err.Error())
+		return []byte{}, echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	return fileBytes, nil
 }

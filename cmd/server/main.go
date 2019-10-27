@@ -1,7 +1,10 @@
 package main
 
 import (
+	"flag"
 	"os"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -10,12 +13,20 @@ import (
 )
 
 func main() {
+	configsPath := flag.String("config", "../../configs/", "directory with configs")
+	flag.Parse()
+
+	err := common.UnmarshalConfigs(configsPath)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
+
+
 	conn, err := database.InitMongo()
 	if err != nil {
 		log.Fatal(err)
 	}
-	// Do it one time
-	conn.FakeFillDB()
+
 	apiServer, err := server.CreateAPIServer(conn)
 	if err != nil {
 		log.Fatal(err.Error())
@@ -24,7 +35,7 @@ func main() {
 
 	mode := os.Getenv("mode")
 	if mode == "production" {
-		log.Fatal(apiServer.Server.ListenAndServeTLS(configs.CertFile, configs.KeyFile))
+		log.Fatal(apiServer.Server.ListenAndServeTLS(configs.Default.CertFile, configs.Default.KeyFile))
 	} else {
 		log.Fatal(apiServer.Server.ListenAndServe())
 	}

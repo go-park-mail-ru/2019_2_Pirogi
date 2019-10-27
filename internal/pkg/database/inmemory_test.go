@@ -33,7 +33,7 @@ func TestDB_Insert(t *testing.T) {
 	require.True(t, reflect.DeepEqual(db.users[0].Credentials, ksyusha.Credentials))
 
 	cookie := http.Cookie{
-		Name:  "cinsear_session",
+		Name:  configs.Default.CookieAuthName,
 		Value: "value",
 		Path:  "/",
 	}
@@ -45,7 +45,7 @@ func TestDB_Insert(t *testing.T) {
 func TestDB_FindUserByCookie(t *testing.T) {
 	db := InitInmemory()
 	cookie := http.Cookie{
-		Name:  "cinsear_session",
+		Name:  configs.Default.CookieAuthName,
 		Value: "value",
 		Path:  "/",
 	}
@@ -68,7 +68,7 @@ func TestDB_FindUserByCookie(t *testing.T) {
 func TestDB_CheckCookie(t *testing.T) {
 	db := InitInmemory()
 	cookie := http.Cookie{
-		Name:  "cinsear_session",
+		Name:  configs.Default.CookieAuthName,
 		Value: "value",
 		Path:  "/",
 	}
@@ -89,7 +89,7 @@ func TestDB_DeleteCookie(t *testing.T) {
 	e := db.Insert(ksyusha)
 	require.Nil(t, e)
 	cookie := http.Cookie{
-		Name:  "cinsear_session",
+		Name:  configs.Default.CookieAuthName,
 		Value: "value",
 		Path:  "/",
 	}
@@ -134,7 +134,7 @@ func TestDB_GetID(t *testing.T) {
 	}
 	e := db.Insert(ksyusha)
 	require.Nil(t, e)
-	id := db.GetIDForInsert(configs.UserTargetName)
+	id := db.GetIDForInsert(configs.Default.UserTargetName)
 	require.Equal(t, 1, id)
 }
 
@@ -165,7 +165,7 @@ func TestDB_Get(t *testing.T) {
 	}
 	err := db.Insert(ksyusha)
 	require.Nil(t, err)
-	obj, err := db.Get(0, configs.UserTargetName)
+	obj, err := db.Get(0, configs.Default.UserTargetName)
 	require.Nil(t, err)
 	u := obj.(models.User)
 	require.True(t, reflect.DeepEqual(u.Credentials, ksyusha.Credentials))

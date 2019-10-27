@@ -28,11 +28,11 @@ func InitInmemory() *InmemoryDB {
 
 func (db *InmemoryDB) GetIDForInsert(target string) int {
 	switch target {
-	case configs.UserTargetName:
+	case configs.Default.UserTargetName:
 		return len(db.users)
-	case configs.FilmTargetName:
+	case configs.Default.FilmTargetName:
 		return len(db.films)
-	case configs.CookieTargetName:
+	case configs.Default.CookieTargetName:
 		return len(db.usersAuthCookies)
 	default:
 		return 0
@@ -45,40 +45,40 @@ func (db *InmemoryDB) Insert(in interface{}) *models.Error {
 	case models.NewUser:
 		_, ok := db.FindUserByEmail(in.Email)
 		if ok {
-			return Error.New(400, "user with the email already exists")
+			return Error.New(http.StatusBadRequest, "user with the email already exists")
 		}
-		u, e := user.CreateNewUser(db.GetIDForInsert(configs.UserTargetName), &in)
+		u, e := user.CreateNewUser(db.GetIDForInsert(configs.Default.UserTargetName), &in)
 		if e != nil {
 			return e
 		}
-		db.users[db.GetIDForInsert(configs.UserTargetName)] = u
+		db.users[db.GetIDForInsert(configs.Default.UserTargetName)] = u
 	case models.User:
 		if _, ok := db.users[in.ID]; ok {
 			db.users[in.ID] = in
 			return nil
 		}
-		return Error.New(404, "user not found")
+		return Error.New(http.StatusNotFound, "user not found")
 	case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
 		_, ok := db.FindFilmByTitle(in.Title)
 		if ok {
-			return Error.New(400, "film with the title already exists")
+			return Error.New(http.StatusBadRequest, "film with the title already exists")
 		}
-		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.FilmTargetName), &in)
+		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.Default.FilmTargetName), &in)
 		if e != nil {
 			return e
 		}
-		db.films[db.GetIDForInsert(configs.FilmTargetName)] = f
+		db.films[db.GetIDForInsert(configs.Default.FilmTargetName)] = f
 	case models.Film:
 		if _, ok := db.users[in.ID]; ok {
 			db.films[in.ID] = in
 			return nil
 		}
-		return Error.New(404, "film not found")
+		return Error.New(http.StatusNotFound, "film not found")
 	case models.UserCookie:
 		db.usersAuthCookies[in.UserID] = *in.Cookie
 	default:
-		return Error.New(400, "not supported type")
+		return Error.New(http.StatusBadRequest, "not supported type")
 	}
 	return nil
 }
@@ -89,14 +89,14 @@ func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
-		return nil, Error.New(404, "no user with id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no user with id: "+strconv.Itoa(id))
 	case "film":
 		if f, ok := db.films[id]; ok {
 			return f, nil
 		}
-		return nil, Error.New(404, "no film with the id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, Error.New(404, "not supported type: "+target)
+	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
 
 func (db *InmemoryDB) CheckCookie(cookie *http.Cookie) bool {
@@ -166,7 +166,7 @@ func (db *InmemoryDB) FindFilmByID(id int) (models.Film, bool) {
 
 func (db *InmemoryDB) FakeFillDB() {
 	cookie := http.Cookie{
-		Name:  "cinsear_session",
+		Name:  configs.Default.CookieAuthName,
 		Value: "value",
 		Path:  "/",
 	}

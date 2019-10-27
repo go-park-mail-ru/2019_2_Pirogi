@@ -7,10 +7,10 @@ import (
 )
 
 type Database interface {
-	Insert(in interface{}) *models.Error
+	InsertOrUpdate(in interface{}) *models.Error
 	Get(id int, target string) (interface{}, *models.Error)
+	Delete(in interface{}) *models.Error
 	CheckCookie(cookie *http.Cookie) bool
-	DeleteCookie(in interface{})
 	FindUserByEmail(email string) (models.User, bool)
 	FindUserByID(id int) (models.User, bool)
 	FindUserByCookie(cookie *http.Cookie) (models.User, bool)

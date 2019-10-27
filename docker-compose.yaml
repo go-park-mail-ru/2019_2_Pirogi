@@ -1,0 +1,35 @@
+version: '3'
+services:
+  server-dev:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - mode=development
+    ports:
+      - "8000:8000"
+    volumes:
+      - "media:/media"
+      - "log:/log"
+    network_mode: "host"
+    container_name: cinsear
+
+  server-prod:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - mode=production
+    ports:
+      - "8000:8000"
+    volumes:
+      - "media:/media"
+      - "log:/log"
+      - "ssl:/ssl"
+    network_mode: "host"
+    container_name: cinsear
+
+volumes:
+  media:
+  log:
+  ssl:
