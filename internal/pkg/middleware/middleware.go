@@ -14,7 +14,7 @@ import (
 func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
-			session, err := c.Request().Cookie(configs.CookieAuthName)
+			session, err := c.Request().Cookie(configs.Default.CookieAuthName)
 			if err != nil {
 				return next(c)
 			}
