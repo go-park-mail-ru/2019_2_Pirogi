@@ -1,2 +1,3 @@
 docker stop cinsear
-docker-compose up --build --detach server-dev
+docker stop cinsear-db
+docker-compose up --build --detach server-dev mongo

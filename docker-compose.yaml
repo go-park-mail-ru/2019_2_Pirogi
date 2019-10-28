@@ -8,13 +8,16 @@ services:
       - mode=development
     ports:
       - "8000:8000"
+    depends_on:
+      - mongo
+    restart: always
     volumes:
       - "media:/media"
       - "log:/log"
-    network_mode: "host"
     container_name: cinsear
 
   server-prod:
+    restart: always
     build:
       context: ./
       dockerfile: ./Dockerfile
@@ -22,14 +25,29 @@ services:
       - mode=production
     ports:
       - "8000:8000"
+    depends_on:
+      - mongo
+
     volumes:
       - "media:/media"
       - "log:/log"
       - "ssl:/ssl"
-    network_mode: "host"
     container_name: cinsear
 
+  mongo:
+    image: mongo
+    ports:
+      - "27017-27019:27017-27019"
+    volumes:
+      - db:/data/db
+      - ./mongoInit.js:/docker-entrypoint-initdb.d/mongoInit.js:ro
+    container_name: cinsear-db
+    environment:
+      - MONGO_INITDB_DATABASE=cinsear
+      - MONGO_INITDB_USERNAME=cinsear-user
+      - MONGO_INITDB_PASSWORD=cinsear-pwd
 volumes:
   media:
   log:
   ssl:
+  db:
