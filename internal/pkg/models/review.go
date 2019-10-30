@@ -6,6 +6,14 @@ type ReviewsNum struct {
 	Negative int `json:"negative"`
 }
 
+func NewReviewsNum() ReviewsNum {
+	return ReviewsNum{
+		Total:    0,
+		Positive: 0,
+		Negative: 0,
+	}
+}
+
 type NewReview struct {
 	Title    string   `json:"title"`
 	Body     string   `json:"body"`

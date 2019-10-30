@@ -3,29 +3,24 @@ package user
 import (
 	"crypto/md5"
 	"encoding/hex"
-	"net/http"
-
-	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 )
 
-func CreateNewUser(id models.ID, newUser *models.NewUser) (models.User, *models.Error) {
-	if !validators.ValidateEmail(newUser.Email) {
-		return models.User{}, Error.New(http.StatusBadRequest, "invalid data")
-	}
+func CreateUser(id models.ID, newUser *models.NewUser) (models.User, *models.Error) {
 	user := models.User{
 		ID: id,
 		Credentials: models.Credentials{
 			Email:    newUser.Email,
 			Password: newUser.Password,
 		},
-		UserInfo: models.UserInfo{
+		UserTrunc: models.UserTrunc{
 			Username:    newUser.Username,
 			Rating:      0,
 			Description: "",
-			Image:       "default.jpg",
+			Image: models.Image{
+				ID:   -1,
+				Name: "default.png",
+			},
 		},
 	}
 	return user, nil

@@ -100,6 +100,12 @@ func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
 		e = UpdateFilm(conn, in)
 	case models.UserCookie:
 		e = InsertOrUpdateUserCookie(conn, in)
+	case models.Person:
+		e = InsertOrUpdatePerson(conn, in)
+	case models.Review:
+		e = InsertReview(conn, in)
+	case models.Like:
+		e = InsertLike(conn, in)
 	default:
 		e = Error.New(http.StatusBadRequest, "not supported type")
 	}
@@ -178,9 +184,21 @@ func (conn *MongoConnection) FindFilmByID(id models.ID) (models.Film, bool) {
 	return result, err == nil
 }
 
+func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool) {
+	result := models.Person{}
+	err := conn.persons.FindOne(conn.context, bson.M{"person.name": name, "person.birthday": birthday}).Decode(&result)
+	return result, err == nil
+}
+
 func (conn *MongoConnection) ClearDB() {
 	_, _ = conn.users.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.cookies.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.films.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
+}
+
+func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) {
+	result := models.Person{}
+	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
 }
