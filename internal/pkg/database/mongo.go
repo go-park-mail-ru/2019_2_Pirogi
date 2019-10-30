@@ -4,9 +4,7 @@ import (
 	"context"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -89,73 +87,23 @@ func (conn *MongoConnection) GetNextSequence(target string) (models.ID, error) {
 }
 
 func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
+	var e *models.Error
 	switch in := in.(type) {
 	case models.NewUser:
-		_, ok := conn.FindUserByEmail(in.Email)
-		if ok {
-			return Error.New(http.StatusBadRequest, "user with the email already exists")
-		}
-		id, err := conn.GetNextSequence(configs.Default.UserTargetName)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
-		}
-		u, e := user.CreateNewUser(id, &in)
-		if e != nil {
-			return e
-		}
-		_, err = conn.users.InsertOne(conn.context, u)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
-		}
+		e = InsertUser(conn, in)
 	case models.User:
-		filter := bson.M{"_id": in.ID}
-		update := bson.M{"$set": in}
-		_, err := conn.users.UpdateOne(conn.context, filter, update)
-		if err != nil {
-			return Error.New(http.StatusNotFound, "user not found")
-		}
+		e = UpdateUser(conn, in)
 	case models.NewFilm:
 		// It is supposed that there cannot be films with the same title
-		_, ok := conn.FindFilmByTitle(in.Title)
-		if ok {
-			return Error.New(http.StatusBadRequest, "film with the title already exists")
-		}
-		id, err := conn.GetNextSequence(configs.Default.FilmTargetName)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
-		}
-		f, e := film.CreateNewFilm(id, &in)
-		if e != nil {
-			return e
-		}
-		_, err = conn.films.InsertOne(conn.context, f)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert film in database")
-		}
+		e = InsertFilm(conn, in)
 	case models.Film:
-		filter := bson.M{"_id": in.ID}
-		update := bson.M{"$set": in}
-		_, err := conn.films.UpdateOne(conn.context, filter, update)
-		if err != nil {
-			return Error.New(http.StatusNotFound, "film not found")
-		}
+		e = UpdateFilm(conn, in)
 	case models.UserCookie:
-		filter := bson.M{"_id": in.UserID}
-		foundCookie := models.UserCookie{}
-		err := conn.cookies.FindOne(conn.context, filter).Decode(&foundCookie)
-		if err != nil {
-			_, err = conn.cookies.InsertOne(conn.context, in)
-		} else {
-			update := bson.M{"$set": in}
-			_, err = conn.cookies.UpdateOne(conn.context, filter, update)
-		}
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert cookie in database: "+err.Error())
-		}
+		e = InsertOrUpdateUserCookie(conn, in)
 	default:
-		return Error.New(http.StatusBadRequest, "not supported type")
+		e = Error.New(http.StatusBadRequest, "not supported type")
 	}
-	return nil
+	return e
 }
 
 func (conn *MongoConnection) Get(id models.ID, target string) (interface{}, *models.Error) {
