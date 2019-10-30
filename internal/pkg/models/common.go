@@ -1,6 +1,12 @@
 package models
 
+import "strconv"
+
 type ID int
+
+func (id ID) String() string {
+	return strconv.Itoa(int(id))
+}
 
 type Error struct {
 	Status int    `json:"status"`

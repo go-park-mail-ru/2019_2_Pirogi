@@ -11,7 +11,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 )
 
-func CreateNewUser(id int, newUser *models.NewUser) (models.User, *models.Error) {
+func CreateNewUser(id models.ID, newUser *models.NewUser) (models.User, *models.Error) {
 	if !validators.ValidateEmail(newUser.Email) {
 		return models.User{}, Error.New(http.StatusBadRequest, "invalid data")
 	}

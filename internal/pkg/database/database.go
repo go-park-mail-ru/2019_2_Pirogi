@@ -16,5 +16,4 @@ type Database interface {
 	FindUserByCookie(cookie *http.Cookie) (models.User, bool)
 	FindFilmByTitle(title string) (models.Film, bool)
 	FindFilmByID(id int) (models.Film, bool)
-	FakeFillDB()
 }
