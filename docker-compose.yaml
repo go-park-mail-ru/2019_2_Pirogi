@@ -1,6 +1,6 @@
 version: '3'
 services:
-  server-dev:
+  server:
     build:
       context: ./
       dockerfile: ./Dockerfile
@@ -14,24 +14,6 @@ services:
     volumes:
       - "media:/media"
       - "log:/log"
-    container_name: cinsear
-
-  server-prod:
-    restart: always
-    build:
-      context: ./
-      dockerfile: ./Dockerfile
-    environment:
-      - mode=production
-    ports:
-      - "8000:8000"
-    depends_on:
-      - mongo
-
-    volumes:
-      - "media:/media"
-      - "log:/log"
-      - "ssl:/ssl"
     container_name: cinsear
 
   mongo:
@@ -49,5 +31,4 @@ services:
 volumes:
   media:
   log:
-  ssl:
   db:

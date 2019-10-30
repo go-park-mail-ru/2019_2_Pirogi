@@ -5,8 +5,10 @@ RUN mkdir -p /media/images/films
 RUN mkdir -p /log
 WORKDIR /cinsear
 COPY . .
-WORKDIR /cinsear/cmd
-RUN go build -o server/main ./server
-RUN go build -o database/initDB ./database
-CMD ["/cinsear/cmd/server/main", "/cinsear/cmd/database/initDB"]
+WORKDIR /cinsear/cmd/database
+RUN go build -o initDB .
+CMD ["/cinsear/cmd/database/initDB"]
+WORKDIR /cinsear/cmd/server
+RUN go build -o main .
+CMD ["/cinsear/cmd/server/main"]
 EXPOSE 8000
