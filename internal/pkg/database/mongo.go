@@ -15,14 +15,15 @@ import (
 )
 
 type MongoConnection struct {
-	client   *mongo.Client
-	context  context.Context
+	client  *mongo.Client
+	context context.Context
+
 	users    *mongo.Collection
-	films    *mongo.Collection
-	types    *mongo.Collection
-	genres   *mongo.Collection
-	actors   *mongo.Collection
 	cookies  *mongo.Collection
+	films    *mongo.Collection
+	persons  *mongo.Collection
+	likes    *mongo.Collection
+	reviews  *mongo.Collection
 	counters *mongo.Collection
 }
 
@@ -59,8 +60,11 @@ func InitMongo() (*MongoConnection, error) {
 		client:   client,
 		context:  context.Background(),
 		users:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.UsersCollectionName),
-		films:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
 		cookies:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
+		films:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
+		persons:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
+		likes:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
+		reviews:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
 		counters: client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
 	}
 

@@ -1,9 +1,8 @@
 package database
 
 import (
-	"net/http"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"net/http"
 )
 
 type Database interface {
@@ -16,4 +15,5 @@ type Database interface {
 	FindUserByCookie(cookie *http.Cookie) (models.User, bool)
 	FindFilmByTitle(title string) (models.Film, bool)
 	FindFilmByID(id int) (models.Film, bool)
+	ClearDB()
 }
