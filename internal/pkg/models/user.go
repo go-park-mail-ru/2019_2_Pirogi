@@ -7,22 +7,22 @@ type Credentials struct {
 	Password string `json:"password"`
 }
 
-type UserInfo struct {
+type NewUser struct {
+	Credentials
+	Username string `json:"username"`
+}
+
+type UserTrunc struct {
 	Username    string  `json:"username"`
 	Rating      float32 `json:"rating"`
 	Description string  `json:"description"`
-	Image       string  `json:"image"`
+	Image       Image   `json:"image"`
 }
 
 type User struct {
 	ID ID `json:"id" bson:"_id"`
 	Credentials
-	UserInfo
-}
-
-type NewUser struct {
-	Credentials
-	Username string `json:"username"`
+	UserTrunc
 }
 
 type UpdateUser struct {

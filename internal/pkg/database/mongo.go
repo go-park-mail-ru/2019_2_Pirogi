@@ -19,6 +19,9 @@ type MongoConnection struct {
 	context  context.Context
 	users    *mongo.Collection
 	films    *mongo.Collection
+	types    *mongo.Collection
+	genres   *mongo.Collection
+	actors   *mongo.Collection
 	cookies  *mongo.Collection
 	counters *mongo.Collection
 }

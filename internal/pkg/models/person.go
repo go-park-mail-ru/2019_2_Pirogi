@@ -1,14 +1,19 @@
 package models
 
 type Person struct {
-	ID         ID      `json:"id"`
-	Type       int     `json:"type"`
-	Name       string  `json:"name"`
-	Birthday   string  `json:"birthday"`
-	Birthplace string  `json:"birthplace"`
-	GenresID   []int   `json:"genres_id"`
-	FilmsID    []int   `json:"films_id"`
-	Rating     float32 `json:"rating"`
-	ImagesID   []int   `json:"images_id"`
-	AwardsID   []int   `json:"awards_id"`
+	ID         ID          `json:"id"`
+	Roles      []Role      `json:"type"`
+	Name       string      `json:"name"`
+	Birthday   string      `json:"birthday"`
+	Birthplace string      `json:"birthplace"`
+	Genres     []Genre     `json:"genres_id"`
+	Films      []FilmTrunc `json:"films_id"`
+	Likes      int         `json:"rating"`
+	Images     []Image     `json:"images_id"`
+	Awards     []Award     `json:"awards_id"`
+}
+
+type PersonTrunc struct {
+	ID   ID     `json:"id"`
+	Name string `json:"name"`
 }
