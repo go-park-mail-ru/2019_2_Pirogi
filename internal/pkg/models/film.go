@@ -22,14 +22,14 @@ type Film struct {
 	Actors      []PersonTrunc `json:"actors"`
 	Directors   []PersonTrunc `json:"directors"`
 	Images      []Image       `json:"image"`
-	ReviewsNum  int           `json:"reviewsnum"`
+	ReviewsNum  int           `json:"reviews_num"`
 }
 
 type FilmTrunc struct {
-	ID     ID       `json:"id" bson:"_id"`
-	Title  string   `json:"title"`
-	Date   string   `json:"date"`
-	Genres []Genre  `json:"genres"`
-	Poster Image    `json:"poster"`
-	Rating FilmMark `json:"rating"`
+	ID     ID      `json:"id" bson:"_id"`
+	Title  string  `json:"title"`
+	Date   string  `json:"date"`
+	Genres []Genre `json:"genres"`
+	Poster Image   `json:"poster"`
+	Rating Mark    `json:"rating"`
 }

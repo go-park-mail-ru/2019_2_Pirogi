@@ -11,9 +11,10 @@ func (id ID) String() string {
 	return strconv.Itoa(int(id))
 }
 
-type FilmMark float32
+// number of stars
+type Mark float32
 
-func (fm FilmMark) String() string {
+func (fm Mark) String() string {
 	return fmt.Sprintf("%f", fm)
 }
 

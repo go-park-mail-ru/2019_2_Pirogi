@@ -51,6 +51,9 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	likes := api.Group("/likes")
 	likes.POST("/", handlers.GetHandlerLikesCreate(conn))
 
+	marks := api.Group("/marks")
+	marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
+
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 
