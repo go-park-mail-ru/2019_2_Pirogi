@@ -1,8 +1,3 @@
-if [ "$1" = "-first-time" ]; then
-  echo "---Filling db..."
-  cd ../cmd/database/ && go run initDB.go
-fi
-
 echo "---Stopping containers"
 docker stop cinsear
 docker rm cinsear
@@ -18,3 +13,8 @@ docker volume create db
 echo "---Starting..."
 docker-compose up --build --detach server mongo
 
+
+if [ "$1" = "-first-time" ]; then
+  echo "---Filling db..."
+  cd ../cmd/database/ && go run initDB.go
+fi

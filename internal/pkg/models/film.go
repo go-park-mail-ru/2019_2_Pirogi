@@ -22,7 +22,7 @@ type Film struct {
 	Actors      []PersonTrunc `json:"actors"`
 	Directors   []PersonTrunc `json:"directors"`
 	Images      []Image       `json:"image"`
-	ReviewsNum  int           `json:"reviewsnum"`
+	ReviewsNum  int           `json:"reviews_num"`
 }
 
 type FilmTrunc struct {
@@ -31,5 +31,5 @@ type FilmTrunc struct {
 	Year   int      `json:"year"`
 	Genres []Genre  `json:"genres"`
 	Poster Image    `json:"poster"`
-	Rating FilmMark `json:"rating"`
+	Rating Mark `json:"rating"`
 }

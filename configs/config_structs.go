@@ -11,8 +11,9 @@ type DefaultConfig struct {
 	AccessLog string `yaml:"access_log"`
 	ErrorLog  string `yaml:"error_log"`
 
-	UsersImageUploadPath string `yaml:"users_image_upload_path"`
-	FilmsImageUploadPath string `yaml:"films_image_upload_path"`
+	UsersImageUploadPath   string `yaml:"users_image_upload_path"`
+	FilmsImageUploadPath   string `yaml:"films_image_upload_path"`
+	PersonsImageUploadPath string `yaml:"persons_image_upload_path"`
 
 	MongoUser   string `yaml:"mongo_user"`
 	MongoPwd    string `yaml:"mongo_pwd"`
