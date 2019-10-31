@@ -10,7 +10,6 @@ type Person struct {
 	Films      []FilmTrunc `json:"films_id"`
 	Likes      int         `json:"rating"`
 	Images     []Image     `json:"images_id"`
-	Awards     []Award     `json:"awards_id"`
 }
 
 type PersonTrunc struct {

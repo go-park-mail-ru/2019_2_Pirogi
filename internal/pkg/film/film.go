@@ -18,6 +18,6 @@ func CreateFilm(id models.ID, newFilm *models.NewFilm) (models.Film, *models.Err
 		Actors:      newFilm.Actors,
 		Directors:   newFilm.Directors,
 		Images:      newFilm.Images,
-		ReviewsNum:  models.NewReviewsNum(),
+		ReviewsNum:  0,
 	}, nil
 }

@@ -13,6 +13,7 @@ type NewUser struct {
 }
 
 type UserTrunc struct {
+	ID          ID      `json:"id"`
 	Username    string  `json:"username"`
 	Rating      float32 `json:"rating"`
 	Description string  `json:"description"`
@@ -20,7 +21,6 @@ type UserTrunc struct {
 }
 
 type User struct {
-	ID ID `json:"id" bson:"_id"`
 	Credentials
 	UserTrunc
 }

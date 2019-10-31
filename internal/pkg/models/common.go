@@ -22,22 +22,19 @@ type Error struct {
 	Error  string `json:"error"`
 }
 
-type Role struct {
-	ID   ID     `json:"id"`
-	Name string `json:"name"`
-}
+type Role string
 
-type Genre struct {
-	ID   ID     `json:"id"`
-	Name string `json:"name"`
-}
+type Target string
+
+type Genre string
 
 type Image struct {
-	ID   ID     `json:"id"`
-	Name string `json:"name"`
+	ID       ID     `json:"id"`
+	Filename string `json:"filename"`
 }
 
+/*
 type Award struct {
 	ID   ID     `json:"id"`
 	Name string `json:"name"`
-}
+}*/
