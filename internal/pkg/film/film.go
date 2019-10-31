@@ -9,7 +9,7 @@ func CreateFilm(id models.ID, newFilm *models.NewFilm) (models.Film, *models.Err
 		FilmTrunc: models.FilmTrunc{
 			ID:     id,
 			Title:  newFilm.Title,
-			Date:   newFilm.Date,
+			Year:   newFilm.Year,
 			Genres: newFilm.Genres,
 			Poster: newFilm.Poster,
 			Rating: 0,

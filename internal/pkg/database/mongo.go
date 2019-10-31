@@ -142,8 +142,16 @@ func (conn *MongoConnection) Delete(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(http.StatusInternalServerError, "cannot delete cookie from database: "+err.Error())
 		}
+		return nil
 	}
-	return nil
+	return Error.New(http.StatusBadRequest, "not supported type")
+}
+
+func (conn *MongoConnection) ClearDB() {
+	_, _ = conn.users.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.cookies.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.films.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
 }
 
 func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
@@ -173,6 +181,11 @@ func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (models.User,
 	return conn.FindUserByID(foundCookie.UserID)
 }
 
+// TODO
+func (conn *MongoConnection) FindUsersByIDs(ids []models.ID) ([]models.User, bool) {
+	return nil, false
+}
+
 func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
 	result := models.Film{}
 	err := conn.films.FindOne(conn.context, bson.M{"filminfo.title": title}).Decode(&result)
@@ -191,15 +204,30 @@ func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday s
 	return result, err == nil
 }
 
-func (conn *MongoConnection) ClearDB() {
-	_, _ = conn.users.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.cookies.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.films.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
-}
-
 func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) {
 	result := models.Person{}
 	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
+}
+
+// TODO
+func (conn *MongoConnection) GetFilmsSortedByRating(limit int, offset int) ([]models.Film, *models.Error) {
+	return nil, nil
+}
+
+func (conn *MongoConnection) GetFilmsOfGenreSortedByRating(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {
+	return nil, nil
+}
+
+func (conn *MongoConnection) GetFilmsOfYearSortedByRating(year int, limit int, offset int) ([]models.Film, *models.Error) {
+	return nil, nil
+}
+
+
+func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {
+	return nil, nil
+}
+
+func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmTitle string, limit int, offset int) ([]models.Review, *models.Error) {
+	return nil, nil
 }

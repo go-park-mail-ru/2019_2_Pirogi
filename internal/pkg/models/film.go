@@ -4,7 +4,7 @@ package models
 type NewFilm struct {
 	Title         string        `json:"title"`
 	Description   string        `json:"description"`
-	Date          string        `json:"date"`
+	Year          int           `json:"year"`
 	Countries     []string      `json:"countries"`
 	Genres        []Genre       `json:"genres"`
 	Actors        []PersonTrunc `json:"actors"`
@@ -28,7 +28,7 @@ type Film struct {
 type FilmTrunc struct {
 	ID     ID       `json:"id" bson:"_id"`
 	Title  string   `json:"title"`
-	Date   string   `json:"date"`
+	Year   int      `json:"year"`
 	Genres []Genre  `json:"genres"`
 	Poster Image    `json:"poster"`
 	Rating FilmMark `json:"rating"`

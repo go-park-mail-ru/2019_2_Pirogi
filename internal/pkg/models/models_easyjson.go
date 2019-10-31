@@ -4,11 +4,10 @@ package models
 
 import (
 	json "encoding/json"
-	http "net/http"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	http "net/http"
 )
 
 // suppress unused package warning
@@ -1173,8 +1172,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels9(in
 			out.Title = string(in.String())
 		case "description":
 			out.Description = string(in.String())
-		case "date":
-			out.Date = string(in.String())
+		case "year":
+			out.Year = int(in.Int())
 		case "countries":
 			if in.IsNull() {
 				in.Skip()
@@ -1386,9 +1385,9 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels9(ou
 		out.String(string(in.Description))
 	}
 	{
-		const prefix string = ",\"date\":"
+		const prefix string = ",\"year\":"
 		out.RawString(prefix)
-		out.String(string(in.Date))
+		out.Int(int(in.Year))
 	}
 	{
 		const prefix string = ",\"countries\":"
@@ -1732,8 +1731,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels12(i
 			out.ID = ID(in.Int())
 		case "title":
 			out.Title = string(in.String())
-		case "date":
-			out.Date = string(in.String())
+		case "year":
+			out.Year = int(in.Int())
 		case "genres":
 			if in.IsNull() {
 				in.Skip()
@@ -1786,9 +1785,9 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels12(o
 		out.String(string(in.Title))
 	}
 	{
-		const prefix string = ",\"date\":"
+		const prefix string = ",\"year\":"
 		out.RawString(prefix)
-		out.String(string(in.Date))
+		out.Int(int(in.Year))
 	}
 	{
 		const prefix string = ",\"genres\":"
@@ -1938,8 +1937,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels13(i
 			out.ID = ID(in.Int())
 		case "title":
 			out.Title = string(in.String())
-		case "date":
-			out.Date = string(in.String())
+		case "year":
+			out.Year = int(in.Int())
 		case "genres":
 			if in.IsNull() {
 				in.Skip()
@@ -2050,9 +2049,9 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels13(o
 		out.String(string(in.Title))
 	}
 	{
-		const prefix string = ",\"date\":"
+		const prefix string = ",\"year\":"
 		out.RawString(prefix)
-		out.String(string(in.Date))
+		out.Int(int(in.Year))
 	}
 	{
 		const prefix string = ",\"genres\":"

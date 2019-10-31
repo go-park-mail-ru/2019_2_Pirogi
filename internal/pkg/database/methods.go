@@ -31,6 +31,7 @@ func InsertUser(conn *MongoConnection, in models.NewUser) *models.Error {
 	}
 	return nil
 }
+
 func UpdateUser(conn *MongoConnection, in models.User) *models.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
@@ -40,6 +41,7 @@ func UpdateUser(conn *MongoConnection, in models.User) *models.Error {
 	}
 	return nil
 }
+
 func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 	_, ok := conn.FindFilmByTitle(in.Title)
 	if ok {
@@ -59,6 +61,7 @@ func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 	}
 	return nil
 }
+
 func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
@@ -68,6 +71,7 @@ func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
 	}
 	return nil
 }
+
 func InsertOrUpdateUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error {
 	filter := bson.M{"_id": in.UserID}
 	foundCookie := models.UserCookie{}
@@ -83,6 +87,7 @@ func InsertOrUpdateUserCookie(conn *MongoConnection, in models.UserCookie) *mode
 	}
 	return nil
 }
+
 func InsertOrUpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
 	var (
 		person models.Person

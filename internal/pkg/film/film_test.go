@@ -4,7 +4,7 @@ package film
 //	newFilmInfo := models.FilmInfo{
 //		Title:       "title",
 //		Description: "description",
-//		Date:        "1998",
+//		Year:        "1998",
 //		Actors:      nil,
 //		Genres:      nil,
 //		Directors:   nil,
