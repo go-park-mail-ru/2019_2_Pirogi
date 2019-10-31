@@ -65,7 +65,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	conn, err := database.InitMongo()
+	conn, err := database.InitMongo("mongodb://localhost:27017")
 	if err != nil {
 		log.Fatal(err)
 	}

@@ -26,20 +26,20 @@ type MongoConnection struct {
 	counters *mongo.Collection
 }
 
-func getMongoClient() (*mongo.Client, error) {
+func getMongoClient(mongoHost string) (*mongo.Client, error) {
 	credentials := &options.Credential{
 		Username:   configs.Default.MongoUser,
 		Password:   configs.Default.MongoPwd,
 		AuthSource: configs.Default.MongoDbName,
 	}
 	clientOpt := &options.ClientOptions{Auth: credentials}
-	clientOpt.ApplyURI(configs.Default.MongoHost)
+	clientOpt.ApplyURI(mongoHost)
 	client, err := mongo.NewClient(clientOpt)
 	return client, err
 }
 
-func InitMongo() (*MongoConnection, error) {
-	client, err := getMongoClient()
+func InitMongo(mongoHost string) (*MongoConnection, error) {
+	client, err := getMongoClient(mongoHost)
 	if err != nil {
 		return nil, err
 	}
