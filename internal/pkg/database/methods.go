@@ -42,6 +42,7 @@ func UpdateUser(conn *MongoConnection, in models.User) *models.Error {
 	return nil
 }
 
+// It is supposed that there cannot be films with the same title
 func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 	_, ok := conn.FindFilmByTitle(in.Title)
 	if ok {

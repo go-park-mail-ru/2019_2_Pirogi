@@ -26,10 +26,10 @@ type Film struct {
 }
 
 type FilmTrunc struct {
-	ID     ID       `json:"id" bson:"_id"`
-	Title  string   `json:"title"`
-	Year   int      `json:"year"`
-	Genres []Genre  `json:"genres"`
-	Poster Image    `json:"poster"`
-	Rating Mark `json:"rating"`
+	ID     ID      `json:"id"`
+	Title  string  `json:"title"`
+	Year   int     `json:"year"`
+	Genres []Genre `json:"genres"`
+	Poster Image   `json:"poster"`
+	Rating Mark    `json:"rating"`
 }

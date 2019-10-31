@@ -95,7 +95,6 @@ func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
 	case models.User:
 		e = UpdateUser(conn, in)
 	case models.NewFilm:
-		// It is supposed that there cannot be films with the same title
 		e = InsertFilm(conn, in)
 	case models.Film:
 		e = UpdateFilm(conn, in)
@@ -194,7 +193,7 @@ func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
 
 func (conn *MongoConnection) FindFilmByID(id models.ID) (models.Film, bool) {
 	result := models.Film{}
-	err := conn.films.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	err := conn.films.FindOne(conn.context, bson.M{"filmtrunc.id": id}).Decode(&result)
 	return result, err == nil
 }
 
