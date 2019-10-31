@@ -3,9 +3,10 @@ package user
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 //func TestCreateNewUserOK(t *testing.T) {

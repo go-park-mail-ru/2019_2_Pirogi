@@ -16,7 +16,7 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-		obj, e := conn.Get(id, "film")
+		obj, e := conn.Get(models.ID(id), "film")
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

@@ -1,6 +1,8 @@
 package database
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
@@ -8,7 +10,6 @@ import (
 	Person "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/person"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
-	"net/http"
 )
 
 func InsertUser(conn *MongoConnection, in models.NewUser) *models.Error {

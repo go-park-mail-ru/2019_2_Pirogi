@@ -2,13 +2,14 @@ package main
 
 import (
 	"flag"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/labstack/gommon/log"
-	"net/http"
 )
 
 func FakeFillDB(conn *database.MongoConnection) {
@@ -36,31 +37,23 @@ func FakeFillDB(conn *database.MongoConnection) {
 	})
 	conn.InsertOrUpdate(models.UserCookie{UserID: 2, Cookie: &cookie})
 
-	conn.InsertOrUpdate(models.NewFilm{FilmInfo: models.FilmInfo{
+	conn.InsertOrUpdate(models.NewFilm{
 		Title: "Бойцовский клуб",
 		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
 			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
 			"уверен, что самосовершенствование — удел слабых, а саморазрушение — единственное, ради чего стоит жить.",
-		Date:        "1999",
-		ActorsID:    []models.ID{0, 1, 2, 3},
-		GenresID:    []models.ID{2, 3},
-		DirectorsID: []models.ID{0, 3},
-		Rating:      9.1,
-		ImagesID:    []models.ID{0, 3, 4, 5},
-		ReviewsNum:  models.ReviewsNum{Total: 100, Positive: 90, Negative: 10},
-	}})
-	conn.InsertOrUpdate(models.NewFilm{FilmInfo: models.FilmInfo{
-		Title: "Матрица",
-		Description: "Мир Матрицы — это иллюзия, существующая только в бесконечном сне обреченного человечества. " +
-			"Холодный мир будущего, в котором люди — всего лишь батарейки в компьютерных системах.",
-		Date:        "1999",
-		ActorsID:    []models.ID{0, 1, 2, 3},
-		GenresID:    []models.ID{2, 3},
-		DirectorsID: []models.ID{0, 3},
-		Rating:      9.1,
-		ImagesID:    []models.ID{0, 3, 4, 5},
-		ReviewsNum:  models.ReviewsNum{Total: 100, Positive: 90, Negative: 10},
-	}})
+		Date:      "1999",
+		Countries: []string{"США", "Германия"},
+		Genres:    []models.Genre{"триллер", "драма", "криминал"},
+		Actors: []models.PersonTrunc{{0, "Эдвард Нортон"}, {1, "Брэд Питт"},
+			{2, "Хелена Бонем Картер"}},
+		Directors:     []models.PersonTrunc{{3, "Дэвид Финчер"}},
+		Producers:     []models.PersonTrunc{{4, "Росс Грэйсон Белл"}, {5, "Сиан Чаффин"}},
+		Compositors:   []models.PersonTrunc{{6, "Даст Бразерс"}, {7, "Джон Кинг"}},
+		Screenwriters: []models.PersonTrunc{{8, "Джим Улс"}, {9, "Чак Паланик"}},
+		Poster:        models.Image{0, "matrix.png"},
+		Images:        []models.Image{},
+	})
 }
 
 func main() {

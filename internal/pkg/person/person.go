@@ -13,6 +13,6 @@ func CreatePerson(id models.ID, in models.Person) (models.Person, *models.Error)
 		Films:      in.Films,
 		Likes:      0,
 		Images:     in.Images,
-		Awards:     in.Awards,
+		//Awards:     in.Awards,
 	}, nil
 }

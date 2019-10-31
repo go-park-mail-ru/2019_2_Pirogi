@@ -5,7 +5,7 @@ type NewFilm struct {
 	Title         string        `json:"title"`
 	Description   string        `json:"description"`
 	Date          string        `json:"date"`
-	Country       string        `json:"country"`
+	Countries     []string      `json:"countries"`
 	Genres        []Genre       `json:"genres"`
 	Actors        []PersonTrunc `json:"actors"`
 	Directors     []PersonTrunc `json:"directors"`
@@ -22,7 +22,7 @@ type Film struct {
 	Actors      []PersonTrunc `json:"actors"`
 	Directors   []PersonTrunc `json:"directors"`
 	Images      []Image       `json:"image"`
-	ReviewsNum
+	ReviewsNum  int           `json:"reviewsnum"`
 }
 
 type FilmTrunc struct {

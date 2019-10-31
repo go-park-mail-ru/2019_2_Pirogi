@@ -36,12 +36,12 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
 		}
-		obj, e := conn.Get(id, "user")
+		obj, e := conn.Get(models.ID(id), "user")
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
 		user := obj.(models.User)
-		userInfo := user.UserInfo
+		userInfo := user.UserTrunc
 		jsonBody, err := userInfo.MarshalJSON()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -89,7 +89,7 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		updateUser := &models.UserInfo{}
+		updateUser := &models.UpdateUser{}
 		err = updateUser.UnmarshalJSON(rawBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
