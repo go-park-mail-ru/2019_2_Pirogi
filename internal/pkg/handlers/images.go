@@ -31,6 +31,8 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 			base = configs.Default.UsersImageUploadPath
 		case strings.Contains(ctx.Request().URL.Path, "films"):
 			base = configs.Default.FilmsImageUploadPath
+		case strings.Contains(ctx.Request().URL.Path, "persons"):
+			base = configs.Default.PersonsImageUploadPath
 		default:
 			return echo.NewHTTPError(http.StatusBadRequest, "wrong path")
 		}
@@ -39,6 +41,7 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 			return err
 		}
 
+		// TODO: разобраться с изображениями
 		user.Image.Filename = filename
 		e := conn.InsertOrUpdate(user)
 		if e != nil {

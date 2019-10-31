@@ -4,11 +4,10 @@ package models
 
 import (
 	json "encoding/json"
-	http "net/http"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	http "net/http"
 )
 
 // suppress unused package warning
@@ -559,20 +558,20 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels4(in
 		switch key {
 		case "id":
 			out.ID = ID(in.Int())
+		case "date":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Date).UnmarshalJSON(data))
+			}
+		case "likes":
+			out.Likes = int(in.Int())
 		case "title":
 			out.Title = string(in.String())
 		case "body":
 			out.Body = string(in.String())
-		case "date":
-			out.Date = string(in.String())
 		case "film_id":
 			out.FilmID = ID(in.Int())
 		case "author_id":
 			out.AuthorID = ID(in.Int())
-		case "film_mark":
-			out.FilmMark = FilmMark(in.Float32())
-		case "likes":
-			out.Likes = int(in.Int())
 		default:
 			in.SkipRecursive()
 		}
@@ -593,6 +592,16 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels4(ou
 		out.Int(int(in.ID))
 	}
 	{
+		const prefix string = ",\"date\":"
+		out.RawString(prefix)
+		out.Raw((in.Date).MarshalJSON())
+	}
+	{
+		const prefix string = ",\"likes\":"
+		out.RawString(prefix)
+		out.Int(int(in.Likes))
+	}
+	{
 		const prefix string = ",\"title\":"
 		out.RawString(prefix)
 		out.String(string(in.Title))
@@ -603,11 +612,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels4(ou
 		out.String(string(in.Body))
 	}
 	{
-		const prefix string = ",\"date\":"
-		out.RawString(prefix)
-		out.String(string(in.Date))
-	}
-	{
 		const prefix string = ",\"film_id\":"
 		out.RawString(prefix)
 		out.Int(int(in.FilmID))
@@ -616,16 +620,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels4(ou
 		const prefix string = ",\"author_id\":"
 		out.RawString(prefix)
 		out.Int(int(in.AuthorID))
-	}
-	{
-		const prefix string = ",\"film_mark\":"
-		out.RawString(prefix)
-		out.Float32(float32(in.FilmMark))
-	}
-	{
-		const prefix string = ",\"likes\":"
-		out.RawString(prefix)
-		out.Int(int(in.Likes))
 	}
 	out.RawByte('}')
 }
@@ -745,8 +739,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(in
 			continue
 		}
 		switch key {
-		case "id":
-			out.ID = ID(in.Int())
 		case "type":
 			if in.IsNull() {
 				in.Skip()
@@ -770,8 +762,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(in
 				}
 				in.Delim(']')
 			}
-		case "name":
-			out.Name = string(in.String())
 		case "birthday":
 			out.Birthday = string(in.String())
 		case "birthplace":
@@ -847,6 +837,10 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(in
 				}
 				in.Delim(']')
 			}
+		case "id":
+			out.ID = ID(in.Int())
+		case "name":
+			out.Name = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -862,13 +856,8 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(ou
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"id\":"
-		out.RawString(prefix[1:])
-		out.Int(int(in.ID))
-	}
-	{
 		const prefix string = ",\"type\":"
-		out.RawString(prefix)
+		out.RawString(prefix[1:])
 		if in.Roles == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -881,11 +870,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(ou
 			}
 			out.RawByte(']')
 		}
-	}
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix)
-		out.String(string(in.Name))
 	}
 	{
 		const prefix string = ",\"birthday\":"
@@ -949,6 +933,16 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(ou
 			}
 			out.RawByte(']')
 		}
+	}
+	{
+		const prefix string = ",\"id\":"
+		out.RawString(prefix)
+		out.Int(int(in.ID))
+	}
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
 	}
 	out.RawByte('}')
 }
@@ -1083,8 +1077,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels8(in
 			out.FilmID = ID(in.Int())
 		case "author_id":
 			out.AuthorID = ID(in.Int())
-		case "film_mark":
-			out.FilmMark = FilmMark(in.Float32())
 		default:
 			in.SkipRecursive()
 		}
@@ -1118,11 +1110,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels8(ou
 		const prefix string = ",\"author_id\":"
 		out.RawString(prefix)
 		out.Int(int(in.AuthorID))
-	}
-	{
-		const prefix string = ",\"film_mark\":"
-		out.RawString(prefix)
-		out.Float32(float32(in.FilmMark))
 	}
 	out.RawByte('}')
 }

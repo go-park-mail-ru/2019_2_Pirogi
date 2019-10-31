@@ -6,6 +6,7 @@ error_log: "/log/error.log"
 
 users_image_upload_path: "/media/images/users/"
 films_image_upload_path: "/media/images/films/"
+persons_image_upload_path: "/media/images/films/"
 
 # Put the credentials of MongoDB user here
 mongo_user: "cinsear-user"

@@ -40,6 +40,17 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	sessions.POST("/", handlers.GetHandlerLogin(conn))
 	sessions.DELETE("/", handlers.GetHandlerLogout(conn))
 
+	persons := api.Group("/persons")
+	persons.GET("/:person_id/", handlers.GetHandlerPerson(conn))
+	persons.POST("/", handlers.GetHandlerPersonsCreate(conn))
+	persons.POST("/images/", handlers.GetImagesHandler(conn))
+
+	reviews := api.Group("/reviews")
+	reviews.POST("/", handlers.GetHandlerReviewsCreate(conn))
+
+	likes := api.Group("/likes")
+	likes.POST("/", handlers.GetHandlerLikesCreate(conn))
+
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 
