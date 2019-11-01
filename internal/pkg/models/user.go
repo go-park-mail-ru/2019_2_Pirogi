@@ -17,7 +17,7 @@ type UserTrunc struct {
 	Username    string `json:"username" valid:"title"`
 	Mark        Mark   `json:"mark" valid:"mark, optional"`
 	Description string `json:"description" valid:"description"`
-	Image       Image  `json:"image" valid:"required"`
+	Image       Image  `json:"image" valid:"required, optional"`
 }
 
 type User struct {
@@ -26,8 +26,8 @@ type User struct {
 }
 
 type UpdateUser struct {
-	Username    string `json:"username,omitempty" valid:"username, stringlength(4|50)"`
-	Description string `json:"description,omitempty" valid:"user_description, stringlength(8|50)"`
+	Username    string `json:"username,omitempty" valid:"username, stringlength(4|50), optional"`
+	Description string `json:"description,omitempty" valid:"user_description, stringlength(8|50), optional"`
 }
 
 type UserCookie struct {

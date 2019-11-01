@@ -636,6 +636,8 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(in
 			continue
 		}
 		switch key {
+		case "id":
+			out.ID = ID(in.Int())
 		case "date":
 			if data := in.Raw(); in.Ok() {
 				in.AddError((out.Date).UnmarshalJSON(data))
@@ -665,8 +667,13 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(ou
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"date\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	{
+		const prefix string = ",\"date\":"
+		out.RawString(prefix)
 		out.Raw((in.Date).MarshalJSON())
 	}
 	{

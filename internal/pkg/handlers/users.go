@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/asaskevich/govalidator"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -70,6 +71,10 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
+		_, err = govalidator.ValidateStruct(newUser)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
 		e := conn.Upsert(newUser)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
@@ -91,6 +96,10 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 		defer ctx.Request().Body.Close()
 		updateUser := &models.UpdateUser{}
 		err = updateUser.UnmarshalJSON(rawBody)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		_, err = govalidator.ValidateStruct(updateUser)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}

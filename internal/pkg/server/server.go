@@ -5,12 +5,15 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 )
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
+	validators.InitValidator()
+
 	e := echo.New()
 	e.Server.Addr = configs.Default.APIPort
 	e.Logger.SetLevel(log.WARN)

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/asaskevich/govalidator"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -42,7 +43,10 @@ func GetHandlerPersonsCreate(conn database.Database) echo.HandlerFunc {
 		defer ctx.Request().Body.Close()
 		newPerson := models.NewPerson{}
 		err = newPerson.UnmarshalJSON(rawBody)
-
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		_, err = govalidator.ValidateStruct(newPerson)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}

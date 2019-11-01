@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"github.com/asaskevich/govalidator"
 	"io/ioutil"
 	"net/http"
 	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
@@ -44,6 +44,10 @@ func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 		defer ctx.Request().Body.Close()
 		newFilm := models.NewFilm{}
 		err = newFilm.UnmarshalJSON(rawBody)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		_, err = govalidator.ValidateStruct(newFilm)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}

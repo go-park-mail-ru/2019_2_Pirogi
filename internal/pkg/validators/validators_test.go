@@ -13,7 +13,6 @@ const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
 func TestLike(t *testing.T) {
 	InitValidator()
 	like := models.Like{
-		ID:       1,
 		UserID:   2,
 		Target:   models.Target("film"),
 		TargetID: 5,
@@ -25,7 +24,6 @@ func TestLike(t *testing.T) {
 func TestStars(t *testing.T) {
 	InitValidator()
 	stars := models.Stars{
-		ID:     2,
 		UserID: 3,
 		FilmID: 4,
 		Mark:   4.2,

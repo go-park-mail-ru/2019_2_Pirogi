@@ -1,6 +1,8 @@
 package auth
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"log"
 	"net/http"
 	"testing"
 	"time"
@@ -26,6 +28,11 @@ func TestGenerateCookie(t *testing.T) {
 }
 
 func TestExpireCookie(t *testing.T) {
+	configsPath := "../../../configs"
+	err := common.UnmarshalConfigs(&configsPath)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	const cookieName = "test"
 	const value = "testValue"
 

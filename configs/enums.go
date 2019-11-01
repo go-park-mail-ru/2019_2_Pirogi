@@ -1,5 +1,6 @@
 package configs
 
+//TODO: перевести в yaml
 var Genres = [...]string{
 	"драма",
 	"боевик",
