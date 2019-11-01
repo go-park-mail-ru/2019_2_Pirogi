@@ -1,6 +1,7 @@
 package database
 
 import (
+	"github.com/pkg/errors"
 	"net/http"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -11,6 +12,15 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
 )
+
+func (conn *MongoConnection) GetNextSequence(target string) (models.ID, error) {
+	result := struct {
+		Seq int `bson:"seq"`
+	}{}
+	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
+		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
+	return models.ID(result.Seq), errors.Wrap(err, "get next sequence failed")
+}
 
 func InsertUser(conn *MongoConnection, in models.NewUser) *models.Error {
 	_, ok := conn.FindUserByEmail(in.Email)
@@ -84,35 +94,36 @@ func InsertOrUpdateUserCookie(conn *MongoConnection, in models.UserCookie) *mode
 		_, err = conn.cookies.UpdateOne(conn.context, filter, update)
 	}
 	if err != nil {
-		return Error.New(http.StatusInternalServerError, "cannot insert cookie in database: "+err.Error())
+		return Error.New(http.StatusInternalServerError, "cannot insert cookie in database")
 	}
 	return nil
 }
 
 func InsertOrUpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
-	var (
-		person models.Person
-		ok     bool
-	)
-	if in.ID == -1 {
-		person, ok = conn.FindPersonByNameAndBirthday(in.Name, in.Birthday)
-	} else {
-		person, ok = conn.FindPersonByID(in.ID)
-	}
+	person, ok := conn.FindPersonByID(in.ID)
 
 	// if we do not have user in database
 	if !ok {
 		id, err := conn.GetNextSequence(configs.Default.UserTargetName)
 		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
+			return Error.New(http.StatusInternalServerError, "cannot insert person in database")
 		}
 		newPerson, e := Person.CreatePerson(id, person)
 		if e != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
+			return e
 		}
 		_, err = conn.persons.InsertOne(conn.context, newPerson)
+		if err != nil {
+			return Error.New(http.StatusInternalServerError, "cannot insert person in database")
+		}
+	} else {
+		filter := bson.M{"_id": in.ID}
+		update := bson.M{"$set": in}
+		_, err := conn.films.UpdateOne(conn.context, filter, update)
+		if err != nil {
+			return Error.New(http.StatusNotFound, "person not found")
+		}
 	}
-	//TODO: finish the method
 	return nil
 }
 

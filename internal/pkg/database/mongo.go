@@ -2,12 +2,12 @@ package database
 
 import (
 	"context"
+	"github.com/pkg/errors"
 	"net/http"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -76,15 +76,6 @@ func (conn *MongoConnection) InitCounters() error {
 		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
 	})
 	return errors.Wrap(err, "init counters collection failed")
-}
-
-func (conn *MongoConnection) GetNextSequence(target string) (models.ID, error) {
-	result := struct {
-		Seq int `bson:"seq"`
-	}{}
-	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
-		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
-	return models.ID(result.Seq), errors.Wrap(err, "get next sequence failed")
 }
 
 func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
