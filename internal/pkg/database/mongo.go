@@ -182,9 +182,18 @@ func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (models.User,
 	return conn.FindUserByID(foundCookie.UserID)
 }
 
-// TODO
 func (conn *MongoConnection) FindUsersByIDs(ids []models.ID) ([]models.User, bool) {
-	return nil, false
+	var result []models.User
+	ok := true
+	for _, id := range ids {
+		u, found := conn.FindUserByID(id)
+		if !found {
+			ok = found
+			continue
+		}
+		result = append(result, u)
+	}
+	return result, ok
 }
 
 func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
