@@ -37,6 +37,14 @@ func FakeFillDB(conn *database.MongoConnection) {
 	})
 	conn.Upsert(models.UserCookie{UserID: 2, Cookie: &cookie})
 
+	conn.Upsert(models.NewPerson{
+		Name:       "Эдвард Нортон",
+		Roles:      []models.Role{"actor"},
+		Birthday:   "18.08.1969",
+		Birthplace: "Бостон",
+		Genres:     []models.Genre{"комедия"},
+	})
+
 	conn.Upsert(models.NewFilm{
 		Title: "Бойцовский клуб",
 		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +

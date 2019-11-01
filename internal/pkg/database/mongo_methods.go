@@ -103,16 +103,16 @@ func UpsertUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error
 
 // It is supposed that there cannot be persons with the same name and birthday
 func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
-	person, ok := conn.FindPersonByNameAndBirthday(in.Name, in.Birthday)
+	_, ok := conn.FindPersonByNameAndBirthday(in.Name, in.Birthday)
 	if ok {
 		return Error.New(http.StatusBadRequest, "person with this name and birthday already exists")
 	}
 
-	id, err := conn.GetNextSequence(configs.Default.UserTargetName)
+	id, err := conn.GetNextSequence(configs.Default.PersonTargetName)
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert person in database")
 	}
-	newPerson, e := Person.CreatePerson(id, person)
+	newPerson, e := Person.CreatePerson(id, in)
 	if e != nil {
 		return e
 	}
