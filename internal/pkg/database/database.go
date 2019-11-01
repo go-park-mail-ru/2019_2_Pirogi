@@ -25,6 +25,8 @@ type Database interface {
 	FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool)
 	FindPersonByID(id models.ID) (models.Person, bool)
 
+	FindReviewByID(id models.ID) (models.Review, bool)
+
 	GetFilmsSortedByRating(limit int, offset int) ([]models.Film, *models.Error)
 	GetFilmsOfGenreSortedByRating(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error)
 	GetFilmsOfYearSortedByRating(year int, limit int, offset int) ([]models.Film, *models.Error)

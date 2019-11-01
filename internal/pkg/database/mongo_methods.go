@@ -133,8 +133,13 @@ func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
 	return nil
 }
 
+// TODO: check that user and film of review exist
 func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
-	rev, err := review.CreateReview(in)
+	id, err := conn.GetNextSequence(configs.Default.ReviewTargetName)
+	if err != nil {
+		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
+	}
+	rev, err := review.CreateReview(id, in)
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
 	}
@@ -146,7 +151,7 @@ func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
 }
 
 func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
-	filter := bson.M{"": in.Date}
+	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.reviews.UpdateOne(conn.context, filter, update)
 	if err != nil {

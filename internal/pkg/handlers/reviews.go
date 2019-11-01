@@ -7,7 +7,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/review"
 	"github.com/labstack/echo"
 )
 
@@ -33,11 +32,7 @@ func GetHandlerReviewsCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		newReview.AuthorID = userID
-		result, err := review.CreateReview(newReview)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		}
-		e := conn.Upsert(result)
+		e := conn.Upsert(newReview)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

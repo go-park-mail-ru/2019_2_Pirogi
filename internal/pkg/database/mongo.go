@@ -220,6 +220,12 @@ func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) 
 	return result, err == nil
 }
 
+func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) {
+	result := models.Review{}
+	err := conn.reviews.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
 // TODO
 func (conn *MongoConnection) GetFilmsSortedByRating(limit int, offset int) ([]models.Film, *models.Error) {
 	return nil, nil

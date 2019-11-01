@@ -32,6 +32,7 @@ type DefaultConfig struct {
 	FilmTargetName   string `yaml:"film_target_name"`
 	CookieTargetName string `yaml:"cookie_target_name"`
 	PersonTargetName string `yaml:"person_target_name"`
+	ReviewTargetName string `yaml:"review_target_name"`
 }
 
 var Default DefaultConfig
