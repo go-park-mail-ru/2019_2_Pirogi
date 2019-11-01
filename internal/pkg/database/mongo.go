@@ -75,6 +75,8 @@ func (conn *MongoConnection) InitCounters() error {
 	_, err := conn.counters.InsertMany(conn.context, []interface{}{
 		bson.M{"_id": configs.Default.UserTargetName, "seq": 0},
 		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.PersonTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.ReviewTargetName, "seq": 0},
 	})
 	return errors.Wrap(err, "init counters collection failed")
 }
