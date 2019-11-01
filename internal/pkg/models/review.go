@@ -5,16 +5,16 @@ import "time"
 type ReviewsNum int
 
 type NewReview struct {
-	Title    string `json:"title"`
-	Body     string `json:"body"`
-	FilmID   ID     `json:"film_id"`
-	AuthorID ID     `json:"author_id, omitempty"`
+	Title    string `json:"title" valid:"title, stringlength(8|50)"`
+	Body     string `json:"body" valid:"description, stringlength(8|50)"`
+	FilmID   ID     `json:"film_id" valid:"numeric"`
+	AuthorID ID     `json:"author_id, omitempty" valid:"numeric"`
 }
 
 // TODO: remove binary choice of film's like/dislike
 type Review struct {
-	NewReview
-	ID    ID        `json:"id, omitempty"`
-	Date  time.Time `json:"date"`
-	Likes int       `json:"likes"`
+	NewReview `valid:"required"`
+	ID        ID        `json:"id, omitempty" valid:"numeric"`
+	Date      time.Time `json:"date" valid:"time"`
+	Likes     int       `json:"likes" valid:"numeric, optional"`
 }
