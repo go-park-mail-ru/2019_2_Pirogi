@@ -1,10 +1,10 @@
 package models
 
 type NewPerson struct {
-	Name       string      `json:"name"`
-	Roles      []Role      `json:"type"`
-	Birthday   string      `json:"birthday"`
-	Birthplace string      `json:"birthplace"`
+	Name       string      `json:"name" valid:"string, stringlength(1|50)"`
+	Roles      []Role      `json:"type" valid:"roles"`
+	Birthday   string      `json:"birthday" valid:"date"`
+	Birthplace string      `json:"birthplace" valid:"text, stringlength(2|50)"`
 	Genres     []Genre     `json:"genres_id" valid:"genres, optional"`
 	Films      []FilmTrunc `json:"films_id" valid:"films_trunc, optional"`
 	Likes      int         `json:"rating, omitempty" valid:"numeric, optional"`
@@ -15,7 +15,7 @@ type Person struct {
 	PersonTrunc `valid:"required"`
 	Roles       []Role      `json:"type" valid:"roles"`
 	Birthday    string      `json:"birthday" valid:"date"`
-	Birthplace  string      `json:"birthplace" valid:"alphanum, stringlength(2|50)"`
+	Birthplace  string      `json:"birthplace" valid:"text, stringlength(2|50)"`
 	Genres      []Genre     `json:"genres" valid:"genres, optional"`
 	Films       []FilmTrunc `json:"films" valid:"films_trunc, optional"`
 	Likes       int         `json:"likes, omitempty" valid:"numeric, optional"`
