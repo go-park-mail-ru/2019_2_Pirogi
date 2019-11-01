@@ -12,9 +12,18 @@ var yearPattern = regexp.MustCompile("[1|2][0-9]{3}")
 var datePattern = regexp.MustCompile("([0-9]{2}.){2}[1-2][0-9]{3}")
 var imagePattern = regexp.MustCompile("([0-9]|[a-z]){40}.(jpeg|jpg|png|gif)")
 
+//TODO: переделать регулярку на строку
+var textPattern = regexp.MustCompile(".+")
+
 func InitValidator() {
 	valid.SetFieldsRequiredByDefault(true)
-
+	valid.CustomTypeTagMap.Set("text", func(i interface{}, o interface{}) bool {
+		subject, ok := i.(string)
+		if !ok {
+			return false
+		}
+		return textPattern.MatchString(subject)
+	})
 	valid.CustomTypeTagMap.Set("year", func(i interface{}, o interface{}) bool {
 		subject, ok := i.(string)
 		if !ok {

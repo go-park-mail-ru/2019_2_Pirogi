@@ -1252,7 +1252,7 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels10(i
 		switch key {
 		case "name":
 			out.Name = string(in.String())
-		case "type":
+		case "roles":
 			if in.IsNull() {
 				in.Skip()
 				out.Roles = nil
@@ -1279,77 +1279,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels10(i
 			out.Birthday = string(in.String())
 		case "birthplace":
 			out.Birthplace = string(in.String())
-		case "genres_id":
-			if in.IsNull() {
-				in.Skip()
-				out.Genres = nil
-			} else {
-				in.Delim('[')
-				if out.Genres == nil {
-					if !in.IsDelim(']') {
-						out.Genres = make([]Genre, 0, 4)
-					} else {
-						out.Genres = []Genre{}
-					}
-				} else {
-					out.Genres = (out.Genres)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v17 Genre
-					v17 = Genre(in.String())
-					out.Genres = append(out.Genres, v17)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "films_id":
-			if in.IsNull() {
-				in.Skip()
-				out.Films = nil
-			} else {
-				in.Delim('[')
-				if out.Films == nil {
-					if !in.IsDelim(']') {
-						out.Films = make([]FilmTrunc, 0, 1)
-					} else {
-						out.Films = []FilmTrunc{}
-					}
-				} else {
-					out.Films = (out.Films)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v18 FilmTrunc
-					(v18).UnmarshalEasyJSON(in)
-					out.Films = append(out.Films, v18)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "rating":
-			out.Likes = int(in.Int())
-		case "images_id":
-			if in.IsNull() {
-				in.Skip()
-				out.Images = nil
-			} else {
-				in.Delim('[')
-				if out.Images == nil {
-					if !in.IsDelim(']') {
-						out.Images = make([]Image, 0, 2)
-					} else {
-						out.Images = []Image{}
-					}
-				} else {
-					out.Images = (out.Images)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v19 Image
-					(v19).UnmarshalEasyJSON(in)
-					out.Images = append(out.Images, v19)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
 		default:
 			in.SkipRecursive()
 		}
@@ -1370,17 +1299,17 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels10(o
 		out.String(string(in.Name))
 	}
 	{
-		const prefix string = ",\"type\":"
+		const prefix string = ",\"roles\":"
 		out.RawString(prefix)
 		if in.Roles == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v20, v21 := range in.Roles {
-				if v20 > 0 {
+			for v17, v18 := range in.Roles {
+				if v17 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v21))
+				out.String(string(v18))
 			}
 			out.RawByte(']')
 		}
@@ -1394,59 +1323,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels10(o
 		const prefix string = ",\"birthplace\":"
 		out.RawString(prefix)
 		out.String(string(in.Birthplace))
-	}
-	{
-		const prefix string = ",\"genres_id\":"
-		out.RawString(prefix)
-		if in.Genres == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v22, v23 := range in.Genres {
-				if v22 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v23))
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"films_id\":"
-		out.RawString(prefix)
-		if in.Films == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v24, v25 := range in.Films {
-				if v24 > 0 {
-					out.RawByte(',')
-				}
-				(v25).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"rating\":"
-		out.RawString(prefix)
-		out.Int(int(in.Likes))
-	}
-	{
-		const prefix string = ",\"images_id\":"
-		out.RawString(prefix)
-		if in.Images == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v26, v27 := range in.Images {
-				if v26 > 0 {
-					out.RawByte(',')
-				}
-				(v27).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
 	}
 	out.RawByte('}')
 }
@@ -1515,9 +1391,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Countries = (out.Countries)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v28 string
-					v28 = string(in.String())
-					out.Countries = append(out.Countries, v28)
+					var v19 string
+					v19 = string(in.String())
+					out.Countries = append(out.Countries, v19)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1538,9 +1414,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Genres = (out.Genres)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v29 Genre
-					v29 = Genre(in.String())
-					out.Genres = append(out.Genres, v29)
+					var v20 Genre
+					v20 = Genre(in.String())
+					out.Genres = append(out.Genres, v20)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1561,9 +1437,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Actors = (out.Actors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v30 PersonTrunc
-					(v30).UnmarshalEasyJSON(in)
-					out.Actors = append(out.Actors, v30)
+					var v21 PersonTrunc
+					(v21).UnmarshalEasyJSON(in)
+					out.Actors = append(out.Actors, v21)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1584,9 +1460,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Directors = (out.Directors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v31 PersonTrunc
-					(v31).UnmarshalEasyJSON(in)
-					out.Directors = append(out.Directors, v31)
+					var v22 PersonTrunc
+					(v22).UnmarshalEasyJSON(in)
+					out.Directors = append(out.Directors, v22)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1607,9 +1483,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Producers = (out.Producers)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v32 PersonTrunc
-					(v32).UnmarshalEasyJSON(in)
-					out.Producers = append(out.Producers, v32)
+					var v23 PersonTrunc
+					(v23).UnmarshalEasyJSON(in)
+					out.Producers = append(out.Producers, v23)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1630,9 +1506,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Compositors = (out.Compositors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v33 PersonTrunc
-					(v33).UnmarshalEasyJSON(in)
-					out.Compositors = append(out.Compositors, v33)
+					var v24 PersonTrunc
+					(v24).UnmarshalEasyJSON(in)
+					out.Compositors = append(out.Compositors, v24)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1653,9 +1529,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Screenwriters = (out.Screenwriters)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v34 PersonTrunc
-					(v34).UnmarshalEasyJSON(in)
-					out.Screenwriters = append(out.Screenwriters, v34)
+					var v25 PersonTrunc
+					(v25).UnmarshalEasyJSON(in)
+					out.Screenwriters = append(out.Screenwriters, v25)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1678,9 +1554,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 					out.Images = (out.Images)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v35 Image
-					(v35).UnmarshalEasyJSON(in)
-					out.Images = append(out.Images, v35)
+					var v26 Image
+					(v26).UnmarshalEasyJSON(in)
+					out.Images = append(out.Images, v26)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1721,11 +1597,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v36, v37 := range in.Countries {
-				if v36 > 0 {
+			for v27, v28 := range in.Countries {
+				if v27 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v37))
+				out.String(string(v28))
 			}
 			out.RawByte(']')
 		}
@@ -1737,11 +1613,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v38, v39 := range in.Genres {
-				if v38 > 0 {
+			for v29, v30 := range in.Genres {
+				if v29 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v39))
+				out.String(string(v30))
 			}
 			out.RawByte(']')
 		}
@@ -1753,11 +1629,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v40, v41 := range in.Actors {
-				if v40 > 0 {
+			for v31, v32 := range in.Actors {
+				if v31 > 0 {
 					out.RawByte(',')
 				}
-				(v41).MarshalEasyJSON(out)
+				(v32).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1769,11 +1645,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v42, v43 := range in.Directors {
-				if v42 > 0 {
+			for v33, v34 := range in.Directors {
+				if v33 > 0 {
 					out.RawByte(',')
 				}
-				(v43).MarshalEasyJSON(out)
+				(v34).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1785,11 +1661,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v44, v45 := range in.Producers {
-				if v44 > 0 {
+			for v35, v36 := range in.Producers {
+				if v35 > 0 {
 					out.RawByte(',')
 				}
-				(v45).MarshalEasyJSON(out)
+				(v36).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1801,11 +1677,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v46, v47 := range in.Compositors {
-				if v46 > 0 {
+			for v37, v38 := range in.Compositors {
+				if v37 > 0 {
 					out.RawByte(',')
 				}
-				(v47).MarshalEasyJSON(out)
+				(v38).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1817,11 +1693,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v48, v49 := range in.Screenwriters {
-				if v48 > 0 {
+			for v39, v40 := range in.Screenwriters {
+				if v39 > 0 {
 					out.RawByte(',')
 				}
-				(v49).MarshalEasyJSON(out)
+				(v40).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -1838,11 +1714,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v50, v51 := range in.Images {
-				if v50 > 0 {
+			for v41, v42 := range in.Images {
+				if v41 > 0 {
 					out.RawByte(',')
 				}
-				(v51).MarshalEasyJSON(out)
+				(v42).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2067,9 +1943,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels14(i
 					out.Genres = (out.Genres)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v52 Genre
-					v52 = Genre(in.String())
-					out.Genres = append(out.Genres, v52)
+					var v43 Genre
+					v43 = Genre(in.String())
+					out.Genres = append(out.Genres, v43)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2114,11 +1990,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels14(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v53, v54 := range in.Genres {
-				if v53 > 0 {
+			for v44, v45 := range in.Genres {
+				if v44 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v54))
+				out.String(string(v45))
 			}
 			out.RawByte(']')
 		}
@@ -2196,9 +2072,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 					out.Countries = (out.Countries)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v55 string
-					v55 = string(in.String())
-					out.Countries = append(out.Countries, v55)
+					var v46 string
+					v46 = string(in.String())
+					out.Countries = append(out.Countries, v46)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2219,9 +2095,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 					out.Actors = (out.Actors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v56 PersonTrunc
-					(v56).UnmarshalEasyJSON(in)
-					out.Actors = append(out.Actors, v56)
+					var v47 PersonTrunc
+					(v47).UnmarshalEasyJSON(in)
+					out.Actors = append(out.Actors, v47)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2242,9 +2118,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 					out.Directors = (out.Directors)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v57 PersonTrunc
-					(v57).UnmarshalEasyJSON(in)
-					out.Directors = append(out.Directors, v57)
+					var v48 PersonTrunc
+					(v48).UnmarshalEasyJSON(in)
+					out.Directors = append(out.Directors, v48)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2265,9 +2141,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 					out.Images = (out.Images)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v58 Image
-					(v58).UnmarshalEasyJSON(in)
-					out.Images = append(out.Images, v58)
+					var v49 Image
+					(v49).UnmarshalEasyJSON(in)
+					out.Images = append(out.Images, v49)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2296,9 +2172,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 					out.Genres = (out.Genres)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v59 Genre
-					v59 = Genre(in.String())
-					out.Genres = append(out.Genres, v59)
+					var v50 Genre
+					v50 = Genre(in.String())
+					out.Genres = append(out.Genres, v50)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2333,11 +2209,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v60, v61 := range in.Countries {
-				if v60 > 0 {
+			for v51, v52 := range in.Countries {
+				if v51 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v61))
+				out.String(string(v52))
 			}
 			out.RawByte(']')
 		}
@@ -2349,11 +2225,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v62, v63 := range in.Actors {
-				if v62 > 0 {
+			for v53, v54 := range in.Actors {
+				if v53 > 0 {
 					out.RawByte(',')
 				}
-				(v63).MarshalEasyJSON(out)
+				(v54).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2365,11 +2241,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v64, v65 := range in.Directors {
-				if v64 > 0 {
+			for v55, v56 := range in.Directors {
+				if v55 > 0 {
 					out.RawByte(',')
 				}
-				(v65).MarshalEasyJSON(out)
+				(v56).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2381,11 +2257,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v66, v67 := range in.Images {
-				if v66 > 0 {
+			for v57, v58 := range in.Images {
+				if v57 > 0 {
 					out.RawByte(',')
 				}
-				(v67).MarshalEasyJSON(out)
+				(v58).MarshalEasyJSON(out)
 			}
 			out.RawByte(']')
 		}
@@ -2417,11 +2293,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v68, v69 := range in.Genres {
-				if v68 > 0 {
+			for v59, v60 := range in.Genres {
+				if v59 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v69))
+				out.String(string(v60))
 			}
 			out.RawByte(']')
 		}
