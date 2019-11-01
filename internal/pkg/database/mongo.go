@@ -2,8 +2,9 @@ package database
 
 import (
 	"context"
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -78,7 +79,7 @@ func (conn *MongoConnection) InitCounters() error {
 	return errors.Wrap(err, "init counters collection failed")
 }
 
-func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
+func (conn *MongoConnection) Upsert(in interface{}) *models.Error {
 	var e *models.Error
 	switch in := in.(type) {
 	case models.NewUser:
@@ -90,11 +91,15 @@ func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
 	case models.Film:
 		e = UpdateFilm(conn, in)
 	case models.UserCookie:
-		e = InsertOrUpdateUserCookie(conn, in)
+		e = UpsertUserCookie(conn, in)
+	case models.NewPerson:
+		e = InsertPerson(conn, in)
 	case models.Person:
-		e = InsertOrUpdatePerson(conn, in)
-	case models.Review:
+		e = UpdatePerson(conn, in)
+	case models.NewReview:
 		e = InsertReview(conn, in)
+	case models.Review:
+		e = UpdateReview(conn, in)
 	case models.Like:
 		e = InsertLike(conn, in)
 	default:
@@ -117,6 +122,12 @@ func (conn *MongoConnection) Get(id models.ID, target string) (interface{}, *mod
 			return f, nil
 		}
 		return nil, Error.New(http.StatusNotFound, "no film with the id: "+id.String())
+	case configs.Default.PersonTargetName:
+		f, ok := conn.FindPersonByID(id)
+		if ok {
+			return f, nil
+		}
+		return nil, Error.New(http.StatusNotFound, "no person with the id: "+id.String())
 	}
 	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
@@ -212,7 +223,6 @@ func (conn *MongoConnection) GetFilmsOfGenreSortedByRating(genre models.Genre, l
 func (conn *MongoConnection) GetFilmsOfYearSortedByRating(year int, limit int, offset int) ([]models.Film, *models.Error) {
 	return nil, nil
 }
-
 
 func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {
 	return nil, nil

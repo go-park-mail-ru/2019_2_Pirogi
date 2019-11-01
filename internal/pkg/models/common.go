@@ -34,6 +34,8 @@ type Image struct {
 	Filename string `json:"filename"`
 }
 
+type ReviewsNum int
+
 /*
 type Award struct {
 	ID   ID     `json:"id"`

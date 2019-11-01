@@ -53,7 +53,7 @@ func Login(ctx echo.Context, db database.Database, email, password string) *mode
 			return error.New(http.StatusBadRequest, "invalid credentials")
 		}
 		cookie := GenerateCookie(configs.Default.CookieAuthName, email)
-		e := db.InsertOrUpdate(models.UserCookie{UserID: u.ID, Cookie: &cookie})
+		e := db.Upsert(models.UserCookie{UserID: u.ID, Cookie: &cookie})
 		if e != nil {
 			return e
 		}

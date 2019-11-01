@@ -10,8 +10,6 @@ import (
 	"strconv"
 	"time"
 
-	"gopkg.in/yaml.v2"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/images"

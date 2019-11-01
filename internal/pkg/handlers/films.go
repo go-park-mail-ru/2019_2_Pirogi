@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"strconv"
 
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
@@ -16,7 +18,7 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-		obj, e := conn.Get(models.ID(id), "film")
+		obj, e := conn.Get(models.ID(id), configs.Default.FilmTargetName)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
@@ -45,7 +47,7 @@ func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		e := conn.InsertOrUpdate(newFilm)
+		e := conn.Upsert(newFilm)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

@@ -2,8 +2,6 @@ package models
 
 import "time"
 
-type ReviewsNum int
-
 type NewReview struct {
 	Title    string `json:"title"`
 	Body     string `json:"body"`
@@ -14,7 +12,6 @@ type NewReview struct {
 // TODO: remove binary choice of film's like/dislike
 type Review struct {
 	NewReview
-	ID    ID        `json:"id, omitempty"`
 	Date  time.Time `json:"date"`
 	Likes int       `json:"likes"`
 }

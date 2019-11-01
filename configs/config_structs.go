@@ -31,6 +31,7 @@ type DefaultConfig struct {
 	UserTargetName   string `yaml:"user_target_name"`
 	FilmTargetName   string `yaml:"film_target_name"`
 	CookieTargetName string `yaml:"cookie_target_name"`
+	PersonTargetName string `yaml:"person_target_name"`
 }
 
 var Default DefaultConfig

@@ -1,8 +1,10 @@
 package database
 
 import (
-	"github.com/pkg/errors"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/review"
+	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
@@ -43,7 +45,7 @@ func InsertUser(conn *MongoConnection, in models.NewUser) *models.Error {
 }
 
 func UpdateUser(conn *MongoConnection, in models.User) *models.Error {
-	filter := bson.M{"_id": in.ID}
+	filter := bson.M{"usertrunc.id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.users.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -74,7 +76,7 @@ func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 }
 
 func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
-	filter := bson.M{"_id": in.ID}
+	filter := bson.M{"filmtrunc.id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.films.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -83,7 +85,7 @@ func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
 	return nil
 }
 
-func InsertOrUpdateUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error {
+func UpsertUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error {
 	filter := bson.M{"_id": in.UserID}
 	foundCookie := models.UserCookie{}
 	err := conn.cookies.FindOne(conn.context, filter).Decode(&foundCookie)
@@ -99,38 +101,64 @@ func InsertOrUpdateUserCookie(conn *MongoConnection, in models.UserCookie) *mode
 	return nil
 }
 
-func InsertOrUpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
-	person, ok := conn.FindPersonByID(in.ID)
+// It is supposed that there cannot be persons with the same name and birthday
+func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
+	person, ok := conn.FindPersonByNameAndBirthday(in.Name, in.Birthday)
+	if ok {
+		return Error.New(http.StatusBadRequest, "person with this name and birthday already exists")
+	}
 
-	// if we do not have user in database
-	if !ok {
-		id, err := conn.GetNextSequence(configs.Default.UserTargetName)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert person in database")
-		}
-		newPerson, e := Person.CreatePerson(id, person)
-		if e != nil {
-			return e
-		}
-		_, err = conn.persons.InsertOne(conn.context, newPerson)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert person in database")
-		}
-	} else {
-		filter := bson.M{"_id": in.ID}
-		update := bson.M{"$set": in}
-		_, err := conn.films.UpdateOne(conn.context, filter, update)
-		if err != nil {
-			return Error.New(http.StatusNotFound, "person not found")
-		}
+	id, err := conn.GetNextSequence(configs.Default.UserTargetName)
+	if err != nil {
+		return Error.New(http.StatusInternalServerError, "cannot insert person in database")
+	}
+	newPerson, e := Person.CreatePerson(id, person)
+	if e != nil {
+		return e
+	}
+	_, err = conn.persons.InsertOne(conn.context, newPerson)
+	if err != nil {
+		return Error.New(http.StatusInternalServerError, "cannot insert person in database")
+	}
+	return nil
+}
+
+func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
+	filter := bson.M{"persontrunc.id": in.ID}
+	update := bson.M{"$set": in}
+	_, err := conn.films.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		return Error.New(http.StatusNotFound, "person not found")
+	}
+	return nil
+}
+
+func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
+	rev, err := review.CreateReview(in)
+	if err != nil {
+		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
+	}
+	_, err = conn.reviews.InsertOne(conn.context, rev)
+	if err != nil {
+		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
+	}
+	return nil
+}
+
+func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
+	filter := bson.M{"": in.Date}
+	update := bson.M{"$set": in}
+	_, err := conn.reviews.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		return Error.New(http.StatusNotFound, "review not found")
 	}
 	return nil
 }
 
 func InsertLike(conn *MongoConnection, in models.Like) *models.Error {
-	return nil
-}
-
-func InsertReview(conn *MongoConnection, in models.Review) *models.Error {
+	_, err := conn.likes.InsertOne(conn.context, in)
+	if err != nil {
+		return Error.New(http.StatusInternalServerError, "cannot insert like in database")
+	}
 	return nil
 }

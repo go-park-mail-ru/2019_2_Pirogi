@@ -7,7 +7,7 @@ import (
 )
 
 type Database interface {
-	InsertOrUpdate(in interface{}) *models.Error
+	Upsert(in interface{}) *models.Error
 	Get(id models.ID, target string) (interface{}, *models.Error)
 	Delete(in interface{}) *models.Error
 	ClearDB()

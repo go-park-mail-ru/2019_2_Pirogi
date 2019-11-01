@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"io/ioutil"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
-	"io/ioutil"
-	"net/http"
 )
 
 func GetHandlerLikesCreate(conn database.Database) echo.HandlerFunc {
@@ -31,7 +32,7 @@ func GetHandlerLikesCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		newLike.UserID = userID
-		e := conn.InsertOrUpdate(newLike)
+		e := conn.Upsert(newLike)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

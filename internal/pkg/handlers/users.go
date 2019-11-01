@@ -36,7 +36,7 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
 		}
-		obj, e := conn.Get(models.ID(id), "user")
+		obj, e := conn.Get(models.ID(id), configs.Default.UserTargetName)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
@@ -70,7 +70,7 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		e := conn.InsertOrUpdate(newUser)
+		e := conn.Upsert(newUser)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
@@ -109,7 +109,7 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 		case updateUser.Description != "":
 			user.Description = updateUser.Description
 		}
-		e := conn.InsertOrUpdate(user)
+		e := conn.Upsert(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/labstack/echo"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/labstack/echo"
 )
 
 func GetHandlerPerson(conn database.Database) echo.HandlerFunc {
@@ -39,13 +40,13 @@ func GetHandlerPersonsCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		newPerson := models.Person{}
+		newPerson := models.NewPerson{}
 		err = newPerson.UnmarshalJSON(rawBody)
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		e := conn.InsertOrUpdate(newPerson)
+		e := conn.Upsert(newPerson)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

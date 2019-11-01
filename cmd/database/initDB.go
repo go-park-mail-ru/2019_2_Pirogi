@@ -19,25 +19,25 @@ func FakeFillDB(conn *database.MongoConnection) {
 		Path:  "/",
 	}
 
-	conn.InsertOrUpdate(models.NewUser{
+	conn.Upsert(models.NewUser{
 		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
 		Username:    "Oleg",
 	})
-	conn.InsertOrUpdate(models.UserCookie{UserID: 0, Cookie: &cookie})
+	conn.Upsert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
-	conn.InsertOrUpdate(models.NewUser{
+	conn.Upsert(models.NewUser{
 		Credentials: models.Credentials{Email: "anton@mail.ru", Password: user.GetMD5Hash("qwe523")},
 		Username:    "Anton",
 	})
-	conn.InsertOrUpdate(models.UserCookie{UserID: 1, Cookie: &cookie})
+	conn.Upsert(models.UserCookie{UserID: 1, Cookie: &cookie})
 
-	conn.InsertOrUpdate(models.NewUser{
+	conn.Upsert(models.NewUser{
 		Credentials: models.Credentials{Email: "yura@gmail.com", Password: user.GetMD5Hash("12312312")},
 		Username:    "Yura",
 	})
-	conn.InsertOrUpdate(models.UserCookie{UserID: 2, Cookie: &cookie})
+	conn.Upsert(models.UserCookie{UserID: 2, Cookie: &cookie})
 
-	conn.InsertOrUpdate(models.NewFilm{
+	conn.Upsert(models.NewFilm{
 		Title: "Бойцовский клуб",
 		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
 			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
