@@ -12,7 +12,7 @@ func CreateFilm(id models.ID, newFilm *models.NewFilm) (models.Film, *models.Err
 			Year:   newFilm.Year,
 			Genres: newFilm.Genres,
 			Poster: newFilm.Poster,
-			Rating: 0,
+			Mark: 0,
 		},
 		Description: newFilm.Description,
 		Actors:      newFilm.Actors,

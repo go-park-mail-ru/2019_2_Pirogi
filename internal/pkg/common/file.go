@@ -2,6 +2,7 @@ package common
 
 import (
 	"bufio"
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"math/rand"
 	"net/http"

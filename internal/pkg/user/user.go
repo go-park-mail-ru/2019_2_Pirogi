@@ -16,7 +16,7 @@ func CreateUser(id models.ID, newUser *models.NewUser) (models.User, *models.Err
 		UserTrunc: models.UserTrunc{
 			ID:          id,
 			Username:    newUser.Username,
-			Rating:      0,
+			Mark:        0,
 			Description: "",
 			Image: models.Image{
 				ID:       -1,

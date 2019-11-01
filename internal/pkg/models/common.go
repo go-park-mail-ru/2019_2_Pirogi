@@ -19,8 +19,8 @@ func (fm Mark) String() string {
 }
 
 type Error struct {
-	Status int    `json:"status"`
-	Error  string `json:"error"`
+	Status int    `json:"status" valid:"numeric"`
+	Error  string `json:"error" valid:"alphanum"`
 }
 
 type Role string
@@ -30,14 +30,8 @@ type Target string
 type Genre string
 
 type Image struct {
-	ID       ID     `json:"id"`
-	Filename string `json:"filename"`
+	ID       ID     `json:"id" valid:"numeric"`
+	Filename string `json:"filename" valid:"image"`
 }
 
 type ReviewsNum int
-
-/*
-type Award struct {
-	ID   ID     `json:"id"`
-	Name string `json:"name"`
-}*/

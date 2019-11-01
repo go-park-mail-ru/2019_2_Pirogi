@@ -26,13 +26,13 @@ func GetHandlerRatingsCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		newRating := models.Rating{}
-		err = newRating.UnmarshalJSON(rawBody)
+		newStars := models.Stars{}
+		err = newStars.UnmarshalJSON(rawBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		newRating.UserID = userID
-		e := conn.Upsert(newRating)
+		newStars.UserID = userID
+		e := conn.Upsert(newStars)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
