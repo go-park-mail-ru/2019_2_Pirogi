@@ -16,5 +16,5 @@ docker-compose up --build --detach server mongo
 
 if [ "$1" = "-first-time" ]; then
   echo "---Filling db..."
-  cd ../cmd/database/ && go run initDB.go
+  cd cmd/database/ && go run initDB.go
 fi

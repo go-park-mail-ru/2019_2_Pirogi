@@ -1,11 +1,12 @@
 package auth
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"log"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/stretchr/testify/require"

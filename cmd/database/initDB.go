@@ -3,6 +3,7 @@ package main
 import (
 	"flag"
 	"net/http"
+	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
@@ -79,6 +80,17 @@ func FakeFillDB(conn *database.MongoConnection) {
 		Genres:    []models.Genre{"триллер", "драма", "криминал"},
 		PersonsID: []models.ID{0, 1, 2},
 	})
+
+	for i := 3; i < 11; i++ {
+		conn.Upsert(models.NewFilm{
+			Title:       "Film " + strconv.Itoa(i),
+			Description: "Description of film " + strconv.Itoa(i),
+			Year:        "2009",
+			Countries:   []string{"Беларусь", "Германия"},
+			Genres:      []models.Genre{"триллер", "драма", "криминал"},
+			PersonsID:   []models.ID{0, 1, 2},
+		})
+	}
 
 	conn.Upsert(models.NewReview{
 		Title:    "Best review title",

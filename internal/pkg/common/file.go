@@ -2,7 +2,6 @@ package common
 
 import (
 	"bufio"
-	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
@@ -10,6 +9,8 @@ import (
 	"path/filepath"
 	"strconv"
 	"time"
+
+	"gopkg.in/yaml.v2"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 

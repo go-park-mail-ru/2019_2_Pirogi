@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/asaskevich/govalidator"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/asaskevich/govalidator"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"

@@ -1,11 +1,12 @@
 package validators
 
 import (
+	"testing"
+	"time"
+
 	valid "github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/stretchr/testify/require"
-	"testing"
-	"time"
 )
 
 const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
