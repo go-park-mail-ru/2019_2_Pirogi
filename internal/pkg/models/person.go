@@ -8,7 +8,7 @@ type NewPerson struct {
 }
 
 type Person struct {
-	ID         ID      `json:"id, omitempty" valid:"numeric"`
+	ID         ID      `json:"id, omitempty" bson:"_id" valid:"numeric"`
 	Name       string  `json:"name" valid:"text, stringlength(1|50)"`
 	Mark       Mark    `json:"mark" valid:"mark, optional"`
 	Roles      []Role  `json:"type" valid:"roles"`

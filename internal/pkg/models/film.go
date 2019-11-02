@@ -11,7 +11,7 @@ type NewFilm struct {
 }
 
 type Film struct {
-	ID          ID       `json:"id" valid:"numeric,optional"`
+	ID          ID       `json:"id" bson:"_id" valid:"numeric,optional"`
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
 	Year        string   `json:"year" valid:"year, stringlength(4|4)"`
 	Genres      []Genre  `json:"genres" valid:"genres"`

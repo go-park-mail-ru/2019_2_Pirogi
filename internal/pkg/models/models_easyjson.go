@@ -4,11 +4,10 @@ package models
 
 import (
 	json "encoding/json"
-	http "net/http"
-
 	easyjson "github.com/mailru/easyjson"
 	jlexer "github.com/mailru/easyjson/jlexer"
 	jwriter "github.com/mailru/easyjson/jwriter"
+	http "net/http"
 )
 
 // suppress unused package warning

@@ -19,7 +19,7 @@ func (conn *MongoConnection) GetNextSequence(target string) (models.ID, error) {
 	result := struct {
 		Seq int `bson:"seq"`
 	}{}
-	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"id": target},
+	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
 		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
 	return models.ID(result.Seq), errors.Wrap(err, "get next sequence failed")
 }
@@ -76,7 +76,7 @@ func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 }
 
 func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
-	filter := bson.M{"id": in.ID}
+	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.films.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -86,7 +86,7 @@ func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
 }
 
 func UpsertUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error {
-	filter := bson.M{"id": in.UserID}
+	filter := bson.M{"_id": in.UserID}
 	foundCookie := models.UserCookie{}
 	err := conn.cookies.FindOne(conn.context, filter).Decode(&foundCookie)
 	if err != nil {
@@ -124,7 +124,7 @@ func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
 }
 
 func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
-	filter := bson.M{"id": in.ID}
+	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.films.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -151,7 +151,7 @@ func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
 }
 
 func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
-	filter := bson.M{"id": in.ID}
+	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.reviews.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -161,7 +161,7 @@ func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
 }
 
 func InsertStars(conn *MongoConnection, in models.Stars) *models.Error {
-	filter := bson.M{"id": in.FilmID}
+	filter := bson.M{"_id": in.FilmID}
 	// TODO: рассчитывать newMark
 	newMark := in.Mark
 	update := bson.M{"$set": bson.M{"mark": newMark}}

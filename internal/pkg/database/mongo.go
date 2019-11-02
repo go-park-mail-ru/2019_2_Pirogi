@@ -73,10 +73,10 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 
 func (conn *MongoConnection) InitCounters() error {
 	_, err := conn.counters.InsertMany(conn.context, []interface{}{
-		bson.M{"id": configs.Default.UserTargetName, "seq": 0},
-		bson.M{"id": configs.Default.FilmTargetName, "seq": 0},
-		bson.M{"id": configs.Default.PersonTargetName, "seq": 0},
-		bson.M{"id": configs.Default.ReviewTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.UserTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.PersonTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.ReviewTargetName, "seq": 0},
 	})
 	return errors.Wrap(err, "init counters collection failed")
 }
@@ -143,7 +143,7 @@ func (conn *MongoConnection) Delete(in interface{}) *models.Error {
 		if !ok {
 			return nil
 		}
-		_, err := conn.cookies.DeleteOne(conn.context, bson.M{"id": u.ID})
+		_, err := conn.cookies.DeleteOne(conn.context, bson.M{"_id": u.ID})
 		if err != nil {
 			return Error.New(http.StatusInternalServerError, "cannot delete cookie from database: "+err.Error())
 		}
@@ -176,7 +176,7 @@ func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
 
 func (conn *MongoConnection) FindUserByID(id models.ID) (models.User, bool) {
 	result := models.User{}
-	err := conn.users.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
+	err := conn.users.FindOne(conn.context, bson.M{"usertrunc.id": id}).Decode(&result)
 	return result, err == nil
 }
 
@@ -211,25 +211,25 @@ func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
 
 func (conn *MongoConnection) FindFilmByID(id models.ID) (models.Film, bool) {
 	result := models.Film{}
-	err := conn.films.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
+	err := conn.films.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
 func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool) {
 	result := models.Person{}
-	err := conn.persons.FindOne(conn.context, bson.M{"person.name": name, "person.birthday": birthday}).Decode(&result)
+	err := conn.persons.FindOne(conn.context, bson.M{"name": name, "birthday": birthday}).Decode(&result)
 	return result, err == nil
 }
 
 func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) {
 	result := models.Person{}
-	err := conn.persons.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
+	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
 func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) {
 	result := models.Review{}
-	err := conn.reviews.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
+	err := conn.reviews.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
