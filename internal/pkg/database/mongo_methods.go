@@ -179,3 +179,20 @@ func InsertLike(conn *MongoConnection, in models.Like) *models.Error {
 	}
 	return nil
 }
+
+func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]models.Film, *models.Error) {
+	curs, err := conn.films.Aggregate(conn.context, pipeline)
+	if err != nil {
+		return nil, Error.New(http.StatusInternalServerError, "error while aggregating films")
+	}
+	var result []models.Film
+	for curs.Next(conn.context) {
+		f := models.Film{}
+		err = curs.Decode(&f)
+		if err != nil {
+			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in films")
+		}
+		result = append(result, f)
+	}
+	return result, nil
+}

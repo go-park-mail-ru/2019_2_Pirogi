@@ -87,7 +87,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 			Description: "Description of film " + strconv.Itoa(i),
 			Year:        "2009",
 			Countries:   []string{"Беларусь", "Германия"},
-			Genres:      []models.Genre{"триллер", "драма", "криминал"},
+			Genres:      []models.Genre{"триллер", "драма"},
 			PersonsID:   []models.ID{0, 1, 2},
 		})
 	}
@@ -132,7 +132,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 }
 
 func main() {
-	configsPath := flag.String("config", "../../configs/", "directory with configs")
+	configsPath := flag.String("config", "./configs/", "directory with configs")
 	flag.Parse()
 
 	err := common.UnmarshalConfigs(configsPath)

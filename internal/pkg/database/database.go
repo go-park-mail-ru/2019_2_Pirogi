@@ -28,8 +28,8 @@ type Database interface {
 	FindReviewByID(id models.ID) (models.Review, bool)
 
 	GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error)
-	GetFilmsOfGenreSortedByRating(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error)
-	GetFilmsOfYearSortedByRating(year int, limit int, offset int) ([]models.Film, *models.Error)
+	GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error)
+	GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error)
 
 	GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error)
 	GetReviewsOfFilmSortedByDate(filmTitle string, limit int, offset int) ([]models.Review, *models.Error)

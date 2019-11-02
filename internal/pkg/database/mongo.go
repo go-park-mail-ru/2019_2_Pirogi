@@ -236,31 +236,30 @@ func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) 
 func (conn *MongoConnection) GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error) {
 	pipeline := []bson.M{
 		{"$sort": bson.M{"mark": -1}},
-		{"$skip": offset},
 		{"$limit": limit},
+		{"$skip": offset},
 	}
-	curs, err := conn.films.Aggregate(conn.context, pipeline)
-	if err != nil {
-		return nil, Error.New(http.StatusInternalServerError, "cannot get films sorted by mark from database")
-	}
-	var result []models.Film
-	for curs.Next(conn.context) {
-		film := models.Film{}
-		err = curs.Decode(&film)
-		if err != nil {
-			return nil, Error.New(http.StatusInternalServerError, "cannot get films sorted by mark from database")
-		}
-		result = append(result, film)
-	}
-	return result, nil
+	return AggregateFilms(conn, pipeline)
 }
 
-func (conn *MongoConnection) GetFilmsOfGenreSortedByRating(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {
-	return nil, nil
+func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"genres": genre}},
+		{"$sort": bson.M{"mark": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateFilms(conn, pipeline)
 }
 
-func (conn *MongoConnection) GetFilmsOfYearSortedByRating(year int, limit int, offset int) ([]models.Film, *models.Error) {
-	return nil, nil
+func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"year": year}},
+		{"$sort": bson.M{"mark": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateFilms(conn, pipeline)
 }
 
 func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {
