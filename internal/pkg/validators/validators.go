@@ -143,11 +143,11 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("image", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(string)
+		subject, ok := i.(models.Image)
 		if !ok {
 			return false
 		}
-		return imagePattern.MatchString(subject)
+		return imagePattern.MatchString(string(subject))
 	})
 
 	valid.CustomTypeTagMap.Set("films_trunc", func(i interface{}, o interface{}) bool {
@@ -184,8 +184,7 @@ func InitValidator() {
 			return false
 		}
 		for _, image := range subject {
-			ok, _ := valid.ValidateStruct(image)
-			if !ok {
+			if !imagePattern.MatchString(string(image)) {
 				return false
 			}
 		}

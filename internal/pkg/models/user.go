@@ -17,7 +17,7 @@ type UserTrunc struct {
 	Username    string `json:"username" valid:"title"`
 	Mark        Mark   `json:"mark" valid:"mark, optional"`
 	Description string `json:"description" valid:"description"`
-	Image       Image  `json:"image" valid:"required, optional"`
+	Image       Image  `json:"image" valid:"image, optional"`
 }
 
 type User struct {

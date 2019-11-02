@@ -33,16 +33,6 @@ func TestStars(t *testing.T) {
 	require.NoError(t, err)
 }
 
-func TestImage(t *testing.T) {
-	InitValidator()
-	image := models.Image{
-		ID:       12,
-		Filename: "cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg",
-	}
-	_, err := valid.ValidateStruct(image)
-	require.NoError(t, err)
-}
-
 func TestTruncUser(t *testing.T) {
 	InitValidator()
 	userTrunc := models.UserTrunc{
@@ -50,10 +40,7 @@ func TestTruncUser(t *testing.T) {
 		Username:    "Artefakt1",
 		Mark:        3.5,
 		Description: "lalalalal",
-		Image: models.Image{
-			ID:       2,
-			Filename: "cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg",
-		},
+		Image:       "cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg",
 	}
 	_, err := valid.ValidateStruct(userTrunc)
 	require.NoError(t, err)
@@ -65,11 +52,8 @@ func TestTruncFilm(t *testing.T) {
 		Title:  "matrix",
 		Year:   "1998",
 		Genres: []models.Genre{"драма"},
-		Poster: models.Image{
-			ID:       12,
-			Filename: imageFilename,
-		},
-		Mark: 3.4,
+		Poster: imageFilename,
+		Mark:   3.4,
 	}
 	_, err := valid.ValidateStruct(filmTrunc)
 	require.NoError(t, err)
@@ -97,37 +81,26 @@ func TestPersonTrunc(t *testing.T) {
 
 func TestPerson(t *testing.T) {
 	InitValidator()
-	image := models.Image{
-		ID:       12,
-		Filename: "cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg",
-	}
+	image := models.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
+
 	personTrunc := models.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
 		Mark: models.Mark(0.4),
 	}
-	filmTrunc := models.FilmTrunc{
-		ID:     2,
-		Title:  "matrix",
-		Year:   "1998",
-		Genres: []models.Genre{"драма"},
-		Poster: models.Image{
-			ID:       12,
-			Filename: imageFilename,
-		},
-		Mark: 3.0,
-	}
 	person := models.Person{
-		PersonTrunc: personTrunc,
-		Roles:       []models.Role{"actor"},
-		Birthday:    "09.12.1998",
-		Birthplace:  "USA",
-		Genres:      []models.Genre{"драма"},
-		FilmsID: []models.FilmTrunc{
-			filmTrunc,
+		ID:         personTrunc.ID,
+		Name:       personTrunc.Name,
+		Mark:       personTrunc.Mark,
+		Roles:      []models.Role{"actor"},
+		Birthday:   "09.12.1998",
+		Birthplace: "USA",
+		Genres:     []models.Genre{"драма"},
+		FilmsID: []models.ID{
+			0,
 		},
 		Likes: 2,
-		ImagesID: []models.Image{
+		Images: []models.Image{
 			image,
 		},
 	}
@@ -136,35 +109,26 @@ func TestPerson(t *testing.T) {
 }
 
 func TestFilm(t *testing.T) {
-	image := models.Image{
-		ID:       12,
-		Filename: "cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg",
-	}
-	personTrunc := models.PersonTrunc{
-		ID:   12,
-		Name: "artefakt",
-		Mark: models.Mark(0.4),
-	}
+	image := models.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
 	filmTrunc := models.FilmTrunc{
 		ID:     2,
 		Title:  "matrix",
 		Year:   "1998",
 		Genres: []models.Genre{"драма"},
-		Poster: models.Image{
-			ID:       12,
-			Filename: imageFilename,
-		},
-		Mark: 3.0,
+		Poster: models.Image(imageFilename),
+		Mark:   3.0,
 	}
 	film := models.Film{
-		FilmTrunc:   filmTrunc,
+		ID:          filmTrunc.ID,
+		Title:       filmTrunc.Title,
+		Year:        filmTrunc.Year,
+		Genres:      filmTrunc.Genres,
+		Poster:      filmTrunc.Poster,
+		Mark:        filmTrunc.Mark,
 		Countries:   []string{"USA"},
 		Description: "laslasldasldlasdl",
-		PersonsID: []models.PersonTrunc{
-			personTrunc,
-		},
-		Directors: []models.PersonTrunc{
-			personTrunc,
+		PersonsID: []models.ID{
+			0,
 		},
 		Images: []models.Image{
 			image,

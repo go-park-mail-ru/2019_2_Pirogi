@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	film2 "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"net/http"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
@@ -18,7 +19,8 @@ func GetHandlerList(conn database.Database) echo.HandlerFunc {
 				continue
 			}
 			film := obj.(models.Film)
-			jsonModel, err := film.MarshalJSON()
+			filmFull := film2.MakerFullFilm(conn, film)
+			jsonModel, err := filmFull.MarshalJSON()
 			if err != nil {
 				continue
 			}

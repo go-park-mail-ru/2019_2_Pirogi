@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	film2 "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -24,7 +25,8 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
 		film := obj.(models.Film)
-		jsonBody, err := film.MarshalJSON()
+		filmFull := film2.MakerFullFilm(conn, film)
+		jsonBody, err := filmFull.MarshalJSON()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}

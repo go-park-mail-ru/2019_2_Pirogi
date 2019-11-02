@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	person2 "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/person"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -23,7 +24,8 @@ func GetHandlerPerson(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
 		person := obj.(models.Person)
-		jsonBody, err := person.MarshalJSON()
+		personFull := person2.MakeFullPerson(conn, person)
+		jsonBody, err := personFull.MarshalJSON()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}

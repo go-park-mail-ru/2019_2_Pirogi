@@ -29,9 +29,6 @@ type Target string
 
 type Genre string
 
-type Image struct {
-	ID       ID     `json:"id" valid:"numeric"`
-	Filename string `json:"filename" valid:"image"`
-}
+type Image string
 
 type ReviewsNum int
