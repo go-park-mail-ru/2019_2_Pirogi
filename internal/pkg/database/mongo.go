@@ -263,9 +263,20 @@ func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year string, limit int, 
 }
 
 func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {
-	return nil, nil
+	pipeline := []bson.M{
+		{"$sort": bson.M{"date": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateReviews(conn, pipeline)
 }
 
-func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmTitle string, limit int, offset int) ([]models.Review, *models.Error) {
-	return nil, nil
+func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"newreview.filmid": filmID}},
+		{"$sort": bson.M{"date": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateReviews(conn, pipeline)
 }

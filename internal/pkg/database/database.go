@@ -32,5 +32,5 @@ type Database interface {
 	GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error)
 
 	GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error)
-	GetReviewsOfFilmSortedByDate(filmTitle string, limit int, offset int) ([]models.Review, *models.Error)
+	GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error)
 }

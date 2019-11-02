@@ -4,6 +4,7 @@ import (
 	"flag"
 	"net/http"
 	"strconv"
+	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
@@ -98,6 +99,8 @@ func FakeFillDB(conn *database.MongoConnection) {
 		FilmID:   0,
 		AuthorID: 1,
 	})
+
+	time.Sleep(2 * time.Second)
 
 	conn.Upsert(models.NewReview{
 		Title:    "Best review title 2",

@@ -196,3 +196,20 @@ func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]models.Film,
 	}
 	return result, nil
 }
+
+func AggregateReviews(conn *MongoConnection, pipeline interface{}) ([]models.Review, *models.Error) {
+	curs, err := conn.reviews.Aggregate(conn.context, pipeline)
+	if err != nil {
+		return nil, Error.New(http.StatusInternalServerError, "error while aggregating reviews")
+	}
+	var result []models.Review
+	for curs.Next(conn.context) {
+		f := models.Review{}
+		err = curs.Decode(&f)
+		if err != nil {
+			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in reviews")
+		}
+		result = append(result, f)
+	}
+	return result, nil
+}
