@@ -4,7 +4,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
@@ -25,7 +24,10 @@ func GetHandlerList(conn database.Database) echo.HandlerFunc {
 			if err != nil {
 				continue
 			}
-			jsonBody = common.UnionJSONAsArray(jsonBody, jsonModel)
+			if i > 0 {
+				jsonBody = append(jsonBody, []byte(",")...)
+			}
+			jsonBody = append(jsonBody, jsonModel...)
 		}
 
 		_, err := ctx.Response().Write(jsonBody)

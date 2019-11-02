@@ -8,12 +8,11 @@ func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 		Title:       in.Title,
 		Year:        in.Year,
 		Genres:      in.Genres,
-		Poster:      "",
 		Mark:        models.Mark(0),
 		Description: in.Description,
 		Countries:   in.Countries,
 		PersonsID:   in.PersonsID,
-		Images:      nil,
+		Images:      []models.Image{"default.png"},
 		ReviewsNum:  0,
 	}
 }
@@ -24,7 +23,6 @@ func MakeTruncFilm(in models.Film) models.FilmTrunc {
 		Title:  in.Title,
 		Year:   in.Year,
 		Genres: in.Genres,
-		Poster: in.Poster,
 		Mark:   in.Mark,
 	}
 }
@@ -39,7 +37,6 @@ func MakeFullFilm(in models.Film, persons []models.Person) models.FilmFull {
 		Title:       in.Title,
 		Year:        in.Year,
 		Genres:      in.Genres,
-		Poster:      in.Poster,
 		Mark:        in.Mark,
 		Description: in.Description,
 		Countries:   in.Countries,

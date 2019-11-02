@@ -1932,8 +1932,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels14(i
 				}
 				in.Delim(']')
 			}
-		case "poster":
-			out.Poster = Image(in.String())
 		case "mark":
 			out.Mark = Mark(in.Float32())
 		default:
@@ -1980,11 +1978,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels14(o
 			}
 			out.RawByte(']')
 		}
-	}
-	{
-		const prefix string = ",\"poster\":"
-		out.RawString(prefix)
-		out.String(string(in.Poster))
 	}
 	{
 		const prefix string = ",\"mark\":"
@@ -2065,8 +2058,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 				}
 				in.Delim(']')
 			}
-		case "poster":
-			out.Poster = Image(in.String())
 		case "mark":
 			out.Mark = Mark(in.Float32())
 		case "description":
@@ -2186,11 +2177,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			}
 			out.RawByte(']')
 		}
-	}
-	{
-		const prefix string = ",\"poster\":"
-		out.RawString(prefix)
-		out.String(string(in.Poster))
 	}
 	{
 		const prefix string = ",\"mark\":"
@@ -2329,8 +2315,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels16(i
 				}
 				in.Delim(']')
 			}
-		case "poster":
-			out.Poster = Image(in.String())
 		case "mark":
 			out.Mark = Mark(in.Float32())
 		case "description":
@@ -2450,11 +2434,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels16(o
 			}
 			out.RawByte(']')
 		}
-	}
-	{
-		const prefix string = ",\"poster\":"
-		out.RawString(prefix)
-		out.String(string(in.Poster))
 	}
 	{
 		const prefix string = ",\"mark\":"

@@ -15,7 +15,6 @@ type Film struct {
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
 	Year        string   `json:"year" valid:"year, stringlength(4|4)"`
 	Genres      []Genre  `json:"genres" valid:"genres"`
-	Poster      Image    `json:"poster" valid:"image, optional"`
 	Mark        Mark     `json:"mark" valid:"mark"`
 	Description string   `json:"description" valid:"text, stringlength(8|50)"`
 	Countries   []string `json:"countries" valid:"countries"`
@@ -29,7 +28,6 @@ type FilmTrunc struct {
 	Title  string  `json:"title" valid:"text, stringlength(1|50)"`
 	Year   string  `json:"year" valid:"year, stringlength(4|4)"`
 	Genres []Genre `json:"genres" valid:"genres"`
-	Poster Image   `json:"poster" valid:"image, optional"`
 	Mark   Mark    `json:"mark" valid:"mark"`
 }
 
@@ -38,7 +36,6 @@ type FilmFull struct {
 	Title       string        `json:"title" valid:"text, stringlength(1|50)"`
 	Year        string        `json:"year" valid:"year, stringlength(4|4)"`
 	Genres      []Genre       `json:"genres" valid:"genres"`
-	Poster      Image         `json:"poster" valid:"image, optional"`
 	Mark        Mark          `json:"mark" valid:"mark"`
 	Description string        `json:"description" valid:"text, stringlength(8|50)"`
 	Countries   []string      `json:"countries" valid:"countries"`

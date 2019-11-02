@@ -12,7 +12,7 @@ func CreatePerson(id models.ID, in models.NewPerson) (models.Person, *models.Err
 		Genres:     []models.Genre{},
 		FilmsID:    []models.ID{},
 		Likes:      0,
-		Images:     []models.Image{},
+		Images:     []models.Image{"default.png"},
 	}, nil
 }
 
