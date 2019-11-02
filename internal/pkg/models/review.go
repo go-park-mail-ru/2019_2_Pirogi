@@ -12,7 +12,7 @@ type NewReview struct {
 // TODO: remove binary choice of film's like/dislike
 type Review struct {
 	NewReview `valid:"required"`
-	ID        ID        `json:"id, omitempty" bson:"_id" valid:"required"`
+	ID        ID        `json:"id, omitempty" valid:"required"`
 	Date      time.Time `json:"date" valid:"time"`
 	Likes     int       `json:"likes" valid:"numeric, optional"`
 }

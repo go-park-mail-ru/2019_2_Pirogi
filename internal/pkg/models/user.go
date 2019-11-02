@@ -31,6 +31,6 @@ type UpdateUser struct {
 }
 
 type UserCookie struct {
-	UserID ID           `json:"user-id" bson:"_id" valid:"numeric"`
+	UserID ID           `json:"user-id" valid:"numeric"`
 	Cookie *http.Cookie `valid:"cookie"`
 }
