@@ -27,7 +27,7 @@ type Database interface {
 
 	FindReviewByID(id models.ID) (models.Review, bool)
 
-	GetFilmsSortedByRating(limit int, offset int) ([]models.Film, *models.Error)
+	GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error)
 	GetFilmsOfGenreSortedByRating(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error)
 	GetFilmsOfYearSortedByRating(year int, limit int, offset int) ([]models.Film, *models.Error)
 

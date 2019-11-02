@@ -114,7 +114,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 
 	conn.Upsert(models.Stars{
 		UserID: 1,
-		FilmID: 0,
+		FilmID: 1,
 		Mark:   5.0,
 	})
 

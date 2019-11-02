@@ -102,6 +102,8 @@ func (conn *MongoConnection) Upsert(in interface{}) *models.Error {
 		e = InsertReview(conn, in)
 	case models.Review:
 		e = UpdateReview(conn, in)
+	case models.Stars:
+		e = InsertStars(conn, in)
 	case models.Like:
 		e = InsertLike(conn, in)
 	default:
@@ -231,9 +233,26 @@ func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) 
 	return result, err == nil
 }
 
-// TODO
-func (conn *MongoConnection) GetFilmsSortedByRating(limit int, offset int) ([]models.Film, *models.Error) {
-	return nil, nil
+func (conn *MongoConnection) GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error) {
+	pipeline := []bson.M{
+		{"$sort": bson.M{"mark": -1}},
+		{"$skip": offset},
+		{"$limit": limit},
+	}
+	curs, err := conn.films.Aggregate(conn.context, pipeline)
+	if err != nil {
+		return nil, Error.New(http.StatusInternalServerError, "cannot get films sorted by mark from database")
+	}
+	var result []models.Film
+	for curs.Next(conn.context) {
+		film := models.Film{}
+		err = curs.Decode(&film)
+		if err != nil {
+			return nil, Error.New(http.StatusInternalServerError, "cannot get films sorted by mark from database")
+		}
+		result = append(result, film)
+	}
+	return result, nil
 }
 
 func (conn *MongoConnection) GetFilmsOfGenreSortedByRating(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {

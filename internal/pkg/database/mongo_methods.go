@@ -76,7 +76,7 @@ func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 }
 
 func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
-	filter := bson.M{"filmtrunc.id": in.ID}
+	filter := bson.M{"id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.films.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -156,6 +156,18 @@ func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
 	_, err := conn.reviews.UpdateOne(conn.context, filter, update)
 	if err != nil {
 		return Error.New(http.StatusNotFound, "review not found")
+	}
+	return nil
+}
+
+func InsertStars(conn *MongoConnection, in models.Stars) *models.Error {
+	filter := bson.M{"id": in.FilmID}
+	// TODO: рассчитывать newMark
+	newMark := in.Mark
+	update := bson.M{"$set": bson.M{"mark": newMark}}
+	_, err := conn.films.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		return Error.New(http.StatusNotFound, "film not found")
 	}
 	return nil
 }
