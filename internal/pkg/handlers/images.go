@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -42,7 +43,7 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 		}
 
 		// TODO: разобраться с изображениями
-		user.Image.Filename = filename
+		user.Image = models.Image(filename)
 		e := conn.Upsert(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)

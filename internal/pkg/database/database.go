@@ -21,9 +21,11 @@ type Database interface {
 
 	FindFilmByTitle(title string) (models.Film, bool)
 	FindFilmByID(id models.ID) (models.Film, bool)
+	FindFilmsByIDs(ids []models.ID) ([]models.Film, bool)
 
 	FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool)
 	FindPersonByID(id models.ID) (models.Person, bool)
+	FindPersonsByIDs(ids []models.ID) ([]models.Person, bool)
 
 	FindReviewByID(id models.ID) (models.Review, bool)
 

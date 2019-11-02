@@ -1,11 +1,6 @@
-package person
+package makers
 
-import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/labstack/gommon/log"
-)
+import "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 
 func CreatePerson(id models.ID, in models.NewPerson) (models.Person, *models.Error) {
 	return models.Person{
@@ -29,20 +24,10 @@ func MakeTruncPerson(in models.Person) models.PersonTrunc {
 	}
 }
 
-func MakeFullPerson(conn database.Database, in models.Person) models.PersonFull {
+func MakeFullPerson(in models.Person, films []models.Film) models.PersonFull {
 	var filmsTrunc []models.FilmTrunc
-	for _, filmID := range in.FilmsID {
-		tmp, err := conn.Get(filmID, "film")
-		if err != nil {
-			log.Warn("Make full person error: ", err)
-			continue
-		}
-		filmTrunc, ok := tmp.(models.Film)
-		if !ok {
-			log.Warn("Make full person error: can not cast into type FilmTrunc")
-			continue
-		}
-		filmsTrunc = append(filmsTrunc, film.MakeTruncFilm(filmTrunc))
+	for _, film := range films {
+		filmsTrunc = append(filmsTrunc, MakeTruncFilm(film))
 	}
 	return models.PersonFull{
 		ID:         in.ID,

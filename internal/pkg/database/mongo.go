@@ -203,6 +203,35 @@ func (conn *MongoConnection) FindUsersByIDs(ids []models.ID) ([]models.User, boo
 	return result, ok
 }
 
+//TODO: надо будет переделать на один запрос к базе)))
+func (conn *MongoConnection) FindPersonsByIDs(ids []models.ID) ([]models.Person, bool) {
+	var result []models.Person
+	ok := true
+	for _, id := range ids {
+		u, found := conn.FindPersonByID(id)
+		if !found {
+			ok = found
+			continue
+		}
+		result = append(result, u)
+	}
+	return result, ok
+}
+
+func (conn *MongoConnection) FindFilmsByIDs(ids []models.ID) ([]models.Film, bool) {
+	var result []models.Film
+	ok := true
+	for _, id := range ids {
+		u, found := conn.FindFilmByID(id)
+		if !found {
+			ok = found
+			continue
+		}
+		result = append(result, u)
+	}
+	return result, ok
+}
+
 func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
 	result := models.Film{}
 	err := conn.films.FindOne(conn.context, bson.M{"title": title}).Decode(&result)

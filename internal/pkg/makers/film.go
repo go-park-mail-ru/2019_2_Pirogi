@@ -1,13 +1,8 @@
-package film
+package makers
 
-import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	person2 "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/person"
-	"github.com/labstack/gommon/log"
-)
+import "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 
-func CreateFilm(id models.ID, in *models.NewFilm) models.Film {
+func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 	return models.Film{
 		ID:          id,
 		Title:       in.Title,
@@ -34,20 +29,10 @@ func MakeTruncFilm(in models.Film) models.FilmTrunc {
 	}
 }
 
-func MakerFullFilm(conn database.Database, in models.Film) models.FilmFull {
+func MakeFullFilm(in models.Film, persons []models.Person) models.FilmFull {
 	var personsTrunc []models.PersonTrunc
-	for _, personID := range in.PersonsID {
-		tmp, err := conn.Get(personID, "person")
-		if err != nil {
-			log.Warn(err)
-			continue
-		}
-		person, ok := tmp.(models.Person)
-		if !ok {
-			log.Warn("MakeFullFilm: can not cast")
-			continue
-		}
-		personsTrunc = append(personsTrunc, person2.MakeTruncPerson(person))
+	for _, person := range persons {
+		personsTrunc = append(personsTrunc, MakeTruncPerson(person))
 	}
 	return models.FilmFull{
 		ID:          in.ID,
