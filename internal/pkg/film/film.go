@@ -6,18 +6,14 @@ import (
 
 func CreateFilm(id models.ID, newFilm *models.NewFilm) (models.Film, *models.Error) {
 	return models.Film{
-		FilmTrunc: models.FilmTrunc{
-			ID:     id,
-			Title:  newFilm.Title,
-			Year:   newFilm.Year,
-			Genres: newFilm.Genres,
-			Poster: newFilm.Poster,
-			Mark: 0,
-		},
+		ID:          id,
+		Title:       newFilm.Title,
+		Year:        newFilm.Year,
+		Genres:      newFilm.Genres,
+		Mark:        0,
 		Description: newFilm.Description,
-		Actors:      newFilm.Actors,
-		Directors:   newFilm.Directors,
-		Images:      newFilm.Images,
+		PersonsID:   newFilm.PersonsID,
+		ImagesID:    []models.ID{},
 		ReviewsNum:  0,
 	}, nil
 }

@@ -42,7 +42,20 @@ func FakeFillDB(conn *database.MongoConnection) {
 		Roles:      []models.Role{"actor"},
 		Birthday:   "18.08.1969",
 		Birthplace: "Бостон",
-		Genres:     []models.Genre{"комедия"},
+	})
+
+	conn.Upsert(models.NewPerson{
+		Name:       "Брэд Питт",
+		Roles:      []models.Role{"actor"},
+		Birthday:   "18.10.1969",
+		Birthplace: "Екатеринбург",
+	})
+
+	conn.Upsert(models.NewPerson{
+		Name:       "Хелена Бонем Картер",
+		Roles:      []models.Role{"actor"},
+		Birthday:   "18.08.1989",
+		Birthplace: "Лондон",
 	})
 
 	conn.Upsert(models.NewFilm{
@@ -53,14 +66,18 @@ func FakeFillDB(conn *database.MongoConnection) {
 		Year:      "1999",
 		Countries: []string{"США", "Германия"},
 		Genres:    []models.Genre{"триллер", "драма", "криминал"},
-		Actors: []models.PersonTrunc{{0, "Эдвард Нортон", 4.5}, {1, "Брэд Питт", 4.8},
-			{2, "Хелена Бонем Картер", 4.0}},
-		Directors:     []models.PersonTrunc{{3, "Дэвид Финчер", 3.8}},
-		Producers:     []models.PersonTrunc{{4, "Росс Грэйсон Белл", 4.7}, {5, "Сиан Чаффин", 4.5}},
-		Compositors:   []models.PersonTrunc{{6, "Даст Бразерс", 4.1}, {7, "Джон Кинг", 4.2}},
-		Screenwriters: []models.PersonTrunc{{8, "Джим Улс", 3.3}, {9, "Чак Паланик", 4.7}},
-		Poster:        models.Image{0, "matrix.png"},
-		Images:        []models.Image{},
+		PersonsID: []models.ID{0, 1, 2},
+	})
+
+	conn.Upsert(models.NewFilm{
+		Title: "Матрица",
+		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
+			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
+			"уверен, что самосовершенствование — удел слабых, а саморазрушение — единственное, ради чего стоит жить.",
+		Year:      "2009",
+		Countries: []string{"Беларусь", "Германия"},
+		Genres:    []models.Genre{"триллер", "драма", "криминал"},
+		PersonsID: []models.ID{0, 1, 2},
 	})
 
 	conn.Upsert(models.NewReview{

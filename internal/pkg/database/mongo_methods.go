@@ -110,7 +110,7 @@ func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
 
 	id, err := conn.GetNextSequence(configs.Default.PersonTargetName)
 	if err != nil {
-		return Error.New(http.StatusInternalServerError, "cannot insert person in database")
+		return Error.New(http.StatusInternalServerError, "cannot insert person in database: "+err.Error())
 	}
 	newPerson, e := Person.CreatePerson(id, in)
 	if e != nil {
@@ -118,13 +118,13 @@ func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
 	}
 	_, err = conn.persons.InsertOne(conn.context, newPerson)
 	if err != nil {
-		return Error.New(http.StatusInternalServerError, "cannot insert person in database")
+		return Error.New(http.StatusInternalServerError, "cannot insert person in database: "+err.Error())
 	}
 	return nil
 }
 
 func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
-	filter := bson.M{"persontrunc.id": in.ID}
+	filter := bson.M{"id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.films.UpdateOne(conn.context, filter, update)
 	if err != nil {

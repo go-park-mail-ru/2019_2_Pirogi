@@ -826,6 +826,12 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(in
 			continue
 		}
 		switch key {
+		case "id":
+			out.ID = ID(in.Int())
+		case "name":
+			out.Name = string(in.String())
+		case "mark":
+			out.Mark = Mark(in.Float32())
 		case "type":
 			if in.IsNull() {
 				in.Skip()
@@ -876,60 +882,54 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(in
 				}
 				in.Delim(']')
 			}
-		case "films":
+		case "films_id":
 			if in.IsNull() {
 				in.Skip()
-				out.Films = nil
+				out.FilmsID = nil
 			} else {
 				in.Delim('[')
-				if out.Films == nil {
+				if out.FilmsID == nil {
 					if !in.IsDelim(']') {
-						out.Films = make([]FilmTrunc, 0, 1)
+						out.FilmsID = make([]ID, 0, 8)
 					} else {
-						out.Films = []FilmTrunc{}
+						out.FilmsID = []ID{}
 					}
 				} else {
-					out.Films = (out.Films)[:0]
+					out.FilmsID = (out.FilmsID)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v6 FilmTrunc
-					(v6).UnmarshalEasyJSON(in)
-					out.Films = append(out.Films, v6)
+					var v6 ID
+					v6 = ID(in.Int())
+					out.FilmsID = append(out.FilmsID, v6)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
 		case "likes":
 			out.Likes = int(in.Int())
-		case "images":
+		case "images_id":
 			if in.IsNull() {
 				in.Skip()
-				out.Images = nil
+				out.ImagesID = nil
 			} else {
 				in.Delim('[')
-				if out.Images == nil {
+				if out.ImagesID == nil {
 					if !in.IsDelim(']') {
-						out.Images = make([]Image, 0, 2)
+						out.ImagesID = make([]ID, 0, 8)
 					} else {
-						out.Images = []Image{}
+						out.ImagesID = []ID{}
 					}
 				} else {
-					out.Images = (out.Images)[:0]
+					out.ImagesID = (out.ImagesID)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v7 Image
-					(v7).UnmarshalEasyJSON(in)
-					out.Images = append(out.Images, v7)
+					var v7 ID
+					v7 = ID(in.Int())
+					out.ImagesID = append(out.ImagesID, v7)
 					in.WantComma()
 				}
 				in.Delim(']')
 			}
-		case "id":
-			out.ID = ID(in.Int())
-		case "name":
-			out.Name = string(in.String())
-		case "mark":
-			out.Mark = Mark(in.Float32())
 		default:
 			in.SkipRecursive()
 		}
@@ -945,8 +945,23 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(ou
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"type\":"
+		const prefix string = ",\"id\":"
 		out.RawString(prefix[1:])
+		out.Int(int(in.ID))
+	}
+	{
+		const prefix string = ",\"name\":"
+		out.RawString(prefix)
+		out.String(string(in.Name))
+	}
+	{
+		const prefix string = ",\"mark\":"
+		out.RawString(prefix)
+		out.Float32(float32(in.Mark))
+	}
+	{
+		const prefix string = ",\"type\":"
+		out.RawString(prefix)
 		if in.Roles == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
@@ -987,17 +1002,17 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(ou
 		}
 	}
 	{
-		const prefix string = ",\"films\":"
+		const prefix string = ",\"films_id\":"
 		out.RawString(prefix)
-		if in.Films == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.FilmsID == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v12, v13 := range in.Films {
+			for v12, v13 := range in.FilmsID {
 				if v12 > 0 {
 					out.RawByte(',')
 				}
-				(v13).MarshalEasyJSON(out)
+				out.Int(int(v13))
 			}
 			out.RawByte(']')
 		}
@@ -1008,35 +1023,20 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels7(ou
 		out.Int(int(in.Likes))
 	}
 	{
-		const prefix string = ",\"images\":"
+		const prefix string = ",\"images_id\":"
 		out.RawString(prefix)
-		if in.Images == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.ImagesID == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v14, v15 := range in.Images {
+			for v14, v15 := range in.ImagesID {
 				if v14 > 0 {
 					out.RawByte(',')
 				}
-				(v15).MarshalEasyJSON(out)
+				out.Int(int(v15))
 			}
 			out.RawByte(']')
 		}
-	}
-	{
-		const prefix string = ",\"id\":"
-		out.RawString(prefix)
-		out.Int(int(in.ID))
-	}
-	{
-		const prefix string = ",\"name\":"
-		out.RawString(prefix)
-		out.String(string(in.Name))
-	}
-	{
-		const prefix string = ",\"mark\":"
-		out.RawString(prefix)
-		out.Float32(float32(in.Mark))
 	}
 	out.RawByte('}')
 }
@@ -1421,142 +1421,25 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(i
 				}
 				in.Delim(']')
 			}
-		case "actors":
+		case "persons_id":
 			if in.IsNull() {
 				in.Skip()
-				out.Actors = nil
+				out.PersonsID = nil
 			} else {
 				in.Delim('[')
-				if out.Actors == nil {
+				if out.PersonsID == nil {
 					if !in.IsDelim(']') {
-						out.Actors = make([]PersonTrunc, 0, 2)
+						out.PersonsID = make([]ID, 0, 8)
 					} else {
-						out.Actors = []PersonTrunc{}
+						out.PersonsID = []ID{}
 					}
 				} else {
-					out.Actors = (out.Actors)[:0]
+					out.PersonsID = (out.PersonsID)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v21 PersonTrunc
-					(v21).UnmarshalEasyJSON(in)
-					out.Actors = append(out.Actors, v21)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "directors":
-			if in.IsNull() {
-				in.Skip()
-				out.Directors = nil
-			} else {
-				in.Delim('[')
-				if out.Directors == nil {
-					if !in.IsDelim(']') {
-						out.Directors = make([]PersonTrunc, 0, 2)
-					} else {
-						out.Directors = []PersonTrunc{}
-					}
-				} else {
-					out.Directors = (out.Directors)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v22 PersonTrunc
-					(v22).UnmarshalEasyJSON(in)
-					out.Directors = append(out.Directors, v22)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "producers":
-			if in.IsNull() {
-				in.Skip()
-				out.Producers = nil
-			} else {
-				in.Delim('[')
-				if out.Producers == nil {
-					if !in.IsDelim(']') {
-						out.Producers = make([]PersonTrunc, 0, 2)
-					} else {
-						out.Producers = []PersonTrunc{}
-					}
-				} else {
-					out.Producers = (out.Producers)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v23 PersonTrunc
-					(v23).UnmarshalEasyJSON(in)
-					out.Producers = append(out.Producers, v23)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "compositors":
-			if in.IsNull() {
-				in.Skip()
-				out.Compositors = nil
-			} else {
-				in.Delim('[')
-				if out.Compositors == nil {
-					if !in.IsDelim(']') {
-						out.Compositors = make([]PersonTrunc, 0, 2)
-					} else {
-						out.Compositors = []PersonTrunc{}
-					}
-				} else {
-					out.Compositors = (out.Compositors)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v24 PersonTrunc
-					(v24).UnmarshalEasyJSON(in)
-					out.Compositors = append(out.Compositors, v24)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "screenwriters":
-			if in.IsNull() {
-				in.Skip()
-				out.Screenwriters = nil
-			} else {
-				in.Delim('[')
-				if out.Screenwriters == nil {
-					if !in.IsDelim(']') {
-						out.Screenwriters = make([]PersonTrunc, 0, 2)
-					} else {
-						out.Screenwriters = []PersonTrunc{}
-					}
-				} else {
-					out.Screenwriters = (out.Screenwriters)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v25 PersonTrunc
-					(v25).UnmarshalEasyJSON(in)
-					out.Screenwriters = append(out.Screenwriters, v25)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "poster":
-			(out.Poster).UnmarshalEasyJSON(in)
-		case "image":
-			if in.IsNull() {
-				in.Skip()
-				out.Images = nil
-			} else {
-				in.Delim('[')
-				if out.Images == nil {
-					if !in.IsDelim(']') {
-						out.Images = make([]Image, 0, 2)
-					} else {
-						out.Images = []Image{}
-					}
-				} else {
-					out.Images = (out.Images)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v26 Image
-					(v26).UnmarshalEasyJSON(in)
-					out.Images = append(out.Images, v26)
+					var v21 ID
+					v21 = ID(in.Int())
+					out.PersonsID = append(out.PersonsID, v21)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1597,11 +1480,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v27, v28 := range in.Countries {
-				if v27 > 0 {
+			for v22, v23 := range in.Countries {
+				if v22 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v28))
+				out.String(string(v23))
 			}
 			out.RawByte(']')
 		}
@@ -1613,112 +1496,27 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels11(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v29, v30 := range in.Genres {
-				if v29 > 0 {
+			for v24, v25 := range in.Genres {
+				if v24 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v30))
+				out.String(string(v25))
 			}
 			out.RawByte(']')
 		}
 	}
 	{
-		const prefix string = ",\"actors\":"
+		const prefix string = ",\"persons_id\":"
 		out.RawString(prefix)
-		if in.Actors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+		if in.PersonsID == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v31, v32 := range in.Actors {
-				if v31 > 0 {
+			for v26, v27 := range in.PersonsID {
+				if v26 > 0 {
 					out.RawByte(',')
 				}
-				(v32).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"directors\":"
-		out.RawString(prefix)
-		if in.Directors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v33, v34 := range in.Directors {
-				if v33 > 0 {
-					out.RawByte(',')
-				}
-				(v34).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"producers\":"
-		out.RawString(prefix)
-		if in.Producers == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v35, v36 := range in.Producers {
-				if v35 > 0 {
-					out.RawByte(',')
-				}
-				(v36).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"compositors\":"
-		out.RawString(prefix)
-		if in.Compositors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v37, v38 := range in.Compositors {
-				if v37 > 0 {
-					out.RawByte(',')
-				}
-				(v38).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"screenwriters\":"
-		out.RawString(prefix)
-		if in.Screenwriters == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v39, v40 := range in.Screenwriters {
-				if v39 > 0 {
-					out.RawByte(',')
-				}
-				(v40).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"poster\":"
-		out.RawString(prefix)
-		(in.Poster).MarshalEasyJSON(out)
-	}
-	{
-		const prefix string = ",\"image\":"
-		out.RawString(prefix)
-		if in.Images == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v41, v42 := range in.Images {
-				if v41 > 0 {
-					out.RawByte(',')
-				}
-				(v42).MarshalEasyJSON(out)
+				out.Int(int(v27))
 			}
 			out.RawByte(']')
 		}
@@ -1943,9 +1741,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels14(i
 					out.Genres = (out.Genres)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v43 Genre
-					v43 = Genre(in.String())
-					out.Genres = append(out.Genres, v43)
+					var v28 Genre
+					v28 = Genre(in.String())
+					out.Genres = append(out.Genres, v28)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -1990,11 +1788,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels14(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v44, v45 := range in.Genres {
-				if v44 > 0 {
+			for v29, v30 := range in.Genres {
+				if v29 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v45))
+				out.String(string(v30))
 			}
 			out.RawByte(']')
 		}
@@ -2054,102 +1852,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 			continue
 		}
 		switch key {
-		case "description":
-			out.Description = string(in.String())
-		case "countries":
-			if in.IsNull() {
-				in.Skip()
-				out.Countries = nil
-			} else {
-				in.Delim('[')
-				if out.Countries == nil {
-					if !in.IsDelim(']') {
-						out.Countries = make([]string, 0, 4)
-					} else {
-						out.Countries = []string{}
-					}
-				} else {
-					out.Countries = (out.Countries)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v46 string
-					v46 = string(in.String())
-					out.Countries = append(out.Countries, v46)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "actors":
-			if in.IsNull() {
-				in.Skip()
-				out.Actors = nil
-			} else {
-				in.Delim('[')
-				if out.Actors == nil {
-					if !in.IsDelim(']') {
-						out.Actors = make([]PersonTrunc, 0, 2)
-					} else {
-						out.Actors = []PersonTrunc{}
-					}
-				} else {
-					out.Actors = (out.Actors)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v47 PersonTrunc
-					(v47).UnmarshalEasyJSON(in)
-					out.Actors = append(out.Actors, v47)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "directors":
-			if in.IsNull() {
-				in.Skip()
-				out.Directors = nil
-			} else {
-				in.Delim('[')
-				if out.Directors == nil {
-					if !in.IsDelim(']') {
-						out.Directors = make([]PersonTrunc, 0, 2)
-					} else {
-						out.Directors = []PersonTrunc{}
-					}
-				} else {
-					out.Directors = (out.Directors)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v48 PersonTrunc
-					(v48).UnmarshalEasyJSON(in)
-					out.Directors = append(out.Directors, v48)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "image":
-			if in.IsNull() {
-				in.Skip()
-				out.Images = nil
-			} else {
-				in.Delim('[')
-				if out.Images == nil {
-					if !in.IsDelim(']') {
-						out.Images = make([]Image, 0, 2)
-					} else {
-						out.Images = []Image{}
-					}
-				} else {
-					out.Images = (out.Images)[:0]
-				}
-				for !in.IsDelim(']') {
-					var v49 Image
-					(v49).UnmarshalEasyJSON(in)
-					out.Images = append(out.Images, v49)
-					in.WantComma()
-				}
-				in.Delim(']')
-			}
-		case "reviews_num":
-			out.ReviewsNum = int(in.Int())
 		case "id":
 			out.ID = ID(in.Int())
 		case "title":
@@ -2172,9 +1874,9 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 					out.Genres = (out.Genres)[:0]
 				}
 				for !in.IsDelim(']') {
-					var v50 Genre
-					v50 = Genre(in.String())
-					out.Genres = append(out.Genres, v50)
+					var v31 Genre
+					v31 = Genre(in.String())
+					out.Genres = append(out.Genres, v31)
 					in.WantComma()
 				}
 				in.Delim(']')
@@ -2183,6 +1885,79 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(i
 			(out.Poster).UnmarshalEasyJSON(in)
 		case "mark":
 			out.Mark = Mark(in.Float32())
+		case "description":
+			out.Description = string(in.String())
+		case "countries":
+			if in.IsNull() {
+				in.Skip()
+				out.Countries = nil
+			} else {
+				in.Delim('[')
+				if out.Countries == nil {
+					if !in.IsDelim(']') {
+						out.Countries = make([]string, 0, 4)
+					} else {
+						out.Countries = []string{}
+					}
+				} else {
+					out.Countries = (out.Countries)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v32 string
+					v32 = string(in.String())
+					out.Countries = append(out.Countries, v32)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "persons":
+			if in.IsNull() {
+				in.Skip()
+				out.PersonsID = nil
+			} else {
+				in.Delim('[')
+				if out.PersonsID == nil {
+					if !in.IsDelim(']') {
+						out.PersonsID = make([]ID, 0, 8)
+					} else {
+						out.PersonsID = []ID{}
+					}
+				} else {
+					out.PersonsID = (out.PersonsID)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v33 ID
+					v33 = ID(in.Int())
+					out.PersonsID = append(out.PersonsID, v33)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "images_id":
+			if in.IsNull() {
+				in.Skip()
+				out.ImagesID = nil
+			} else {
+				in.Delim('[')
+				if out.ImagesID == nil {
+					if !in.IsDelim(']') {
+						out.ImagesID = make([]ID, 0, 8)
+					} else {
+						out.ImagesID = []ID{}
+					}
+				} else {
+					out.ImagesID = (out.ImagesID)[:0]
+				}
+				for !in.IsDelim(']') {
+					var v34 ID
+					v34 = ID(in.Int())
+					out.ImagesID = append(out.ImagesID, v34)
+					in.WantComma()
+				}
+				in.Delim(']')
+			}
+		case "reviews_num":
+			out.ReviewsNum = int(in.Int())
 		default:
 			in.SkipRecursive()
 		}
@@ -2198,82 +1973,8 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 	first := true
 	_ = first
 	{
-		const prefix string = ",\"description\":"
-		out.RawString(prefix[1:])
-		out.String(string(in.Description))
-	}
-	{
-		const prefix string = ",\"countries\":"
-		out.RawString(prefix)
-		if in.Countries == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v51, v52 := range in.Countries {
-				if v51 > 0 {
-					out.RawByte(',')
-				}
-				out.String(string(v52))
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"actors\":"
-		out.RawString(prefix)
-		if in.Actors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v53, v54 := range in.Actors {
-				if v53 > 0 {
-					out.RawByte(',')
-				}
-				(v54).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"directors\":"
-		out.RawString(prefix)
-		if in.Directors == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v55, v56 := range in.Directors {
-				if v55 > 0 {
-					out.RawByte(',')
-				}
-				(v56).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"image\":"
-		out.RawString(prefix)
-		if in.Images == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
-			out.RawString("null")
-		} else {
-			out.RawByte('[')
-			for v57, v58 := range in.Images {
-				if v57 > 0 {
-					out.RawByte(',')
-				}
-				(v58).MarshalEasyJSON(out)
-			}
-			out.RawByte(']')
-		}
-	}
-	{
-		const prefix string = ",\"reviews_num\":"
-		out.RawString(prefix)
-		out.Int(int(in.ReviewsNum))
-	}
-	{
 		const prefix string = ",\"id\":"
-		out.RawString(prefix)
+		out.RawString(prefix[1:])
 		out.Int(int(in.ID))
 	}
 	{
@@ -2293,11 +1994,11 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 			out.RawString("null")
 		} else {
 			out.RawByte('[')
-			for v59, v60 := range in.Genres {
-				if v59 > 0 {
+			for v35, v36 := range in.Genres {
+				if v35 > 0 {
 					out.RawByte(',')
 				}
-				out.String(string(v60))
+				out.String(string(v36))
 			}
 			out.RawByte(']')
 		}
@@ -2311,6 +2012,64 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels15(o
 		const prefix string = ",\"mark\":"
 		out.RawString(prefix)
 		out.Float32(float32(in.Mark))
+	}
+	{
+		const prefix string = ",\"description\":"
+		out.RawString(prefix)
+		out.String(string(in.Description))
+	}
+	{
+		const prefix string = ",\"countries\":"
+		out.RawString(prefix)
+		if in.Countries == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v37, v38 := range in.Countries {
+				if v37 > 0 {
+					out.RawByte(',')
+				}
+				out.String(string(v38))
+			}
+			out.RawByte(']')
+		}
+	}
+	{
+		const prefix string = ",\"persons\":"
+		out.RawString(prefix)
+		if in.PersonsID == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v39, v40 := range in.PersonsID {
+				if v39 > 0 {
+					out.RawByte(',')
+				}
+				out.Int(int(v40))
+			}
+			out.RawByte(']')
+		}
+	}
+	{
+		const prefix string = ",\"images_id\":"
+		out.RawString(prefix)
+		if in.ImagesID == nil && (out.Flags&jwriter.NilSliceAsEmpty) == 0 {
+			out.RawString("null")
+		} else {
+			out.RawByte('[')
+			for v41, v42 := range in.ImagesID {
+				if v41 > 0 {
+					out.RawByte(',')
+				}
+				out.Int(int(v42))
+			}
+			out.RawByte(']')
+		}
+	}
+	{
+		const prefix string = ",\"reviews_num\":"
+		out.RawString(prefix)
+		out.Int(int(in.ReviewsNum))
 	}
 	out.RawByte('}')
 }

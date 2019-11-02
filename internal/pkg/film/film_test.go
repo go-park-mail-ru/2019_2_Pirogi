@@ -5,7 +5,7 @@ package film
 //		Title:       "title",
 //		Description: "description",
 //		Year:        "1998",
-//		Actors:      nil,
+//		PersonsID:      nil,
 //		Genres:      nil,
 //		Directors:   nil,
 //		Rating:      0,

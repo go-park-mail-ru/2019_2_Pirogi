@@ -17,6 +17,19 @@ var textPattern = regexp.MustCompile(".+")
 
 func InitValidator() {
 	valid.SetFieldsRequiredByDefault(true)
+	valid.CustomTypeTagMap.Set("ids", func(i interface{}, o interface{}) bool {
+		subject, ok := i.([]models.ID)
+		if !ok {
+			return false
+		}
+		for _, id := range subject {
+			if id < 0 {
+				return false
+			}
+		}
+		return true
+	})
+
 	valid.CustomTypeTagMap.Set("text", func(i interface{}, o interface{}) bool {
 		subject, ok := i.(string)
 		if !ok {

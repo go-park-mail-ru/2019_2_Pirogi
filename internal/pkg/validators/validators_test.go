@@ -122,11 +122,11 @@ func TestPerson(t *testing.T) {
 		Birthday:    "09.12.1998",
 		Birthplace:  "USA",
 		Genres:      []models.Genre{"драма"},
-		Films: []models.FilmTrunc{
+		FilmsID: []models.FilmTrunc{
 			filmTrunc,
 		},
 		Likes: 2,
-		Images: []models.Image{
+		ImagesID: []models.Image{
 			image,
 		},
 	}
@@ -159,7 +159,7 @@ func TestFilm(t *testing.T) {
 		FilmTrunc:   filmTrunc,
 		Countries:   []string{"USA"},
 		Description: "laslasldasldlasdl",
-		Actors: []models.PersonTrunc{
+		PersonsID: []models.PersonTrunc{
 			personTrunc,
 		},
 		Directors: []models.PersonTrunc{
