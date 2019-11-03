@@ -13,11 +13,11 @@ import (
 func GetHandlerList(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var jsonBody []byte
-		offset, err := strconv.Atoi(ctx.QueryParam("offset"))
-		if offset == 0 || err != nil {
-			offset = 10
+		limit, err := strconv.Atoi(ctx.QueryParam("limit"))
+		if limit == 0 || err != nil {
+			limit = 10
 		}
-		for i := 0; i < offset; i++ {
+		for i := 0; i < limit; i++ {
 			obj, e := conn.Get(models.ID(i), "film")
 			if e != nil {
 				continue
