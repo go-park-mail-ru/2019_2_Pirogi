@@ -302,7 +302,7 @@ func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]mo
 
 func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
 	pipeline := []bson.M{
-		{"$match": bson.M{"newreview.filmid": filmID}},
+		{"$match": bson.M{"filmid": filmID}},
 		{"$sort": bson.M{"date": -1}},
 		{"$limit": limit},
 		{"$skip": offset},

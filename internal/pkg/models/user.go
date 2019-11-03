@@ -9,7 +9,7 @@ type Credentials struct {
 
 type NewUser struct {
 	Credentials `valid:"required"`
-	Username    string `json:"username" valid:"username"`
+	Username    string `json:"username" valid:"alphanum, stringlength(4|50)"`
 }
 
 type UserTrunc struct {

@@ -51,7 +51,6 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	reviews := api.Group("/reviews")
 	reviews.GET("/:film_id/", handlers.GetHandlerReviews(conn))
 	reviews.GET("/", handlers.GetHandlerProfileReviews(conn))
-
 	reviews.POST("/", handlers.GetHandlerReviewsCreate(conn))
 
 	likes := api.Group("/likes")
