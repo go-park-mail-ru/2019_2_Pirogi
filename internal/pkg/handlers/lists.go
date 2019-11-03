@@ -3,6 +3,7 @@ package handlers
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
+	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
@@ -12,7 +13,11 @@ import (
 func GetHandlerList(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var jsonBody []byte
-		for i := 0; i < 10; i++ {
+		offset, err := strconv.Atoi(ctx.QueryParam("offset"))
+		if offset == 0 || err != nil {
+			offset = 10
+		}
+		for i := 0; i < offset; i++ {
 			obj, e := conn.Get(models.ID(i), "film")
 			if e != nil {
 				continue
@@ -30,7 +35,7 @@ func GetHandlerList(conn database.Database) echo.HandlerFunc {
 			jsonBody = append(jsonBody, jsonModel...)
 		}
 
-		_, err := ctx.Response().Write(jsonBody)
+		_, err = ctx.Response().Write(jsonBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
