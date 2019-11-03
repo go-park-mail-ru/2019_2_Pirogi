@@ -4,7 +4,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/review"
 	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -135,10 +134,7 @@ func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
 	}
-	rev, err := review.CreateReview(id, in)
-	if err != nil {
-		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
-	}
+	rev := makers.MakeReview(id, in)
 	_, err = conn.reviews.InsertOne(conn.context, rev)
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert review in database")

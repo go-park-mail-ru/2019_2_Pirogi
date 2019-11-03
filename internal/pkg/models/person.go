@@ -36,5 +36,4 @@ type PersonFull struct {
 type PersonTrunc struct {
 	ID   ID     `json:"id, omitempty" valid:"numeric"`
 	Name string `json:"name" valid:"text, stringlength(1|50)"`
-	Mark Mark   `json:"mark" valid:"mark, optional"`
 }

@@ -20,7 +20,6 @@ func MakeTruncPerson(in models.Person) models.PersonTrunc {
 	return models.PersonTrunc{
 		ID:   in.ID,
 		Name: in.Name,
-		Mark: in.Mark,
 	}
 }
 
