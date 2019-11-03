@@ -309,3 +309,13 @@ func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID models.ID, limi
 	}
 	return AggregateReviews(conn, pipeline)
 }
+
+func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"authorid": authorID}},
+		{"$sort": bson.M{"date": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateReviews(conn, pipeline)
+}

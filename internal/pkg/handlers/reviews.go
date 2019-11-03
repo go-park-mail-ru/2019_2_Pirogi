@@ -3,6 +3,7 @@ package handlers
 import (
 	"io/ioutil"
 	"net/http"
+	"strconv"
 
 	"github.com/asaskevich/govalidator"
 
@@ -11,6 +12,82 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
+
+func GetHandlerProfileReviews(conn database.Database) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusUnauthorized, "no cookie")
+		}
+		user, ok := conn.FindUserByCookie(session)
+		if !ok {
+			return echo.NewHTTPError(http.StatusUnauthorized, "no user session in db")
+		}
+		var offset, limit int
+		offset, err = strconv.Atoi(ctx.Param("offset"))
+		if err != nil {
+			offset = 0
+		}
+		limit, err = strconv.Atoi(ctx.Param("limit"))
+		if err != nil {
+			limit = 10
+		}
+		reviews, _ := conn.GetReviewsOfAuthorSortedByDate(user.ID, limit, offset)
+		var jsonResponse []byte
+		for i, review := range reviews {
+			jsonModel, err := review.MarshalJSON()
+			if err != nil {
+				continue
+			}
+			if i > 0 {
+				jsonResponse = append(jsonResponse, []byte(",")...)
+			}
+			jsonResponse = append(jsonResponse, jsonModel...)
+
+		}
+		_, err = ctx.Response().Write(jsonResponse)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+		return nil
+	}
+}
+
+func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		var filmID, offset, limit int
+		filmID, err := strconv.Atoi(ctx.Param("film_id"))
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, "specify film id")
+		}
+		offset, err = strconv.Atoi(ctx.Param("offset"))
+		if err != nil {
+			offset = 0
+		}
+		limit, err = strconv.Atoi(ctx.Param("limit"))
+		if err != nil {
+			limit = 10
+		}
+		reviews, _ := conn.GetReviewsOfFilmSortedByDate(models.ID(filmID), limit, offset)
+		var jsonResponse []byte
+		for i, review := range reviews {
+			jsonModel, err := review.MarshalJSON()
+			if err != nil {
+				continue
+			}
+			if i > 0 {
+				jsonResponse = append(jsonResponse, []byte(",")...)
+			}
+			jsonResponse = append(jsonResponse, jsonModel...)
+
+		}
+		_, err = ctx.Response().Write(jsonResponse)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		}
+		return nil
+	}
+}
 
 func GetHandlerReviewsCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {

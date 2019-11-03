@@ -35,4 +35,5 @@ type Database interface {
 
 	GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error)
 	GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error)
+	GetReviewsOfAuthorSortedByDate(authorID models.ID, limit int, offset int) ([]models.Review, *models.Error)
 }
