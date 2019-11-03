@@ -60,11 +60,11 @@ func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "specify film id")
 		}
-		offset, err = strconv.Atoi(ctx.Param("offset"))
+		offset, err = strconv.Atoi(ctx.QueryParam("offset"))
 		if err != nil {
 			offset = 0
 		}
-		limit, err = strconv.Atoi(ctx.Param("limit"))
+		limit, err = strconv.Atoi(ctx.QueryParam("limit"))
 		if err != nil {
 			limit = 10
 		}
