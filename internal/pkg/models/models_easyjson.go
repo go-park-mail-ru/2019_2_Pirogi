@@ -638,12 +638,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(in
 		switch key {
 		case "id":
 			out.ID = ID(in.Int())
-		case "date":
-			if data := in.Raw(); in.Ok() {
-				in.AddError((out.Date).UnmarshalJSON(data))
-			}
-		case "likes":
-			out.Likes = int(in.Int())
 		case "title":
 			out.Title = string(in.String())
 		case "body":
@@ -652,6 +646,12 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(in
 			out.FilmID = ID(in.Int())
 		case "author_id":
 			out.AuthorID = ID(in.Int())
+		case "date":
+			if data := in.Raw(); in.Ok() {
+				in.AddError((out.Date).UnmarshalJSON(data))
+			}
+		case "likes":
+			out.Likes = int(in.Int())
 		default:
 			in.SkipRecursive()
 		}
@@ -672,16 +672,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(ou
 		out.Int(int(in.ID))
 	}
 	{
-		const prefix string = ",\"date\":"
-		out.RawString(prefix)
-		out.Raw((in.Date).MarshalJSON())
-	}
-	{
-		const prefix string = ",\"likes\":"
-		out.RawString(prefix)
-		out.Int(int(in.Likes))
-	}
-	{
 		const prefix string = ",\"title\":"
 		out.RawString(prefix)
 		out.String(string(in.Title))
@@ -700,6 +690,16 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels5(ou
 		const prefix string = ",\"author_id\":"
 		out.RawString(prefix)
 		out.Int(int(in.AuthorID))
+	}
+	{
+		const prefix string = ",\"date\":"
+		out.RawString(prefix)
+		out.Raw((in.Date).MarshalJSON())
+	}
+	{
+		const prefix string = ",\"likes\":"
+		out.RawString(prefix)
+		out.Int(int(in.Likes))
 	}
 	out.RawByte('}')
 }
@@ -750,8 +750,6 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(in
 			out.ID = ID(in.Int())
 		case "name":
 			out.Name = string(in.String())
-		case "mark":
-			out.Mark = Mark(in.Float32())
 		default:
 			in.SkipRecursive()
 		}
@@ -775,11 +773,6 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels6(ou
 		const prefix string = ",\"name\":"
 		out.RawString(prefix)
 		out.String(string(in.Name))
-	}
-	{
-		const prefix string = ",\"mark\":"
-		out.RawString(prefix)
-		out.Float32(float32(in.Mark))
 	}
 	out.RawByte('}')
 }
