@@ -121,7 +121,7 @@ func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
 func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
-	_, err := conn.films.UpdateOne(conn.context, filter, update)
+	_, err := conn.persons.UpdateOne(conn.context, filter, update)
 	if err != nil {
 		return Error.New(http.StatusNotFound, "person not found")
 	}
