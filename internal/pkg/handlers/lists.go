@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
 	"strconv"
@@ -12,8 +13,7 @@ import (
 
 func GetHandlerList(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		var jsonBody []byte
-		jsonBody = append(jsonBody, []byte("[")...)
+		var modelsBytes [][]byte
 		limit, err := strconv.Atoi(ctx.QueryParam("limit"))
 		if limit == 0 || err != nil {
 			limit = 10
@@ -30,13 +30,9 @@ func GetHandlerList(conn database.Database) echo.HandlerFunc {
 			if err != nil {
 				continue
 			}
-			if i > 0 {
-				jsonBody = append(jsonBody, []byte(",")...)
-			}
-			jsonBody = append(jsonBody, jsonModel...)
+			modelsBytes = append(modelsBytes, jsonModel)
 		}
-		jsonBody = append(jsonBody, []byte("]")...)
-		_, err = ctx.Response().Write(jsonBody)
+		_, err = ctx.Response().Write(common.MakeJSONArray(modelsBytes))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
