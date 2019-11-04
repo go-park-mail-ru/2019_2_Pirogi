@@ -1,12 +1,10 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
-	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"github.com/asaskevich/govalidator"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
@@ -40,17 +38,12 @@ func GetHandlerPerson(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerPersonsCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
+		rawBody, err := common.ReadBody(ctx)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+			return err
 		}
-		defer ctx.Request().Body.Close()
-		newPerson := models.NewPerson{}
-		err = newPerson.UnmarshalJSON(rawBody)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		}
-		_, err = govalidator.ValidateStruct(newPerson)
+		model, err := common.PrepareModel(rawBody, models.NewPerson{})
+		newPerson := model.(models.NewPerson)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}

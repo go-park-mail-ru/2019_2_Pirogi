@@ -1,12 +1,10 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
-	"io/ioutil"
 	"net/http"
 	"strconv"
-
-	"github.com/asaskevich/govalidator"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -41,19 +39,14 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		rawBody, err := ioutil.ReadAll(ctx.Request().Body)
+		rawBody, err := common.ReadBody(ctx)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+			return err
 		}
-		defer ctx.Request().Body.Close()
-		newFilm := models.NewFilm{}
-		err = newFilm.UnmarshalJSON(rawBody)
+		model, err := common.PrepareModel(rawBody, models.NewFilm{})
+		newFilm, _ := model.(models.NewFilm)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
-		}
-		_, err = govalidator.ValidateStruct(newFilm)
-		if err != nil {
-			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+			return err
 		}
 		//TODO: было бы классно, если он возвращал ID
 		e := conn.Upsert(newFilm)

@@ -13,8 +13,6 @@ import (
 var yearPattern = regexp.MustCompile("[1|2][0-9]{3}")
 var datePattern = regexp.MustCompile("([0-9]{2}.){2}[1-2][0-9]{3}")
 var imagePattern = regexp.MustCompile("(([0-9]|[a-z]){40}.(jpeg|jpg|png|gif))|default.png")
-
-//TODO: переделать регулярку на строку
 var textPattern = regexp.MustCompile(".+")
 
 func InitValidator() {
