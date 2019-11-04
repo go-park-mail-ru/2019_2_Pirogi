@@ -1,0 +1,34 @@
+version: '3'
+services:
+  server:
+    build:
+      context: ./
+      dockerfile: ./Dockerfile
+    environment:
+      - mode=development
+    ports:
+      - "8000:8000"
+    depends_on:
+      - mongo
+    restart: always
+    volumes:
+      - "media:/media"
+      - "log:/log"
+    container_name: cinsear
+
+  mongo:
+    image: mongo
+    ports:
+      - "27017:27017"
+    volumes:
+      - db:/data/db
+      - ./mongoInit.js:/docker-entrypoint-initdb.d/mongoInit.js:ro
+    container_name: cinsear-db
+    environment:
+      - MONGO_INITDB_DATABASE=cinsear
+      - MONGO_INITDB_USERNAME=cinsear-user
+      - MONGO_INITDB_PASSWORD=cinsear-pwd
+volumes:
+  media:
+  log:
+  db:

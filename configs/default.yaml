@@ -1,0 +1,24 @@
+cookie_auth_name: "cinsear_session"
+cookie_auth_duration_hours: 10
+
+access_log: "/log/access.log"
+error_log: "/log/error.log"
+
+users_image_upload_path: "/media/images/users/"
+films_image_upload_path: "/media/images/films/"
+
+# Put the credentials of MongoDB user here
+mongo_user: "cinsear-user"
+mongo_pwd: "cinsear-pwd"
+mongo_host: "mongodb://mongo:27017"
+mongo_db_name: "cinsear"
+users_collection_name: "users"
+films_collection_name: "films"
+cookies_collection_name: "cookies"
+counters_collection_name: "counters"
+
+user_target_name: "user"
+film_target_name: "film"
+cookie_target_name: "cookie"
+
+api_port: ":8000"

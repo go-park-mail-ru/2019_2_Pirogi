@@ -4,122 +4,122 @@ import (
 	"net/http"
 	"strconv"
 
-	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+
+	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
-type DB struct {
+type InmemoryDB struct {
 	users            map[int]models.User
 	films            map[int]models.Film
 	usersAuthCookies map[int]http.Cookie
 }
 
-func InitInmemory() *DB {
-	users := make(map[int]models.User, 0)
-	films := make(map[int]models.Film, 0)
-	usersAuthCookies := make(map[int]http.Cookie, 0)
-	db := DB{users: users, usersAuthCookies: usersAuthCookies, films: films}
+func InitInmemory() *InmemoryDB {
+	users := make(map[int]models.User)
+	films := make(map[int]models.Film)
+	usersAuthCookies := make(map[int]http.Cookie)
+	db := InmemoryDB{users: users, usersAuthCookies: usersAuthCookies, films: films}
 	return &db
 }
 
-func (db *DB) GetID(target string) int {
+func (db *InmemoryDB) GetIDForInsert(target string) int {
 	switch target {
-	case "user":
+	case configs.Default.UserTargetName:
 		return len(db.users)
-	case "film":
+	case configs.Default.FilmTargetName:
 		return len(db.films)
-	case "auth_cookie":
+	case configs.Default.CookieTargetName:
 		return len(db.usersAuthCookies)
 	default:
 		return 0
 	}
 }
 
-func (db *DB) InsertCookie(cookie http.Cookie, id int) *models.Error {
-	db.usersAuthCookies[id] = cookie
+// затирает старые записи
+func (db *InmemoryDB) Insert(in interface{}) *models.Error {
+	switch in := in.(type) {
+	case models.NewUser:
+		_, ok := db.FindUserByEmail(in.Email)
+		if ok {
+			return Error.New(http.StatusBadRequest, "user with the email already exists")
+		}
+		u, e := user.CreateNewUser(db.GetIDForInsert(configs.Default.UserTargetName), &in)
+		if e != nil {
+			return e
+		}
+		db.users[db.GetIDForInsert(configs.Default.UserTargetName)] = u
+	case models.User:
+		if _, ok := db.users[in.ID]; ok {
+			db.users[in.ID] = in
+			return nil
+		}
+		return Error.New(http.StatusNotFound, "user not found")
+	case models.NewFilm:
+		// It is supposed that there cannot be films with the same title
+		_, ok := db.FindFilmByTitle(in.Title)
+		if ok {
+			return Error.New(http.StatusBadRequest, "film with the title already exists")
+		}
+		f, e := film.CreateNewFilm(db.GetIDForInsert(configs.Default.FilmTargetName), &in)
+		if e != nil {
+			return e
+		}
+		db.films[db.GetIDForInsert(configs.Default.FilmTargetName)] = f
+	case models.Film:
+		if _, ok := db.users[in.ID]; ok {
+			db.films[in.ID] = in
+			return nil
+		}
+		return Error.New(http.StatusNotFound, "film not found")
+	case models.UserCookie:
+		db.usersAuthCookies[in.UserID] = *in.Cookie
+	default:
+		return Error.New(http.StatusBadRequest, "not supported type")
+	}
 	return nil
 }
 
-// затирает старые записи
-func (db *DB) Insert(in interface{}) *models.Error {
-	switch in.(type) {
-	case models.NewUser:
-		newUser := in.(models.NewUser)
-		_, ok := db.FindByEmail(newUser.Email)
-		if ok {
-			return error.New(400, "user with the email already exists")
-		}
-		u, e := user.CreateNewUser(db.GetID("user"), newUser)
-		if e != nil {
-			return e
-		}
-		db.users[db.GetID("user")] = u
-		return nil
-	case models.User:
-		u := in.(models.User)
-		if _, ok := db.users[u.ID]; ok {
-			db.users[u.ID] = u
-			return nil
-		}
-		return error.New(404, "user not found")
-	case models.NewFilm:
-		newFilm := in.(models.NewFilm)
-		// It is supposed that there cannot be films with the same title
-		_, ok := db.FindFilmByTitle(newFilm.Title)
-		if ok {
-			return error.New(400, "film with the title already exists")
-		}
-		f, e := film.CreateNewFilm(db.GetID("film"), newFilm)
-		if e != nil {
-			return e
-		}
-		db.films[db.GetID("film")] = f
-		return nil
-	case models.Film:
-		f := in.(models.Film)
-		if _, ok := db.users[f.ID]; ok {
-			db.films[f.ID] = f
-			return nil
-		}
-		return error.New(404, "film not found")
-	default:
-		return error.New(400, "not supported type")
-	}
-}
-
-func (db *DB) DeleteCookie(in interface{}) {
-	switch in.(type) {
-	case http.Cookie:
-		cookie := in.(http.Cookie)
-		u, ok := db.FindUserByCookie(cookie)
-		if !ok {
-			return
-		}
-		if _, ok := db.usersAuthCookies[u.ID]; ok {
-			delete(db.usersAuthCookies, u.ID)
-		}
-	}
-}
-
-func (db *DB) Get(id int, target string) (interface{}, *models.Error) {
+func (db *InmemoryDB) Get(id int, target string) (interface{}, *models.Error) {
 	switch target {
 	case "user":
 		if u, ok := db.users[id]; ok {
 			return u, nil
 		}
-		return nil, error.New(404, "no user with id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no user with id: "+strconv.Itoa(id))
 	case "film":
 		if f, ok := db.films[id]; ok {
 			return f, nil
 		}
-		return nil, error.New(404, "no film with the id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no film with the id: "+strconv.Itoa(id))
 	}
-	return nil, error.New(404, "not supported type: "+target)
+	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
 
-func (db *DB) FindByEmail(email string) (models.User, bool) {
+func (db *InmemoryDB) CheckCookie(cookie *http.Cookie) bool {
+	for i := range db.usersAuthCookies {
+		if db.usersAuthCookies[i].Value == cookie.Value {
+			return true
+		}
+	}
+	return false
+}
+
+func (db *InmemoryDB) DeleteCookie(in interface{}) {
+	switch in := in.(type) {
+	case http.Cookie:
+		u, ok := db.FindUserByCookie(&in)
+		if !ok {
+			return
+		}
+		delete(db.usersAuthCookies, u.ID)
+	}
+}
+
+func (db *InmemoryDB) FindUserByEmail(email string) (models.User, bool) {
 	for k, u := range db.users {
 		if u.Email == email {
 			return db.users[k], true
@@ -128,7 +128,7 @@ func (db *DB) FindByEmail(email string) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) FindUserByID(id int) (models.User, bool) {
+func (db *InmemoryDB) FindUserByID(id int) (models.User, bool) {
 	for k, u := range db.users {
 		if u.ID == id {
 			return db.users[k], true
@@ -137,53 +137,57 @@ func (db *DB) FindUserByID(id int) (models.User, bool) {
 	return models.User{}, false
 }
 
-func (db *DB) CheckCookie(cookie http.Cookie) bool {
-	for _, v := range db.usersAuthCookies {
-		if v.Value == cookie.Value {
-			return true
-		}
-	}
-	return false
-}
-
-func (db *DB) FindUserByCookie(cookie http.Cookie) (models.User, bool) {
+func (db *InmemoryDB) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
 	for k, v := range db.usersAuthCookies {
 		if v.Value == cookie.Value {
-			u, ok := db.FindUserByID(k)
-			if !ok {
-				return models.User{}, false
-			}
-			return u, true
+			return db.FindUserByID(k)
 		}
 	}
 	return models.User{}, false
 }
 
-func (db *DB) FindFilmByTitle(title string) (models.Film, bool) {
-	for k, f := range db.films {
-		if f.Title == title {
+func (db *InmemoryDB) FindFilmByTitle(title string) (models.Film, bool) {
+	for k := range db.films {
+		if db.films[k].Title == title {
 			return db.films[k], true
 		}
 	}
 	return models.Film{}, false
 }
 
-// TODO: insert cookie for each user
-func (db *DB) FakeFillDB() {
+func (db *InmemoryDB) FindFilmByID(id int) (models.Film, bool) {
+	for k, f := range db.films {
+		if f.ID == id {
+			return db.films[k], true
+		}
+	}
+	return models.Film{}, false
+}
+
+func (db *InmemoryDB) FakeFillDB() {
+	cookie := http.Cookie{
+		Name:  configs.Default.CookieAuthName,
+		Value: "value",
+		Path:  "/",
+	}
+
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
 		Username:    "Oleg",
 	})
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "anton@mail.ru", Password: user.GetMD5Hash("qwe523")},
 		Username:    "Anton",
 	})
+	db.Insert(models.UserCookie{UserID: 1, Cookie: &cookie})
 
 	db.Insert(models.NewUser{
 		Credentials: models.Credentials{Email: "yura@gmail.com", Password: user.GetMD5Hash("12312312")},
 		Username:    "Yura",
 	})
+	db.Insert(models.UserCookie{UserID: 2, Cookie: &cookie})
 
 	db.Insert(models.NewFilm{FilmInfo: models.FilmInfo{
 		Title: "Бойцовский клуб",

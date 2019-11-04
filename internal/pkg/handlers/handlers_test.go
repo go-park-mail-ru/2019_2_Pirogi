@@ -8,6 +8,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -15,7 +17,7 @@ import (
 	"github.com/gorilla/mux"
 )
 
-func InitDatabase() *database.DB {
+func InitDatabase() *database.InmemoryDB {
 	db := database.InitInmemory()
 	db.FakeFillDB()
 	return db
@@ -115,8 +117,8 @@ func TestGetUser(t *testing.T) {
 
 func TestGetUsers(t *testing.T) {
 	db := InitDatabase()
-	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	cookie := auth.GenerateCookie(configs.Default.CookieAuthName, "cookie")
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -124,7 +126,7 @@ func TestGetUsers(t *testing.T) {
 			StatusCode:   http.StatusUnauthorized,
 		},
 		{
-			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:       http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			ResponsePart: `"error":"invalid cookie"`,
 			StatusCode:   http.StatusUnauthorized,
 		},
@@ -150,8 +152,8 @@ func TestGetUsers(t *testing.T) {
 
 func TestGetUsersCreate(t *testing.T) {
 	db := InitDatabase()
-	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	cookie := auth.GenerateCookie(configs.Default.CookieAuthName, "cookie")
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -159,7 +161,7 @@ func TestGetUsersCreate(t *testing.T) {
 			StatusCode:   http.StatusBadRequest,
 		},
 		{
-			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:       http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			ResponsePart: `"error":"EOF"`,
 			StatusCode:   http.StatusBadRequest,
 		},
@@ -194,8 +196,8 @@ func TestGetUsersCreate(t *testing.T) {
 
 func TestGetUsersUpdate(t *testing.T) {
 	db := InitDatabase()
-	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	cookie := auth.GenerateCookie(configs.Default.CookieAuthName, "cookie")
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -203,7 +205,7 @@ func TestGetUsersUpdate(t *testing.T) {
 			StatusCode:   http.StatusBadRequest,
 		},
 		{
-			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:       http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			ResponsePart: `"error":"EOF"`,
 			StatusCode:   http.StatusBadRequest,
 		},
@@ -213,7 +215,7 @@ func TestGetUsersUpdate(t *testing.T) {
 			StatusCode:   http.StatusBadRequest,
 		},
 		{
-			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:       http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			Body:         strings.NewReader(`{"Username":"OLEG"}`),
 			ResponsePart: `"error":"no user with the cookie"`,
 			StatusCode:   http.StatusUnauthorized,
@@ -245,15 +247,15 @@ func TestGetUsersUpdate(t *testing.T) {
 
 func TestLoginCheck(t *testing.T) {
 	db := InitDatabase()
-	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 0)
+	cookie := auth.GenerateCookie(configs.Default.CookieAuthName, "cookie")
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
 			StatusCode: http.StatusUnauthorized,
 		},
 		{
-			Cookie:     http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:     http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			StatusCode: http.StatusUnauthorized,
 		},
 		{
@@ -277,8 +279,8 @@ func TestLoginCheck(t *testing.T) {
 
 func TestLogin(t *testing.T) {
 	db := InitDatabase()
-	cookie := auth.GenerateCookie(configs.CookieAuthName, "cookie")
-	db.InsertCookie(cookie, 1)
+	cookie := auth.GenerateCookie(configs.Default.CookieAuthName, "cookie")
+	db.Insert(models.UserCookie{UserID: 0, Cookie: &cookie})
 
 	cases := []TestCase{
 		{
@@ -286,7 +288,7 @@ func TestLogin(t *testing.T) {
 			StatusCode:   http.StatusBadRequest,
 		},
 		{
-			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:       http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			ResponsePart: `"error":"invalid json; EOF"`,
 			StatusCode:   http.StatusBadRequest,
 		},
@@ -296,7 +298,7 @@ func TestLogin(t *testing.T) {
 			StatusCode:   http.StatusBadRequest,
 		},
 		{
-			Cookie:       http.Cookie{Name: configs.CookieAuthName, Value: "fake"},
+			Cookie:       http.Cookie{Name: configs.Default.CookieAuthName, Value: "fake"},
 			Body:         strings.NewReader(`{"email":"anton@mail.ru","password":"qwe523"}`),
 			ResponsePart: `"error":"invalid cookie"`,
 			StatusCode:   http.StatusBadRequest,

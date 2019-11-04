@@ -1,12 +1,13 @@
 package models
 
+import "net/http"
+
 type Credentials struct {
 	Email    string `json:"email"`
-	Password string `json:"-"`
+	Password string `json:"password"`
 }
 
 type UserInfo struct {
-	ID          int     `json:"id"`
 	Username    string  `json:"username"`
 	Rating      float32 `json:"rating"`
 	Description string  `json:"description"`
@@ -14,6 +15,7 @@ type UserInfo struct {
 }
 
 type User struct {
+	ID int `json:"id" bson:"_id"`
 	Credentials
 	UserInfo
 }
@@ -51,8 +53,13 @@ type NewFilm struct {
 }
 
 type Film struct {
-	ID int `json:"-"`
+	ID int `json:"id" bson:"_id"`
 	FilmInfo
+}
+
+type UserCookie struct {
+	UserID int `json:"userid" bson:"_id"`
+	Cookie *http.Cookie
 }
 
 type Error struct {

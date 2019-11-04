@@ -3,9 +3,7 @@ package main
 import (
 	"flag"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/labstack/gommon/log"
 )
 
@@ -23,10 +21,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	apiServer, err := server.CreateAPIServer(conn)
+	conn.ClearDB()
+	err = conn.InitCounters()
 	if err != nil {
-		log.Fatal(err.Error())
-		return
+		log.Fatal(err)
 	}
-	log.Fatal(apiServer.Server.ListenAndServe())
+	conn.FakeFillDB()
 }
