@@ -13,6 +13,7 @@ import (
 func GetHandlerList(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var jsonBody []byte
+		jsonBody = append(jsonBody, []byte("[")...)
 		limit, err := strconv.Atoi(ctx.QueryParam("limit"))
 		if limit == 0 || err != nil {
 			limit = 10
@@ -34,7 +35,7 @@ func GetHandlerList(conn database.Database) echo.HandlerFunc {
 			}
 			jsonBody = append(jsonBody, jsonModel...)
 		}
-
+		jsonBody = append(jsonBody, []byte("]")...)
 		_, err = ctx.Response().Write(jsonBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

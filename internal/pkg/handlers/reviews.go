@@ -34,6 +34,7 @@ func GetHandlerProfileReviews(conn database.Database) echo.HandlerFunc {
 		}
 		reviews, _ := conn.GetReviewsOfAuthorSortedByDate(user.ID, limit, offset)
 		var jsonResponse []byte
+		jsonResponse = append(jsonResponse, []byte("[")...)
 		for i, review := range reviews {
 			jsonModel, err := review.MarshalJSON()
 			if err != nil {
@@ -43,8 +44,8 @@ func GetHandlerProfileReviews(conn database.Database) echo.HandlerFunc {
 				jsonResponse = append(jsonResponse, []byte(",")...)
 			}
 			jsonResponse = append(jsonResponse, jsonModel...)
-
 		}
+		jsonResponse = append(jsonResponse, []byte("]")...)
 		_, err = ctx.Response().Write(jsonResponse)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -57,7 +58,7 @@ func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		var filmID, offset, limit int
 		filmID, err := strconv.Atoi(ctx.Param("film_id"))
-		if limit == 0 || err != nil {
+		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "specify film id")
 		}
 		offset, err = strconv.Atoi(ctx.QueryParam("offset"))
@@ -70,6 +71,7 @@ func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
 		}
 		reviews, _ := conn.GetReviewsOfFilmSortedByDate(models.ID(filmID), limit, offset)
 		var jsonResponse []byte
+		jsonResponse = append(jsonResponse, []byte("[")...)
 		for i, review := range reviews {
 			jsonModel, err := review.MarshalJSON()
 			if err != nil {
@@ -79,8 +81,8 @@ func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
 				jsonResponse = append(jsonResponse, []byte(",")...)
 			}
 			jsonResponse = append(jsonResponse, jsonModel...)
-
 		}
+		jsonResponse = append(jsonResponse, []byte("]")...)
 		_, err = ctx.Response().Write(jsonResponse)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
