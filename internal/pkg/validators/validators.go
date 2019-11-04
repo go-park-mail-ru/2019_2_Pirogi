@@ -3,6 +3,7 @@ package validators
 import (
 	"regexp"
 	"time"
+	"unicode"
 
 	valid "github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -191,6 +192,14 @@ func InitValidator() {
 		return true
 	})
 
+	valid.CustomTypeTagMap.Set("password", func(i interface{}, o interface{}) bool {
+		subject, ok := i.(string)
+		if !ok {
+			return false
+		}
+		return validatePassword(subject)
+	})
+
 }
 
 func validateCountry(country string) bool {
@@ -223,6 +232,32 @@ func validateRole(role string) bool {
 		if role == confRole {
 			return true
 		}
+	}
+	return false
+}
+
+func validatePassword(password string) bool {
+	letters := 0
+	var flags = []bool{false, false, false, false}
+	for _, c := range password {
+		switch {
+		case unicode.IsNumber(c):
+			flags[0] = true
+		case unicode.IsUpper(c):
+			flags[1] = true
+			letters++
+		case unicode.IsPunct(c) || unicode.IsSymbol(c):
+			flags[2] = true
+		case unicode.IsLetter(c) || c == ' ':
+			letters++
+		default:
+			return false
+		}
+
+	}
+	flags[3] = letters > 7
+	if flags[0] && flags[1] && flags[2] && flags[3] {
+		return true
 	}
 	return false
 }

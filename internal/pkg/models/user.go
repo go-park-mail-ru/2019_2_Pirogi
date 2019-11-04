@@ -4,7 +4,7 @@ import "net/http"
 
 type Credentials struct {
 	Email    string `json:"email" valid:"email"`
-	Password string `json:"password" valid:"alphanum, stringlength(8|50)"`
+	Password string `json:"password" valid:"password"`
 }
 
 type NewUser struct {
