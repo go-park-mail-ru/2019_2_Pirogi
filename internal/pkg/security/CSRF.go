@@ -3,6 +3,7 @@ package security
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
+	"github.com/labstack/gommon/log"
 )
 
 func CheckNoCSRF(ctx echo.Context) bool {
@@ -15,5 +16,7 @@ func CheckNoCSRF(ctx echo.Context) bool {
 	if err != nil {
 		return false
 	}
+	log.Warn(tokenHeader)
+	log.Warn(configs.Default.CSRFCookie + "=" + cookie.Value)
 	return tokenHeader == configs.Default.CSRFCookie+"="+cookie.Value
 }
