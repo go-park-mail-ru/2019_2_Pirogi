@@ -10,6 +10,7 @@ func CheckNoCSRF(ctx echo.Context) bool {
 	if tokenHeader == "" {
 		return false
 	}
+	println(tokenHeader)
 
 	cookie, err := ctx.Request().Cookie(configs.Default.CSRFCookieName)
 	if err != nil {
