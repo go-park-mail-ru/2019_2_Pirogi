@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"fmt"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"net/http"
 	"os"
 	"time"
@@ -54,6 +55,25 @@ func AccessLogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 				ctx.Logger().Warn(err.Error())
 			}
 		}
+		return next(ctx)
+	}
+}
+
+func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		_, err := ctx.Request().Cookie(configs.Default.CSRFCookieName)
+		if err == nil {
+			return next(ctx)
+		}
+		csrfCookie := &http.Cookie{
+			Name:     configs.Default.CSRFCookieName,
+			Value:    user.GetMD5Hash(time.Now().String() + ctx.Request().RemoteAddr),
+			Path:     "/",
+			Expires:  time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
+			HttpOnly: false,
+			SameSite: http.SameSiteStrictMode,
+		}
+		http.SetCookie(ctx.Response(), csrfCookie)
 		return next(ctx)
 	}
 }

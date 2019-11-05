@@ -63,10 +63,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists.GET("/", handlers.GetHandlerList(conn))
 
 	e.Use(echoMid.Secure())
-	e.Use(echoMid.CSRFWithConfig(echoMid.CSRFConfig{
-		CookiePath: "/",
-		ContextKey: "_csrf",
-	}))
+	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 

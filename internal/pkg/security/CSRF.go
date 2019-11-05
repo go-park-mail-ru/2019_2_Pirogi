@@ -11,9 +11,9 @@ func CheckNoCSRF(ctx echo.Context) bool {
 		return false
 	}
 
-	cookie, err := ctx.Request().Cookie(configs.Default.CSRFCookie)
+	cookie, err := ctx.Request().Cookie(configs.Default.CSRFCookieName)
 	if err != nil {
 		return false
 	}
-	return tokenHeader == configs.Default.CSRFCookie+"="+cookie.Value
+	return tokenHeader == configs.Default.CSRFCookieName+"="+cookie.Value
 }

@@ -34,8 +34,8 @@ type DefaultConfig struct {
 	PersonTargetName string `yaml:"person_target_name"`
 	ReviewTargetName string `yaml:"review_target_name"`
 
-	CSRFHeader string `yaml:"csrf_header"`
-	CSRFCookie string `yaml:"csrf_cookie"`
+	CSRFHeader     string `yaml:"csrf_header"`
+	CSRFCookieName string `yaml:"csrf_cookie"`
 }
 
 var Default DefaultConfig
