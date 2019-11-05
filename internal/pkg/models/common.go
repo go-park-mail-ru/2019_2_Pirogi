@@ -20,7 +20,7 @@ func (fm Mark) String() string {
 
 type Error struct {
 	Status int    `json:"status" valid:"numeric"`
-	Error  string `json:"error" valid:"text"`
+	Error  string `json:"error" valid:"optional"`
 }
 
 type Role string

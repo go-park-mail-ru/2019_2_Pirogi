@@ -31,4 +31,4 @@ review_target_name: "review"
 api_port: ":8000"
 
 csrf_header: "X-CSRF-TOKEN"
-csrf_cookie: "_csrf"
+csrf_cookie_name: "_csrf"
