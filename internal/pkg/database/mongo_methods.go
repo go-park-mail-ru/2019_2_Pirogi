@@ -60,7 +60,7 @@ func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 	}
 	id, err := conn.GetNextSequence(configs.Default.FilmTargetName)
 	if err != nil {
-		return Error.New(http.StatusInternalServerError, "cannot insert user in database")
+		return Error.New(http.StatusInternalServerError, "cannot insert film in database")
 	}
 	f := makers.MakeFilm(id, &in)
 	_, err = conn.films.InsertOne(conn.context, f)

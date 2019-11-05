@@ -45,13 +45,13 @@ func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 		}
 		rawBody, err := common.ReadBody(ctx)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		model, err := common.PrepareModel(rawBody, models.NewFilm{})
-		newFilm, _ := model.(models.NewFilm)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
+		newFilm, _ := model.(models.NewFilm)
 		//TODO: было бы классно, если он возвращал ID
 		e := conn.Upsert(newFilm)
 		if e != nil {
