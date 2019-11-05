@@ -1,7 +1,7 @@
 package makers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth/security"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"html"
 )
@@ -10,7 +10,7 @@ func MakePerson(id models.ID, in models.NewPerson) (models.Person, *models.Error
 	return models.Person{
 		ID:         id,
 		Name:       html.EscapeString(in.Name),
-		Roles:      common.XSSFilterRoles(in.Roles),
+		Roles:      security.XSSFilterRoles(in.Roles),
 		Birthday:   html.EscapeString(in.Birthday),
 		Birthplace: html.EscapeString(in.Birthplace),
 		Genres:     []models.Genre{},

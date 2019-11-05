@@ -1,4 +1,4 @@
-package common
+package security
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"

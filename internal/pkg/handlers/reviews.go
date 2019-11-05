@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -93,9 +94,9 @@ func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerReviewsCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
+		session, err := common.CheckPOSTRequest(ctx)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "no cookie")
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		user, ok := conn.FindUserByCookie(session)
 		if !ok {

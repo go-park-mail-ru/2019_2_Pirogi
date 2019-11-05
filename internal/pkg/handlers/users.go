@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth/security"
 	"io/ioutil"
 	"net/http"
 	"strconv"
@@ -58,6 +59,9 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		if !security.CheckNoCSRF(ctx) {
+			return echo.NewHTTPError(http.StatusBadRequest, "no or invalid CSRF header")
+		}
 		_, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 		if err == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "already logged in")

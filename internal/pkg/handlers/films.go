@@ -39,6 +39,10 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		_, err := common.CheckPOSTRequest(ctx)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
 		rawBody, err := common.ReadBody(ctx)
 		if err != nil {
 			return err

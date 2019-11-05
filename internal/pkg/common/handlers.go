@@ -3,9 +3,12 @@ package common
 import (
 	"errors"
 	"github.com/asaskevich/govalidator"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth/security"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 	"io/ioutil"
+	"net/http"
 )
 
 func ReadBody(ctx echo.Context) ([]byte, error) {
@@ -57,4 +60,11 @@ func PrepareModel(body []byte, in interface{}) (out interface{}, err error) {
 	default:
 		return nil, errors.New("unsupported model")
 	}
+}
+
+func CheckPOSTRequest(ctx echo.Context) (session *http.Cookie, err error) {
+	if !security.CheckNoCSRF(ctx) {
+		return nil, errors.New("no CSRF cookie")
+	}
+	return ctx.Request().Cookie(configs.Default.CookieAuthName)
 }

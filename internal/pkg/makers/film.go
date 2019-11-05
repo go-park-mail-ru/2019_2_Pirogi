@@ -1,7 +1,7 @@
 package makers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth/security"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"html"
 )
@@ -11,10 +11,10 @@ func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 		ID:          id,
 		Title:       html.EscapeString(in.Title),
 		Year:        html.EscapeString(in.Year),
-		Genres:      common.XSSFilterGenres(in.Genres),
+		Genres:      security.XSSFilterGenres(in.Genres),
 		Mark:        models.Mark(0),
 		Description: html.EscapeString(in.Description),
-		Countries:   common.XSSFilterStrings(in.Countries),
+		Countries:   security.XSSFilterStrings(in.Countries),
 		PersonsID:   in.PersonsID,
 		Images:      []models.Image{"default.png"},
 		ReviewsNum:  0,

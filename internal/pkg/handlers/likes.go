@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth/security"
 	"io/ioutil"
 	"net/http"
 
@@ -14,6 +15,10 @@ import (
 
 func GetHandlerLikesCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		ok := security.CheckNoCSRF(ctx)
+		if !ok {
+			return echo.NewHTTPError(http.StatusBadRequest, "No CSRF token")
+		}
 		session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, "no cookie")

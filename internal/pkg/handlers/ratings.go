@@ -1,12 +1,12 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"io/ioutil"
 	"net/http"
 
 	"github.com/asaskevich/govalidator"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
@@ -14,9 +14,9 @@ import (
 
 func GetHandlerRatingsCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
+		session, err := common.CheckPOSTRequest(ctx)
 		if err != nil {
-			return echo.NewHTTPError(http.StatusUnauthorized, "no cookie")
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		user, ok := conn.FindUserByCookie(session)
 		if !ok {

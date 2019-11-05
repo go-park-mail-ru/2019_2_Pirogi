@@ -63,6 +63,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists.GET("/", handlers.GetHandlerList(conn))
 
 	e.Use(echoMid.Secure())
+	e.Use(echoMid.CSRF())
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 
