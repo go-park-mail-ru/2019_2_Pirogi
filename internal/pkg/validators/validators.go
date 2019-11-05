@@ -234,18 +234,19 @@ func validateRole(role string) bool {
 	return false
 }
 
+//TODO: в продакшене расскоментировать
 func validatePassword(password string) bool {
 	letters := 0
-	var flags = []bool{false, false, false, false}
+	//var flags = []bool{false, false, false, false}
 	for _, c := range password {
 		switch {
-		case unicode.IsNumber(c):
-			flags[0] = true
-		case unicode.IsUpper(c):
-			flags[1] = true
-			letters++
-		case unicode.IsPunct(c) || unicode.IsSymbol(c):
-			flags[2] = true
+		//case unicode.IsNumber(c):
+		//	flags[0] = true
+		//case unicode.IsUpper(c):
+		//	flags[1] = true
+		//	letters++
+		//case unicode.IsPunct(c) || unicode.IsSymbol(c):
+		//	flags[2] = true
 		case unicode.IsLetter(c) || c == ' ':
 			letters++
 		default:
@@ -253,9 +254,9 @@ func validatePassword(password string) bool {
 		}
 
 	}
-	flags[3] = letters > 7
-	if flags[0] && flags[1] && flags[2] && flags[3] {
-		return true
-	}
-	return false
+	//flags[3] = letters > 7
+	//if flags[0] && flags[1] && flags[2] && flags[3] {
+	//	return true
+	//}
+	return letters > 7
 }
