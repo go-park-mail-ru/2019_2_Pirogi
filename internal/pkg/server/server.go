@@ -22,6 +22,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e.Pre(middleware.AccessLogMiddleware)
 	e.Pre(echoMid.AddTrailingSlash())
 	e.Pre(middleware.ExpireInvalidCookiesMiddleware(conn))
+	e.Pre(echoMid.CSRF())
 
 	api := e.Group("/api")
 
@@ -63,7 +64,6 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists.GET("/", handlers.GetHandlerList(conn))
 
 	e.Use(echoMid.Secure())
-	e.Use(echoMid.CSRF())
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 
