@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth/security"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"io/ioutil"
 	"net/http"
 	"strconv"

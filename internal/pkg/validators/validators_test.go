@@ -9,7 +9,7 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
+//const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
 
 func TestLike(t *testing.T) {
 	InitValidator()
@@ -52,7 +52,6 @@ func TestTruncFilm(t *testing.T) {
 		Title:  "matrix",
 		Year:   "1998",
 		Genres: []models.Genre{"драма"},
-		Poster: imageFilename,
 		Mark:   3.4,
 	}
 	_, err := valid.ValidateStruct(filmTrunc)
@@ -73,7 +72,6 @@ func TestPersonTrunc(t *testing.T) {
 	personTrunc := models.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
-		Mark: models.Mark(0.4),
 	}
 	_, err := valid.ValidateStruct(personTrunc)
 	require.NoError(t, err)
@@ -86,12 +84,11 @@ func TestPerson(t *testing.T) {
 	personTrunc := models.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
-		Mark: models.Mark(0.4),
 	}
 	person := models.Person{
 		ID:         personTrunc.ID,
 		Name:       personTrunc.Name,
-		Mark:       personTrunc.Mark,
+		Mark:       models.Mark(2.3),
 		Roles:      []models.Role{"actor"},
 		Birthday:   "09.12.1998",
 		Birthplace: "USA",
@@ -115,7 +112,6 @@ func TestFilm(t *testing.T) {
 		Title:  "matrix",
 		Year:   "1998",
 		Genres: []models.Genre{"драма"},
-		Poster: models.Image(imageFilename),
 		Mark:   3.0,
 	}
 	film := models.Film{
@@ -123,7 +119,6 @@ func TestFilm(t *testing.T) {
 		Title:       filmTrunc.Title,
 		Year:        filmTrunc.Year,
 		Genres:      filmTrunc.Genres,
-		Poster:      filmTrunc.Poster,
 		Mark:        filmTrunc.Mark,
 		Countries:   []string{"USA"},
 		Description: "laslasldasldlasdl",
@@ -141,15 +136,13 @@ func TestFilm(t *testing.T) {
 func TestReview(t *testing.T) {
 	InitValidator()
 	review := models.Review{
-		NewReview: models.NewReview{
-			Title:    "Обычный обзор",
-			Body:     "лалааллфылвфлывлфывлфывйцуasd12",
-			FilmID:   2,
-			AuthorID: 6,
-		},
-		ID:    3,
-		Date:  time.Now(),
-		Likes: 8,
+		Title:    "Обычный обзор",
+		Body:     "лалааллфылвфлывлфывлфывйцуasd12",
+		FilmID:   2,
+		AuthorID: 6,
+		ID:       3,
+		Date:     time.Now(),
+		Likes:    8,
 	}
 	_, err := valid.ValidateStruct(review)
 	require.NoError(t, err)
