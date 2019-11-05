@@ -147,34 +147,6 @@ func InitValidator() {
 		return imagePattern.MatchString(string(subject))
 	})
 
-	valid.CustomTypeTagMap.Set("films_trunc", func(i interface{}, o interface{}) bool {
-		subject, ok := i.([]models.FilmTrunc)
-		if !ok {
-			return false
-		}
-		for _, filmT := range subject {
-			ok, _ := valid.ValidateStruct(filmT)
-			if !ok {
-				return false
-			}
-		}
-		return true
-	})
-
-	valid.CustomTypeTagMap.Set("persons_trunc", func(i interface{}, o interface{}) bool {
-		subject, ok := i.([]models.PersonTrunc)
-		if !ok {
-			return false
-		}
-		for _, personT := range subject {
-			ok, _ := valid.ValidateStruct(personT)
-			if !ok {
-				return false
-			}
-		}
-		return true
-	})
-
 	valid.CustomTypeTagMap.Set("images", func(i interface{}, o interface{}) bool {
 		subject, ok := i.([]models.Image)
 		if !ok {

@@ -39,7 +39,7 @@ type FilmFull struct {
 	Mark        Mark          `json:"mark" valid:"mark"`
 	Description string        `json:"description" valid:"text, stringlength(8|50)"`
 	Countries   []string      `json:"countries" valid:"countries"`
-	Persons     []PersonTrunc `json:"persons" valid:"persons_trunc, optional"`
+	Persons     []PersonTrunc `json:"persons" valid:"optional"`
 	Images      []Image       `json:"images" valid:"images, optional"`
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
 }
