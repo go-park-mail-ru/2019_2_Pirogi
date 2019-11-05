@@ -11,6 +11,13 @@ import (
 
 //const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
 
+func TestTarget(t *testing.T) {
+	InitValidator()
+	target := models.Target("film")
+	ok := validateTarget(string(target))
+	require.True(t, ok)
+}
+
 func TestLike(t *testing.T) {
 	InitValidator()
 	like := models.Like{
