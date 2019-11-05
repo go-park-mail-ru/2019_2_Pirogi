@@ -6,22 +6,22 @@ import (
 )
 
 func XSSFilterRoles(roles []models.Role) []models.Role {
-	for _, role := range roles {
-		role = models.Role(html.EscapeString(string(role)))
+	for idx := range roles {
+		roles[idx] = models.Role(html.EscapeString(string(roles[idx])))
 	}
 	return roles
 }
 
-func XSSFilterGenres(Genres []models.Genre) []models.Genre {
-	for _, Genre := range Genres {
-		Genre = models.Genre(html.EscapeString(string(Genre)))
+func XSSFilterGenres(genres []models.Genre) []models.Genre {
+	for idx := range genres {
+		genres[idx] = models.Genre(html.EscapeString(string(genres[idx])))
 	}
-	return Genres
+	return genres
 }
 
 func XSSFilterStrings(in []string) []string {
-	for _, val := range in {
-		val = html.EscapeString(val)
+	for idx := range in {
+		in[idx] = html.EscapeString(in[idx])
 	}
 	return in
 }

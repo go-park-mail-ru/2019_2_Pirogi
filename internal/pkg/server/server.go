@@ -22,10 +22,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e.Pre(middleware.AccessLogMiddleware)
 	e.Pre(echoMid.AddTrailingSlash())
 	e.Pre(middleware.ExpireInvalidCookiesMiddleware(conn))
-	e.Pre(echoMid.CSRFWithConfig(echoMid.CSRFConfig{
-		CookiePath: "/",
-		ContextKey: "_csrf",
-	}))
+
 	api := e.Group("/api")
 
 	users := api.Group("/users")
@@ -66,6 +63,10 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists.GET("/", handlers.GetHandlerList(conn))
 
 	e.Use(echoMid.Secure())
+	e.Use(echoMid.CSRFWithConfig(echoMid.CSRFConfig{
+		CookiePath: "/",
+		ContextKey: "_csrf",
+	}))
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 
