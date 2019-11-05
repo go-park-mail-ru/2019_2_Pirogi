@@ -1,14 +1,18 @@
 package makers
 
-import "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"html"
+)
 
-func CreatePerson(id models.ID, in models.NewPerson) (models.Person, *models.Error) {
+func MakePerson(id models.ID, in models.NewPerson) (models.Person, *models.Error) {
 	return models.Person{
 		ID:         id,
-		Name:       in.Name,
-		Roles:      in.Roles,
-		Birthday:   in.Birthday,
-		Birthplace: in.Birthplace,
+		Name:       html.EscapeString(in.Name),
+		Roles:      common.XSSFilterRoles(in.Roles),
+		Birthday:   html.EscapeString(in.Birthday),
+		Birthplace: html.EscapeString(in.Birthplace),
 		Genres:     []models.Genre{},
 		FilmsID:    []models.ID{},
 		Likes:      0,

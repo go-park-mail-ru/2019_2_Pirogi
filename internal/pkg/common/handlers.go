@@ -1,21 +1,21 @@
 package common
 
 import (
+	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 	"io/ioutil"
-	"net/http"
 )
 
 func ReadBody(ctx echo.Context) ([]byte, error) {
 	rawBody, err := ioutil.ReadAll(ctx.Request().Body)
 	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		return nil, err
 	}
 	err = ctx.Request().Body.Close()
 	if err != nil {
-		return nil, echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+		return nil, err
 	}
 	return rawBody, nil
 }
@@ -23,23 +23,38 @@ func ReadBody(ctx echo.Context) ([]byte, error) {
 func PrepareModel(body []byte, in interface{}) (out interface{}, err error) {
 	switch in.(type) {
 	case models.NewFilm:
-		err = in.(models.NewFilm).UnmarshalJSON(body)
+		newModel := in.(models.NewFilm)
+		err = newModel.UnmarshalJSON(body)
+		if err != nil {
+			return nil, err
+		}
+		_, err = govalidator.ValidateStruct(newModel)
+		return newModel, err
 	case models.NewReview:
-		err = in.(models.NewReview).UnmarshalJSON(body)
+		newModel := in.(models.NewReview)
+		err = newModel.UnmarshalJSON(body)
+		if err != nil {
+			return nil, err
+		}
+		_, err = govalidator.ValidateStruct(newModel)
+		return newModel, err
 	case models.NewUser:
-		err = in.(models.NewUser).UnmarshalJSON(body)
+		newModel := in.(models.NewUser)
+		err = newModel.UnmarshalJSON(body)
+		if err != nil {
+			return nil, err
+		}
+		_, err = govalidator.ValidateStruct(newModel)
+		return newModel, err
 	case models.NewPerson:
-		err = in.(models.NewPerson).UnmarshalJSON(body)
+		newModel := in.(models.NewPerson)
+		err = newModel.UnmarshalJSON(body)
+		if err != nil {
+			return nil, err
+		}
+		_, err = govalidator.ValidateStruct(newModel)
+		return newModel, err
 	default:
-		err = echo.NewHTTPError(500, "Invalid model")
+		return nil, errors.New("unsupported model")
 	}
-	if err != nil {
-		return nil, err
-	}
-	_, err = govalidator.ValidateStruct(in)
-	if err != nil {
-		return nil, err
-	}
-	in = FilterXSS(in)
-	return in, nil
 }

@@ -40,7 +40,7 @@ func GetHandlerPersonsCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		rawBody, err := common.ReadBody(ctx)
 		if err != nil {
-			return err
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		model, err := common.PrepareModel(rawBody, models.NewPerson{})
 		newPerson := model.(models.NewPerson)

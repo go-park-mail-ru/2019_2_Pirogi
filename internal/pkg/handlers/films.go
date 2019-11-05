@@ -55,7 +55,7 @@ func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 		}
 		film, ok := conn.FindFilmByTitle(newFilm.Title)
 		if !ok {
-			return echo.NewHTTPError(http.StatusInternalServerError)
+			return echo.NewHTTPError(http.StatusInternalServerError, "Upsert failed")
 		}
 
 		//TODO: сделать это ассинхронным и красивым, потому что сейчас вообще г, даже смотреть противно, был бы этот код собакой, я бы усыпил

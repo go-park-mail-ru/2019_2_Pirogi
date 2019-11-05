@@ -107,7 +107,7 @@ func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert person in database: "+err.Error())
 	}
-	newPerson, e := makers.CreatePerson(id, in)
+	newPerson, e := makers.MakePerson(id, in)
 	if e != nil {
 		return e
 	}
