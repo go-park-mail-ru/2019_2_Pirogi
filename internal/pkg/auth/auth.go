@@ -46,7 +46,7 @@ func ExpireCookie(cookie *http.Cookie) {
 }
 
 func Login(ctx echo.Context, db database.Database, email, password string) *models.Error {
-	cookie, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
+	_, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		u, ok := db.FindUserByEmail(email)
 		if !ok || u.Password != password {
@@ -59,11 +59,6 @@ func Login(ctx echo.Context, db database.Database, email, password string) *mode
 		}
 		http.SetCookie(ctx.Response(), &cookie)
 		return nil
-	}
-	if cookie != nil {
-		if _, ok := db.FindUserByCookie(cookie); !ok {
-			return error.New(http.StatusBadRequest, "invalid cookie")
-		}
 	}
 	return error.New(http.StatusBadRequest, "already logged in")
 }

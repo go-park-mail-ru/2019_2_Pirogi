@@ -1,19 +1,19 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	mockdatabase "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database/mock"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"
+	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	mockdatabase "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database/mock"
 )
 
 type TestCaseGetHandlerFilm struct {
@@ -38,22 +38,22 @@ func TestGetHandlerFilm(t *testing.T) {
 				ID:        0,
 				PersonsID: []models.ID{1},
 			},
-			ExpectedPersons:  []models.Person{{ID: 1, Name: "actor"}},
-			ExpectedFindRV:   true,
+			ExpectedPersons: []models.Person{{ID: 1, Name: "actor"}},
+			ExpectedFindRV:  true,
 			ExpectedFullFilm: models.FilmFull{
 				ID:      0,
 				Persons: []models.PersonTrunc{{ID: 1, Name: "actor"}},
 			},
 		},
 		{
-			FilmID:             -1,
-			ExpectedFilm:       models.Film{},
-			ExpectedGetError:   &models.Error{Status: http.StatusNotFound, Error: "no film with the id: -1"},
-			ExpectedEchoError:  &echo.HTTPError{Code: http.StatusNotFound, Message: "no film with the id: -1"},
+			FilmID:            -1,
+			ExpectedFilm:      models.Film{},
+			ExpectedGetError:  &models.Error{Status: http.StatusNotFound, Error: "no film with the id: -1"},
+			ExpectedEchoError: &echo.HTTPError{Code: http.StatusNotFound, Message: "no film with the id: -1"},
 		},
 		{
 			ParseErrorExpected: true,
-			ExpectedEchoError:  &echo.HTTPError{Code: http.StatusNotFound,
+			ExpectedEchoError: &echo.HTTPError{Code: http.StatusNotFound,
 				Message: "strconv.Atoi: parsing \"\": invalid syntax"},
 		},
 	}
@@ -105,37 +105,40 @@ type TestCaseGetHandlerFilmCreate struct {
 
 func TestGetHandlerFilmCreate(t *testing.T) {
 	validators.InitValidator()
+	pathConfigs := "../../../configs"
+	err := common.UnmarshalConfigs(&pathConfigs)
+	require.NoError(t, err)
 	t.Parallel()
 	ctrl := gomock.NewController(t)
 	mockDb := mockdatabase.NewMockDatabase(ctrl)
 	testCases := []TestCaseGetHandlerFilmCreate{
 		{
 			NewFilm: models.NewFilm{
-				Title: "Best",
+				Title:       "Best",
 				Description: "Best description",
-				Year: "2008",
-				Countries: []string{"Germany"},
-				Genres:  []models.Genre{"боевик"},
+				Year:        "2008",
+				Countries:   []string{"Germany"},
+				Genres:      []models.Genre{"боевик"},
 			},
 			ExpectedFilm: models.Film{
-				ID:        0,
-				Title:     "Best",
+				ID:          0,
+				Title:       "Best",
 				Description: "Best description",
-				Year: "2008",
-				Countries: []string{"Germany"},
-				Genres:  []models.Genre{"боевик"},
+				Year:        "2008",
+				Countries:   []string{"Germany"},
+				Genres:      []models.Genre{"боевик"},
 			},
-			ExpectedFindFilmRV:    true,
+			ExpectedFindFilmRV: true,
 		},
 		{
 			NewFilm: models.NewFilm{
-				Title: "Best",
+				Title:       "Best",
 				Description: "Best description",
-				Year: "2008",
-				Countries: []string{"Germany"},
+				Year:        "2008",
+				Countries:   []string{"Germany"},
 			},
 			ParseErrorExpected: true,
-			ExpectedEchoError: &echo.HTTPError{Code: http.StatusBadRequest, Message: "genres: Missing required field"},
+			ExpectedEchoError:  &echo.HTTPError{Code: http.StatusBadRequest, Message: "genres: Missing required field"},
 		},
 	}
 
@@ -146,7 +149,11 @@ func TestGetHandlerFilmCreate(t *testing.T) {
 		}
 		e := echo.New()
 		req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(testCase.JsonRequestBody))
+
 		req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+		req.Header.Set(echo.HeaderCookie, "_csrf=test;cinsear_session=test")
+		req.Header.Set(configs.Default.CSRFHeader, "_csrf=test")
 		w := httptest.NewRecorder()
 		c := e.NewContext(req, w)
 		c.SetPath("/api/films/")
