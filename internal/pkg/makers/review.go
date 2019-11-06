@@ -17,3 +17,16 @@ func MakeReview(id models.ID, in models.NewReview) models.Review {
 		AuthorID: in.AuthorID,
 	}
 }
+
+func MakeReviewFull(in models.Review, author models.UserTrunc, mark models.Mark) models.ReviewFull {
+	return models.ReviewFull{
+		ID:     in.ID,
+		Title:  in.Title,
+		Body:   in.Body,
+		FilmID: in.FilmID,
+		Author: author,
+		Date:   in.Date,
+		Likes:  in.Likes,
+		Mark:   mark,
+	}
+}
