@@ -1,9 +1,14 @@
 package security
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
+	"net/http"
+	"net/http/httptest"
 	"testing"
+	"time"
 )
 
 func TestXSSFilterStrings(t *testing.T) {
@@ -27,6 +32,22 @@ func TestXSSFilterRoles(t *testing.T) {
 	require.Equal(t, expected, actual)
 }
 
-func TestCheckNoCSRF(t *testing.T) {
-
+func TestCheckNoCSRFFail(t *testing.T) {
+	e := echo.New()
+	recorder := httptest.NewRecorder()
+	cookie := &http.Cookie{
+		Name:     configs.Default.CSRFCookieName,
+		Value:    "test",
+		Path:     "/",
+		Expires:  time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
+		HttpOnly: false,
+		SameSite: http.SameSiteStrictMode,
+	}
+	http.SetCookie(recorder, cookie)
+	req := &http.Request{Header: http.Header{"Cookie": []string{recorder.Body.String()}}}
+	req.Header.Set(configs.Default.CSRFHeader, "_csrf=invalid")
+	rec := httptest.NewRecorder()
+	c := e.NewContext(req, rec)
+	ok := CheckNoCSRF(c)
+	require.False(t, ok)
 }

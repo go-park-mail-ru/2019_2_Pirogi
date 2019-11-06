@@ -64,7 +64,7 @@ func PrepareModel(body []byte, in interface{}) (out interface{}, err error) {
 
 func CheckPOSTRequest(ctx echo.Context) (session *http.Cookie, err error) {
 	if !security.CheckNoCSRF(ctx) {
-		return nil, errors.New("no CSRF cookie")
+		return nil, errors.New("invalid CSRF")
 	}
 	return ctx.Request().Cookie(configs.Default.CookieAuthName)
 }

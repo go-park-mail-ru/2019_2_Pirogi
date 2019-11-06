@@ -9,8 +9,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-//const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
-
 func TestTarget(t *testing.T) {
 	InitValidator()
 	target := models.Target("film")

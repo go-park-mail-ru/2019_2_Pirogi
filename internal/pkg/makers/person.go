@@ -6,7 +6,7 @@ import (
 	"html"
 )
 
-func MakePerson(id models.ID, in models.NewPerson) (models.Person, *models.Error) {
+func MakePerson(id models.ID, in models.NewPerson) models.Person {
 	return models.Person{
 		ID:         id,
 		Name:       html.EscapeString(in.Name),
@@ -17,7 +17,7 @@ func MakePerson(id models.ID, in models.NewPerson) (models.Person, *models.Error
 		FilmsID:    []models.ID{},
 		Likes:      0,
 		Images:     []models.Image{"default.png"},
-	}, nil
+	}
 }
 
 func MakeTruncPerson(in models.Person) models.PersonTrunc {
