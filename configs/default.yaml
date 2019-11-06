@@ -32,3 +32,5 @@ api_port: ":8000"
 
 csrf_header: "X-CSRF-TOKEN"
 csrf_cookie_name: "_csrf"
+
+default_entries_limit: 10

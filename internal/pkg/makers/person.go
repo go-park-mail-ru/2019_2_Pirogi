@@ -30,7 +30,7 @@ func MakeTruncPerson(in models.Person) models.PersonTrunc {
 func MakeFullPerson(in models.Person, films []models.Film) models.PersonFull {
 	var filmsTrunc []models.FilmTrunc
 	for _, film := range films {
-		filmsTrunc = append(filmsTrunc, MakeTruncFilm(film))
+		filmsTrunc = append(filmsTrunc, MakeFilmTrunc(film))
 	}
 	return models.PersonFull{
 		ID:         in.ID,

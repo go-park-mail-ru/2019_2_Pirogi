@@ -1,21 +1,21 @@
 package configs
 
 //TODO: перевести в yaml
-var Genres = []string{
+var Genres = [...]string{
 	"драма",
 	"боевик",
 	"ужасы",
 	"триллер",
 }
 
-var Targets = []string{
+var Targets = [...]string{
 	"film",
 	"user",
 	"person",
 	"review",
 }
 
-var Roles = []string{
+var Roles = [...]string{
 	"user",
 	"admin",
 	"actor",

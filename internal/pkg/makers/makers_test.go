@@ -109,7 +109,7 @@ var review = models.Review{
 
 func TestMakeTruncFilm(t *testing.T) {
 	expected := filmTrunc
-	actual := MakeTruncFilm(film)
+	actual := MakeFilmTrunc(film)
 	require.Equal(t, expected, actual)
 }
 
@@ -132,7 +132,7 @@ func TestMakeFilm(t *testing.T) {
 
 func TestMakeFullFilm(t *testing.T) {
 	expected := filmFull
-	actual := MakeFullFilm(film, []models.Person{person})
+	actual := MakeFilmFull(film, []models.Person{person})
 	require.Equal(t, expected, actual)
 }
 

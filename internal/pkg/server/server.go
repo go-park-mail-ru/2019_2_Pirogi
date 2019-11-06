@@ -8,18 +8,37 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
-	"github.com/labstack/gommon/log"
+	"go.uber.org/zap"
+	"log"
 )
+
+func CreateLogger() (*zap.Logger, error) {
+	cfg := zap.NewDevelopmentConfig()
+	cfg.OutputPaths = []string{
+		"stdout",
+		"/log/cinsear.log",
+	}
+	cfg.ErrorOutputPaths = []string{
+		"stderr",
+		"/log/error.log",
+	}
+	return cfg.Build()
+}
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	validators.InitValidator()
 
 	e := echo.New()
-	e.Server.Addr = configs.Default.APIPort
-	e.Logger.SetLevel(log.WARN)
-	e.HTTPErrorHandler = handlers.HTTPErrorHandler
+	logger, err := CreateLogger()
+	if err != nil {
+		log.Fatalf("can't initialize zap logger: %v", err)
+	}
+	defer logger.Sync()
 
-	e.Pre(middleware.AccessLogMiddleware)
+	e.Server.Addr = configs.Default.APIPort
+	e.HTTPErrorHandler = handlers.GetHTTPErrorHandler(logger)
+
+	e.Pre(middleware.GetAccessLogMiddleware(logger))
 	e.Pre(echoMid.AddTrailingSlash())
 	e.Pre(middleware.ExpireInvalidCookiesMiddleware(conn))
 
@@ -62,8 +81,8 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists := api.Group("/lists")
 	lists.GET("/", handlers.GetHandlerList(conn))
 
-	//common := api.Group("/common")
-	//common.GET("/:variable/", handlers.GetHandlerCommon())
+	common := api.Group("/common")
+	common.GET("/:variable/", handlers.GetHandlerCommon())
 
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)

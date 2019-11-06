@@ -21,7 +21,7 @@ func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 	}
 }
 
-func MakeTruncFilm(in models.Film) models.FilmTrunc {
+func MakeFilmTrunc(in models.Film) models.FilmTrunc {
 	return models.FilmTrunc{
 		ID:     in.ID,
 		Title:  in.Title,
@@ -31,7 +31,7 @@ func MakeTruncFilm(in models.Film) models.FilmTrunc {
 	}
 }
 
-func MakeFullFilm(in models.Film, persons []models.Person) models.FilmFull {
+func MakeFilmFull(in models.Film, persons []models.Person) models.FilmFull {
 	var personsTrunc []models.PersonTrunc
 	for _, person := range persons {
 		personsTrunc = append(personsTrunc, MakeTruncPerson(person))
@@ -48,4 +48,11 @@ func MakeFullFilm(in models.Film, persons []models.Person) models.FilmFull {
 		Images:      in.Images,
 		ReviewsNum:  in.ReviewsNum,
 	}
+}
+
+func MakeFilmsTrunc(in []models.Film) (out []models.FilmTrunc) {
+	for _, film := range in {
+		out = append(out, MakeFilmTrunc(film))
+	}
+	return
 }
