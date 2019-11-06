@@ -34,19 +34,15 @@ func GetHandlerProfileReviews(conn database.Database) echo.HandlerFunc {
 			limit = 10
 		}
 		reviews, _ := conn.GetReviewsOfAuthorSortedByDate(user.ID, limit, offset)
-		var jsonResponse []byte
-		jsonResponse = append(jsonResponse, []byte("[")...)
-		for i, review := range reviews {
+		var items [][]byte
+		for _, review := range reviews {
 			jsonModel, err := review.MarshalJSON()
 			if err != nil {
 				continue
 			}
-			if i > 0 {
-				jsonResponse = append(jsonResponse, []byte(",")...)
-			}
-			jsonResponse = append(jsonResponse, jsonModel...)
+			items = append(items, jsonModel)
 		}
-		jsonResponse = append(jsonResponse, []byte("]")...)
+		jsonResponse := common.MakeJSONArray(items)
 		_, err = ctx.Response().Write(jsonResponse)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
