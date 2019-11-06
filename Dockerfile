@@ -6,6 +6,6 @@ RUN mkdir -p /log
 WORKDIR /cinsear
 COPY . .
 WORKDIR /cinsear/cmd/server
-RUN go build -o main .
+RUN go build -mod=vendor -o main .
 CMD ["/cinsear/cmd/server/main"]
 EXPOSE 8000

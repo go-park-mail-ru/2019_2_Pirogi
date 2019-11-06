@@ -62,6 +62,9 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists := api.Group("/lists")
 	lists.GET("/", handlers.GetHandlerList(conn))
 
+	//common := api.Group("/common")
+	//common.GET("/:variable/", handlers.GetHandlerCommon())
+
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)
