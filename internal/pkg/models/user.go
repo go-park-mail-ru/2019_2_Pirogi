@@ -26,7 +26,7 @@ type User struct {
 }
 
 type UpdateUser struct {
-	Username    string `json:"username,omitempty" valid:"username, stringlength(4|50), optional"`
+	Username    string `json:"username,omitempty" valid:"text, stringlength(4|50), optional"`
 	Description string `json:"description,omitempty" valid:"description, stringlength(8|50), optional"`
 }
 
