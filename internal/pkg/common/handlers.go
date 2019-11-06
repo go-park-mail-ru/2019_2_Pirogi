@@ -68,3 +68,15 @@ func CheckPOSTRequest(ctx echo.Context) (session *http.Cookie, err error) {
 	}
 	return ctx.Request().Cookie(configs.Default.CookieAuthName)
 }
+
+//func GetIntQueryParams(ctx echo.Context, keys []string) (results []int) {
+//	for _, key := range keys {
+//		result, err := strconv.Atoi(ctx.QueryParam(key))
+//		if err != nil {
+//			results = append(results, 0)
+//			continue
+//		}
+//		results = append(results, result)
+//	}
+//	return results
+//}
