@@ -5,8 +5,8 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
-	"github.com/labstack/gommon/log"
 	"github.com/stretchr/testify/require"
+	"go.uber.org/zap"
 	"net/http"
 	"net/http/httptest"
 	"testing"
@@ -178,12 +178,12 @@ func TestAccessLogMiddleware(t *testing.T) {
 	configPath := "../../../configs"
 	err := common.UnmarshalConfigs(&configPath)
 	require.NoError(t, err)
-	h := AccessLogMiddleware(func(ctx echo.Context) error {
+	logger, err := zap.NewDevelopment()
+	require.NoError(t, err)
+	h := GetAccessLogMiddleware(logger)(func(ctx echo.Context) error {
 		return nil
 	})
 	e := echo.New()
-	buf := new(bytes.Buffer)
-	log.SetOutput(buf)
 	req := httptest.NewRequest(http.MethodGet, "/", nil)
 	rec := httptest.NewRecorder()
 	c := e.NewContext(req, rec)
