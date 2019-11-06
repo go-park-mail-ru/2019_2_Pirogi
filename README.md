@@ -4,6 +4,11 @@
 
 ## Описание
 
+
+### Старт
+
+<code>cd scripts/ && sudo ./run.sh</code>
+
 ### Ссылка на поиграть
 [CINSEAR](http://167.71.5.55)
 
@@ -11,10 +16,10 @@
  - [Пупчин Павел](https://github.com/4taa)
 
 ### Developers
- - [Бакулев Артем](github.com/Artefakt-ff)
- - [Анастасия Сушина](github.com/ansushina)
- - [Елизавета Прохорова](github.com/lisa-bella97)
- - [Олег Щербаков](github.com/oleg-student) 
+ - [Бакулев Артем](https://github.com/Artefakt-ff)
+ - [Анастасия Сушина](https://github.com/ansushina)
+ - [Елизавета Прохорова](https://github.com/lisa-bella97)
+ - [Олег Щербаков](https://github.com/oleg-student) 
 
 ### Репозиторий фронтенда
 [Тут](https://github.com/frontend-park-mail-ru/2019_2_Pirogi)

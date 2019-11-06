@@ -1,44 +1,74 @@
 package server
 
 import (
-	"log"
-	"net/http"
-	"sync"
-	"time"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
-	"github.com/gorilla/mux"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
+	"github.com/labstack/echo"
+	echoMid "github.com/labstack/echo/middleware"
+	"github.com/labstack/gommon/log"
 )
 
-const timeout = 10
+func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
+	validators.InitValidator()
 
-type Server struct {
-	port    string
-	handler mux.Router
-}
+	e := echo.New()
+	e.Server.Addr = configs.Default.APIPort
+	e.Logger.SetLevel(log.WARN)
+	e.HTTPErrorHandler = handlers.HTTPErrorHandler
 
-func New(port string) Server {
-	s := Server{port: port}
-	return s
-}
+	e.Pre(middleware.AccessLogMiddleware)
+	e.Pre(echoMid.AddTrailingSlash())
+	e.Pre(middleware.ExpireInvalidCookiesMiddleware(conn))
 
-func (s *Server) Run(wg *sync.WaitGroup) {
-	defer wg.Done()
-	server := &http.Server{
-		Addr:         ":" + s.port,
-		Handler:      &s.handler,
-		ReadTimeout:  timeout * time.Second,
-		WriteTimeout: timeout * time.Second,
-	}
-	err := server.ListenAndServe()
-	if err != nil {
-		log.Fatal(err)
-	}
-}
+	api := e.Group("/api")
 
-func (s *Server) Init(db *inmemory.DB, router *mux.Router) {
-	db = inmemory.Init()
-	apiRouter := router
+	users := api.Group("/users")
+	users.GET("/", handlers.GetHandlerUsers(conn))
+	users.GET("/:user_id/", handlers.GetHandlerUser(conn))
+	users.POST("/", handlers.GetHandlerUsersCreate(conn))
+	users.PUT("/", handlers.GetHandlerUsersUpdate(conn))
+	users.POST("/images/", handlers.GetImagesHandler(conn))
 
-	s.handler = *apiRouter
+	films := api.Group("/films")
+	films.GET("/:film_id/", handlers.GetHandlerFilm(conn))
+	films.POST("/", handlers.GetHandlerFilmCreate(conn))
+	films.POST("/images/", handlers.GetImagesHandler(conn))
+	//films.DELETE("/:film_id", handlers.GetHandlerFilmDelete(conn))
+
+	sessions := api.Group("/sessions")
+	sessions.GET("/", handlers.GetHandlerLoginCheck(conn))
+	sessions.POST("/", handlers.GetHandlerLogin(conn))
+	sessions.DELETE("/", handlers.GetHandlerLogout(conn))
+
+	persons := api.Group("/persons")
+	persons.GET("/:person_id/", handlers.GetHandlerPerson(conn))
+	persons.POST("/", handlers.GetHandlerPersonsCreate(conn))
+	persons.POST("/images/", handlers.GetImagesHandler(conn))
+
+	reviews := api.Group("/reviews")
+	reviews.GET("/:film_id/", handlers.GetHandlerReviews(conn))
+	reviews.GET("/", handlers.GetHandlerProfileReviews(conn))
+	reviews.POST("/", handlers.GetHandlerReviewsCreate(conn))
+
+	likes := api.Group("/likes")
+	likes.POST("/", handlers.GetHandlerLikesCreate(conn))
+
+	marks := api.Group("/marks")
+	marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
+
+	lists := api.Group("/lists")
+	lists.GET("/", handlers.GetHandlerList(conn))
+
+	//common := api.Group("/common")
+	//common.GET("/:variable/", handlers.GetHandlerCommon())
+
+	e.Use(echoMid.Secure())
+	e.Use(middleware.SetCSRFCookie)
+	e.Use(middleware.HeaderMiddleware)
+	e.Use(echoMid.Recover())
+
+	return e, nil
 }

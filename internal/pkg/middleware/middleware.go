@@ -2,59 +2,78 @@ package middleware
 
 import (
 	"fmt"
-	"log"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"net/http"
 	"os"
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/inmemory"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	"github.com/labstack/echo"
 )
 
-func LoggingMiddleware(next http.Handler) http.Handler {
-
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		if f, err := os.OpenFile(configs.AccessLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
-			log.Fatal("Can not open file to log: ", err.Error())
-		} else {
-			_, _ = fmt.Fprintf(f, "%s %s %s %s \n", time.Now().Format("02/01 15:04:05"), r.Method, r.URL, r.Host)
-		}
-		next.ServeHTTP(w, r)
-	})
-}
-
-func HeaderMiddleware(next http.Handler) http.Handler {
-	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		w.Header().Set("Access-Control-Allow-Origin", r.Header.Get("Origin"))
-		w.Header().Set("Access-Control-Allow-Methods", "GET, POST, OPTIONS, PUT, DELETE")
-		w.Header().Set("Cache-Control", "no-store, no-cache, must-revalidate, post-check=0, pre-check=0")
-		w.Header().Set("Content-Type", "application/json; charset=UTF-8")
-		w.Header().Set("Vary", "Accept-Encoding")
-		next.ServeHTTP(w, r)
-	})
-}
-
-func GetCheckAuthMiddleware(db *inmemory.DB) func(next http.Handler) http.Handler {
-	return func(next http.Handler) http.Handler {
-		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-			// POST разрешен для анонимов разрешен только для регистрации
-			if r.Method == http.MethodGet || r.Method == http.MethodPost && (r.URL.Path == "/api/users/" || r.URL.Path == "/api/sessions/") {
-				next.ServeHTTP(w, r)
-				return
-			}
-
-			cookie, err := r.Cookie(configs.CookieAuthName)
+func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(next echo.HandlerFunc) echo.HandlerFunc {
+		return func(c echo.Context) error {
+			session, err := c.Request().Cookie(configs.Default.CookieAuthName)
 			if err != nil {
-				error.Render(w, error.New(401, "no cookie"))
-				return
+				return next(c)
 			}
-			ok := db.CheckCookie(*cookie)
+			_, ok := conn.FindUserByCookie(session)
 			if !ok {
-				error.Render(w, error.New(401, "no cookie in db"))
-				return
+				auth.ExpireCookie(session)
+				http.SetCookie(c.Response(), session)
+				return next(c)
 			}
-			next.ServeHTTP(w, r)
-		})
+			return next(c)
+		}
+	}
+}
+
+func setDefaultHeaders(w http.ResponseWriter) {
+	for k, v := range configs.Headers.HeadersMap {
+		w.Header().Set(k, v)
+	}
+}
+
+func HeaderMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		setDefaultHeaders(ctx.Response())
+		return next(ctx)
+	}
+}
+
+func AccessLogMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		if f, err := os.OpenFile(configs.Default.AccessLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); err != nil {
+			ctx.Logger().Warn(err.Error())
+		} else {
+			_, err = fmt.Fprintf(f, "%s %s %s %s \n", time.Now().Format("02/01 15:04:05"),
+				ctx.Request().Method, ctx.Request().URL, ctx.Request().Host)
+			if err != nil {
+				ctx.Logger().Warn(err.Error())
+			}
+		}
+		return next(ctx)
+	}
+}
+
+func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		_, err := ctx.Request().Cookie(configs.Default.CSRFCookieName)
+		if err == nil {
+			return next(ctx)
+		}
+		csrfCookie := &http.Cookie{
+			Name:     configs.Default.CSRFCookieName,
+			Value:    user.GetMD5Hash(time.Now().String() + ctx.Request().RemoteAddr),
+			Path:     "/",
+			Expires:  time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
+			HttpOnly: false,
+			SameSite: http.SameSiteStrictMode,
+		}
+		http.SetCookie(ctx.Response(), csrfCookie)
+		return next(ctx)
 	}
 }
