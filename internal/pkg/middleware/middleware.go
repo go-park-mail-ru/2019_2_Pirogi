@@ -5,7 +5,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"net/http"
-	"regexp"
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -33,17 +32,17 @@ func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.Handl
 }
 
 func setDefaultHeaders(w http.ResponseWriter, origin string) {
-	var ipWithPortRegexp = regexp.MustCompile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b:\\d+")
+	//var ipWithPortRegexp = regexp.MustCompile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b:\\d+")
 	for k, v := range configs.Headers.HeadersMap {
 		w.Header().Set(k, v)
 	}
-	if ipWithPortRegexp.MatchString(origin) {
-		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
-
-	} else {
-		w.Header().Set("Access-Control-Allow-Origin", "https://cinsear.ru")
-
-	}
+	//if ipWithPortRegexp.MatchString(origin) {
+	//	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
+	//
+	//} else {
+	//	w.Header().Set("Access-Control-Allow-Origin", "https://cinsear.ru")
+	//
+	//}
 }
 
 func HeaderMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
