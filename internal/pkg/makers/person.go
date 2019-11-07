@@ -22,8 +22,9 @@ func MakePerson(id models.ID, in models.NewPerson) models.Person {
 
 func MakeTruncPerson(in models.Person) models.PersonTrunc {
 	return models.PersonTrunc{
-		ID:   in.ID,
-		Name: in.Name,
+		ID:    in.ID,
+		Name:  in.Name,
+		Image: in.Images[0],
 	}
 }
 
