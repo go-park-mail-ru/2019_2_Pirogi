@@ -2,6 +2,7 @@ package middleware
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"net/http"
@@ -37,6 +38,7 @@ func setDefaultHeaders(w http.ResponseWriter, origin string) {
 	for k, v := range configs.Headers.HeadersMap {
 		w.Header().Set(k, v)
 	}
+	log.Warn(origin)
 	if ipWithPortRegexp.MatchString(origin) {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
