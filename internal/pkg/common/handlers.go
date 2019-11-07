@@ -104,14 +104,3 @@ func GetByQueryListParams(conn database.Database, qp models.QueryListParams) ([]
 	}
 	return items, err
 }
-
-func UnionToJSON(items ...interface{}) (response []byte) {
-	for _, item := range items {
-		body, err := json.Marshal(item)
-		if err != nil {
-			continue
-		}
-		response = append(response, body...)
-	}
-	return
-}
