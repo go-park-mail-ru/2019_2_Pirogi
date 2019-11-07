@@ -29,7 +29,7 @@ func MakeFilmTrunc(in models.Film) models.FilmTrunc {
 		Year:   in.Year,
 		Genres: in.Genres,
 		Mark:   in.Mark,
-		Poster: in.Images[0],
+		Image:  in.Images[0],
 	}
 }
 

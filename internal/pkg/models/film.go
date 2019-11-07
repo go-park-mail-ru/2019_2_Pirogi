@@ -31,7 +31,7 @@ type FilmTrunc struct {
 	Year   string  `json:"year" valid:"year, stringlength(4|4)"`
 	Genres []Genre `json:"genres" valid:"genres"`
 	Mark   Mark    `json:"mark" valid:"mark"`
-	Poster Image   `json:"poster" valid:"image"`
+	Image  Image   `json:"image" valid:"image"`
 }
 
 type FilmFull struct {

@@ -15,13 +15,15 @@ func MakeJSONArray(items [][]byte) []byte {
 }
 
 func UnionToJSON(items ...interface{}) (response []byte) {
-	for _, item := range items {
+	for i, item := range items {
 		body, err := json.Marshal(item)
 		if err != nil {
 			continue
 		}
 		response = append(response, body...)
-		response = append(response, byte(','))
+		if i != len(items)-1 {
+			response = append(response, byte(','))
+		}
 	}
 	return
 }
