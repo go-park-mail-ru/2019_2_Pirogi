@@ -82,7 +82,10 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists.GET("/", handlers.GetHandlerList(conn))
 
 	common := api.Group("/common")
-	common.GET("/:variable/", handlers.GetHandlerCommon())
+	common.GET("/:variable/", handlers.HandlerCommon())
+
+	pages := api.Group("/pages")
+	pages.GET("/", handlers.GetHandlerPages(conn))
 
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)

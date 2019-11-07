@@ -5,7 +5,7 @@ import (
 	"github.com/labstack/echo"
 )
 
-func GetHandlerCommon() echo.HandlerFunc {
+func HandlerCommon() echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		variable := ctx.Param("variable")
 		var err error

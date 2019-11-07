@@ -1,6 +1,7 @@
 package common
 
 import (
+	"encoding/json"
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -102,4 +103,15 @@ func GetByQueryListParams(conn database.Database, qp models.QueryListParams) ([]
 		items, err = conn.GetFilmsSortedByMark(qp.Limit, qp.Offset)
 	}
 	return items, err
+}
+
+func UnionToJSON(items ...interface{}) (response []byte) {
+	for _, item := range items {
+		body, err := json.Marshal(item)
+		if err != nil {
+			continue
+		}
+		response = append(response, body...)
+	}
+	return
 }

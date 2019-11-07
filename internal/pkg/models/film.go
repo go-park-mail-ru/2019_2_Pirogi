@@ -8,6 +8,7 @@ type NewFilm struct {
 	Countries   []string `json:"countries" valid:"countries"`
 	Genres      []Genre  `json:"genres" valid:"genres"`
 	PersonsID   []ID     `json:"persons_id" valid:"ids, optional"`
+	Trailer     string   `json:"trailer" valid:"link, optional"`
 }
 
 type Film struct {
@@ -21,6 +22,7 @@ type Film struct {
 	PersonsID   []ID     `json:"persons_id" valid:"ids, optional"`
 	Images      []Image  `json:"images" valid:"images, optional"`
 	ReviewsNum  int      `json:"reviews_num" valid:"numeric, optional"`
+	Trailer     string   `json:"trailer" valid:"link, optional"`
 }
 
 type FilmTrunc struct {
@@ -42,4 +44,5 @@ type FilmFull struct {
 	Persons     []PersonTrunc `json:"persons" valid:"optional"`
 	Images      []Image       `json:"images" valid:"images, optional"`
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
+	Trailer     string        `json:"trailer" valid:"link, optional"`
 }

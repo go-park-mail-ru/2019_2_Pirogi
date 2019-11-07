@@ -27,10 +27,10 @@ func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 		}
 		fields := []zapcore.Field{
 			zap.Int("status", e.Status),
-			zap.String("latency", time.Now().String()),
+			zap.String("time", time.Now().String()),
 			zap.String("message", e.Error),
 		}
 		logger.Error("Error: ", fields...)
-		err = ctx.JSON(e.Status, e.Error)
+		err = ctx.JSON(e.Status, e)
 	}
 }

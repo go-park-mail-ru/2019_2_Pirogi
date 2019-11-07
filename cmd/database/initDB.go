@@ -69,6 +69,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		Countries: []string{"США", "Германия"},
 		Genres:    []models.Genre{"триллер", "драма", "криминал"},
 		PersonsID: []models.ID{0, 1, 2},
+		Trailer:   "https://www.youtube.com/watch?v=oqHJp_ZZdU4",
 	})
 
 	conn.Upsert(models.NewFilm{
@@ -80,6 +81,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		Countries: []string{"Беларусь", "Германия"},
 		Genres:    []models.Genre{"триллер", "драма", "криминал"},
 		PersonsID: []models.ID{0, 1, 2},
+		Trailer:   "https://www.youtube.com/watch?v=YihPA42fdQ8",
 	})
 
 	for i := 3; i < 11; i++ {
@@ -135,7 +137,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 }
 
 func main() {
-	configsPath := flag.String("config", "../../configs/", "directory with configs")
+	configsPath := flag.String("config", "configs/", "directory with configs")
 	flag.Parse()
 
 	err := common.UnmarshalConfigs(configsPath)

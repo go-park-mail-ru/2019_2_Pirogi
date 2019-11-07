@@ -18,6 +18,7 @@ func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 		PersonsID:   in.PersonsID,
 		Images:      []models.Image{"default.png"},
 		ReviewsNum:  0,
+		Trailer:     in.Trailer,
 	}
 }
 
@@ -47,6 +48,7 @@ func MakeFilmFull(in models.Film, persons []models.Person) models.FilmFull {
 		Persons:     personsTrunc,
 		Images:      in.Images,
 		ReviewsNum:  in.ReviewsNum,
+		Trailer:     in.Trailer,
 	}
 }
 
