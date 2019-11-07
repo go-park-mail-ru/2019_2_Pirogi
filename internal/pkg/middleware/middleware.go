@@ -40,7 +40,7 @@ func setDefaultHeaders(w http.ResponseWriter, origin string) {
 
 func HeaderMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		setDefaultHeaders(ctx.Response(), ctx.Request().Host)
+		setDefaultHeaders(ctx.Response(), ctx.Request().RemoteAddr)
 		return next(ctx)
 	}
 }
