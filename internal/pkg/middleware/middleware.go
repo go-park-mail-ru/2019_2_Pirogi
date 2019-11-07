@@ -31,23 +31,15 @@ func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.Handl
 	}
 }
 
-func setDefaultHeaders(w http.ResponseWriter, origin string) {
-	//var ipWithPortRegexp = regexp.MustCompile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b:\\d+")
+func setDefaultHeaders(w http.ResponseWriter) {
 	for k, v := range configs.Headers.HeadersMap {
 		w.Header().Set(k, v)
 	}
-	//if ipWithPortRegexp.MatchString(origin) {
-	//	w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
-	//
-	//} else {
-	//	w.Header().Set("Access-Control-Allow-Origin", "https://cinsear.ru")
-	//
-	//}
 }
 
 func HeaderMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		setDefaultHeaders(ctx.Response(), ctx.Request().RemoteAddr)
+		setDefaultHeaders(ctx.Response())
 		return next(ctx)
 	}
 }
@@ -103,7 +95,7 @@ func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
 			Path:     "/",
 			Expires:  time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
 			HttpOnly: false,
-			SameSite: http.SameSiteLaxMode,
+			SameSite: http.SameSiteStrictMode,
 		}
 		http.SetCookie(ctx.Response(), csrfCookie)
 		return next(ctx)
