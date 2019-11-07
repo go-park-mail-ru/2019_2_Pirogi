@@ -103,7 +103,7 @@ func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
 			Path:     "/",
 			Expires:  time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
 			HttpOnly: false,
-			SameSite: http.SameSiteStrictMode,
+			SameSite: http.SameSiteLaxMode,
 		}
 		http.SetCookie(ctx.Response(), csrfCookie)
 		return next(ctx)
