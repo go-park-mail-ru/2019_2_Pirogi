@@ -32,3 +32,8 @@ type Genre string
 type Image string
 
 type ReviewsNum int
+
+type TrailerWithTitle struct {
+	Title   string `json:"title" valid:"text"`
+	Trailer string `json:"trailer" valid:"link"`
+}

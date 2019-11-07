@@ -2,9 +2,13 @@ package makers
 
 import "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 
-func MakeTrailersList(films []models.Film) (trailers []string) {
+func MakeTrailersList(films []models.Film) (trailers []models.TrailerWithTitle) {
 	for _, film := range films {
-		trailers = append(trailers, film.Trailer)
+		trailer := models.TrailerWithTitle{
+			Title:   film.Title,
+			Trailer: film.Trailer,
+		}
+		trailers = append(trailers, trailer)
 	}
 	return
 }
