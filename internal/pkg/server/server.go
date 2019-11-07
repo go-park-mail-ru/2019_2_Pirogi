@@ -89,7 +89,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	e.Use(echoMid.CORSWithConfig(echoMid.CORSConfig{
 		AllowOrigins: []string{"https://cinsear.ru", "http://localhost:8080"},
-		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept, echo.HeaderAccessControlAllowCredentials},
 	}))
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)
