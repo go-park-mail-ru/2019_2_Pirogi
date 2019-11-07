@@ -1,9 +1,11 @@
+echo "---Checking or updating vendors"
+go mod vendor
+
 echo "---Stopping containers"
 docker stop cinsear
 docker rm cinsear
 docker stop cinsear-db
 docker rm cinsear-db
-
 
 echo "---Checking or creating volumes..."
 docker volume create media
