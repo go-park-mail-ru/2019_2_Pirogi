@@ -31,15 +31,16 @@ func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.Handl
 	}
 }
 
-func setDefaultHeaders(w http.ResponseWriter) {
+func setDefaultHeaders(w http.ResponseWriter, origin string) {
 	for k, v := range configs.Headers.HeadersMap {
 		w.Header().Set(k, v)
 	}
+	w.Header().Set("Access-Control-Allow-Origin", origin)
 }
 
 func HeaderMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		setDefaultHeaders(ctx.Response())
+		setDefaultHeaders(ctx.Response(), ctx.Request().Host)
 		return next(ctx)
 	}
 }

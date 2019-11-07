@@ -2204,7 +2204,7 @@ func easyjsonD2b7633eDecodeGithubComGoParkMailRu20192PirogiInternalPkgModels17(i
 			}
 		case "mark":
 			out.Mark = Mark(in.Float32())
-		case "poster":
+		case "image":
 			out.Image = Image(in.String())
 		default:
 			in.SkipRecursive()
@@ -2257,7 +2257,7 @@ func easyjsonD2b7633eEncodeGithubComGoParkMailRu20192PirogiInternalPkgModels17(o
 		out.Float32(float32(in.Mark))
 	}
 	{
-		const prefix string = ",\"poster\":"
+		const prefix string = ",\"image\":"
 		out.RawString(prefix)
 		out.String(string(in.Image))
 	}
