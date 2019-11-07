@@ -2,7 +2,6 @@ package middleware
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
-	"github.com/labstack/gommon/log"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"net/http"
@@ -34,11 +33,10 @@ func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.Handl
 }
 
 func setDefaultHeaders(w http.ResponseWriter, origin string) {
-	var ipWithPortRegexp = regexp.MustCompile("^(([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5])/.){3}([0-9]|[1-9][0-9]|1[0-9]{2}|2[0-4][0-9]|25[0-5]):[0-9]+$")
+	var ipWithPortRegexp = regexp.MustCompile("\\b\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\.\\d{1,3}\\b:\\d+")
 	for k, v := range configs.Headers.HeadersMap {
 		w.Header().Set(k, v)
 	}
-	log.Fatal(origin)
 	if ipWithPortRegexp.MatchString(origin) {
 		w.Header().Set("Access-Control-Allow-Origin", "http://localhost:8080")
 
