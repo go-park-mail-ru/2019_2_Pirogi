@@ -1,7 +1,6 @@
 package common
 
 import (
-	"encoding/json"
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
