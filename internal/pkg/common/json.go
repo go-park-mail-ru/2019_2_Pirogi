@@ -14,18 +14,30 @@ func MakeJSONArray(items [][]byte) []byte {
 	return jsonBody
 }
 
-func UnionToJSON(items ...interface{}) (response []byte) {
-	response = append(response, byte('{'))
+func UnionToJSON(names []string, items ...interface{}) (response []byte) {
+	addSymbol('{', &response)
 	for i, item := range items {
+		addKey(names[i], &response)
 		body, err := json.Marshal(item)
 		if err != nil {
 			continue
 		}
 		response = append(response, body...)
 		if i != len(items)-1 {
-			response = append(response, byte(','))
+			addSymbol(',', &response)
 		}
 	}
-	response = append(response, byte('}'))
+	addSymbol('}', &response)
 	return
+}
+
+func addSymbol(sym rune, response *[]byte) {
+	*response = append(*response, byte(sym))
+}
+
+func addKey(line string, response *[]byte) {
+	addSymbol('"', response)
+	*response = append(*response, []byte(line)...)
+	addSymbol('"', response)
+	addSymbol(':', response)
 }

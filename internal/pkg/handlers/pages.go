@@ -20,7 +20,8 @@ func GetHandlerPages(conn database.Database) echo.HandlerFunc {
 		if e != nil {
 			return echo.NewHTTPError(500, e)
 		}
-		err := ctx.JSONBlob(200, common.UnionToJSON(filmsTrunc, trailers))
+		err := ctx.JSONBlob(200,
+			common.UnionToJSON([]string{"filmsNew", "filmsForUser", "trailers"}, filmsTrunc[:8], filmsTrunc[8:], trailers))
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 		}
