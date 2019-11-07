@@ -1,5 +1,5 @@
 *_credentials.*
-
+*_easyjson.go
 ### Go ###
 # Binaries for programs and plugins
 *.exe
