@@ -14,6 +14,27 @@ import (
 	"github.com/labstack/gommon/log"
 )
 
+func upsertNewPerson(conn *database.MongoConnection, name, birthday, birthplace string) {
+	conn.Upsert(models.NewPerson{
+		Name:       name,
+		Roles:      []models.Role{"actor"},
+		Birthday:   birthday,
+		Birthplace: birthplace,
+	})
+}
+
+func upsertNewFilm(conn *database.MongoConnection, title, description, year string, countries []string, genres []models.Genre, ids []models.ID) {
+	conn.Upsert(models.NewFilm{
+		Title:       title,
+		Description: description,
+		Year:        year,
+		Countries:   countries,
+		Genres:      genres,
+		PersonsID:   ids,
+		Trailer:     "https://www.youtube.com/watch?v=oqHJp_ZZdU4",
+	})
+}
+
 func FakeFillDB(conn *database.MongoConnection) {
 	cookie := http.Cookie{
 		Name:  configs.Default.CookieAuthName,
