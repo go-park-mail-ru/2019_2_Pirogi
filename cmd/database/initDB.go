@@ -3,7 +3,6 @@ package main
 import (
 	"flag"
 	"net/http"
-	"strconv"
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -60,61 +59,49 @@ func FakeFillDB(conn *database.MongoConnection) {
 	})
 	conn.Upsert(models.UserCookie{UserID: 2, Cookie: &cookie})
 
-	conn.Upsert(models.NewPerson{
-		Name:       "Эдвард Нортон",
-		Roles:      []models.Role{"actor"},
-		Birthday:   "18.08.1969",
-		Birthplace: "Бостон",
-	})
-
-	conn.Upsert(models.NewPerson{
-		Name:       "Брэд Питт",
-		Roles:      []models.Role{"actor"},
-		Birthday:   "18.10.1969",
-		Birthplace: "Екатеринбург",
-	})
-
-	conn.Upsert(models.NewPerson{
-		Name:       "Хелена Бонем Картер",
-		Roles:      []models.Role{"actor"},
-		Birthday:   "18.08.1989",
-		Birthplace: "Лондон",
-	})
-
-	conn.Upsert(models.NewFilm{
-		Title: "Бойцовский клуб",
-		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
-			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
-			"уверен, что самосовершенствование — удел слабых, а саморазрушение — единственное, ради чего стоит жить.",
-		Year:      "1999",
-		Countries: []string{"США", "Германия"},
-		Genres:    []models.Genre{"триллер", "драма", "криминал"},
-		PersonsID: []models.ID{0, 1, 2},
-		Trailer:   "https://www.youtube.com/watch?v=oqHJp_ZZdU4",
-	})
-
-	conn.Upsert(models.NewFilm{
-		Title: "Матрица",
-		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
-			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
-			"уверен, что самосовершенствование — удел слабых, а саморазрушение — единственное, ради чего стоит жить.",
-		Year:      "2009",
-		Countries: []string{"Беларусь", "Германия"},
-		Genres:    []models.Genre{"триллер", "драма", "криминал"},
-		PersonsID: []models.ID{0, 1, 2},
-		Trailer:   "https://www.youtube.com/watch?v=YihPA42fdQ8",
-	})
-
-	for i := 3; i < 11; i++ {
-		conn.Upsert(models.NewFilm{
-			Title:       "Film " + strconv.Itoa(i),
-			Description: "Description of film " + strconv.Itoa(i),
-			Year:        "2009",
-			Countries:   []string{"Беларусь", "Германия"},
-			Genres:      []models.Genre{"триллер", "драма"},
-			PersonsID:   []models.ID{0, 1, 2},
-		})
-	}
+	upsertNewPerson(conn, "Роберт Редфорд", "США", "1936")
+	upsertNewPerson(conn, "Том Мюррэй", "США", "1973")
+	upsertNewPerson(conn, "Елена Драпеко", "СССР", "1948")
+	upsertNewPerson(conn, "Эдди Альберт", "США", "1906")
+	upsertNewPerson(conn, "Юэн Макгрегор", "США", "1976")
+	upsertNewPerson(conn, "Мэри МакДоннелл", "США", "1966")
+	upsertNewPerson(conn, "Хейден Кристенсен", "США", "1986")
+	upsertNewPerson(conn, "Феллипе Хаагенсен", "США", "1956")
+	upsertNewPerson(conn, "Шон Пенн", "США", "1986")
+	upsertNewPerson(conn, "Вуди Харрельсон", "США", "1966")
+	upsertNewPerson(conn, "Мак Суэйн", "США", "1975")
+	upsertNewPerson(conn, "Ольга Остроумова", "США", "1937")
+	upsertNewPerson(conn, "Виталий Соломин", "СССР", "1989")
+	upsertNewPerson(conn, "Мишель Пфайффер", "США", "1950")
+	upsertNewPerson(conn, "Александр Борисов", "СССР", "1967")
+	upsertNewPerson(conn, "Роберт Шоу", "США", "1977")
+	upsertNewPerson(conn, "Роберт Де Ниро", "США", "1959")
+	upsertNewPerson(conn, "Брюс Уиллис", "США", "1969")
+	upsertNewPerson(conn, "Константин Сорокин", "СССР", "1949")
+	upsertNewPerson(conn, "Тони Кертис", "США", "1990")
+	upsertNewPerson(conn, "Хэйли Джоэл Осмент", "США", "1978")
+	upsertNewPerson(conn, "Одри Хепберн", "США", "1979")
+	upsertNewPerson(conn, "Леонид Быков", "СССР", "1935")
+	upsertNewPerson(conn, "Джек Леммон", "США", "1976")
+	upsertNewPerson(conn, "Дакота Фаннинг", "США", "1956")
+	upsertNewPerson(conn, "Леандру Фирмину", "США", "1976")
+	upsertNewPerson(conn, "Шарлиз Терон", "США", "1981")
+	upsertNewPerson(conn, "Екатерина Маркова", "СССР", "1984")
+	upsertNewPerson(conn, "Василий Ливанов", "США", "1956")
+	upsertNewPerson(conn, "Киану Ривз", "США", "1976")
+	upsertNewPerson(conn, "Кевин Костнен", "США", "1992")
+	upsertNewPerson(conn, "Грэм Грин", "США", "1973")
+	upsertNewPerson(conn, "Уилл Смит", "США", "1978")
+	upsertNewPerson(conn, "Лоренс Фишбёрн", "США", "1989")
+	upsertNewPerson(conn, "Кэрри-Энн Мосс", "США", "1982")
+	upsertNewPerson(conn, "Мэрилин Монро", "США", "1975")
+	upsertNewPerson(conn, "Грегори Пек", "США", "1987")
+	upsertNewPerson(conn, "Кьюба Гудинг мл.", "США", "1986")
+	upsertNewPerson(conn, "Чарльз Чаплин", "США", "1936")
+	upsertNewPerson(conn, "Натали Портман", "США", "1946")
+	upsertNewPerson(conn, "Розарио Доусон", "США", "1956")
+	upsertNewPerson(conn, "Тони Коллетт", "США", "1976")
+	upsertNewPerson(conn, "Никита Михалков", "СССР", "1976")
 
 	conn.Upsert(models.NewReview{
 		Title:    "Best review title",
