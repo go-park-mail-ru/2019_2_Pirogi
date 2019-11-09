@@ -262,13 +262,28 @@ func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) 
 	return result, err == nil
 }
 
+func (conn *MongoConnection) GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *models.Error) {
+	switch collectionName {
+	case configs.Default.FilmsCollectionName:
+		return AggregateFilms(conn, pipeline)
+	case configs.Default.PersonsCollectionName:
+		return AggregatePersons(conn, pipeline)
+	default:
+		return nil, Error.New(http.StatusBadRequest, "not supported type")
+	}
+}
+
 func (conn *MongoConnection) GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error) {
 	pipeline := []bson.M{
 		{"$sort": bson.M{"mark": -1}},
 		{"$limit": limit},
 		{"$skip": offset},
 	}
-	return AggregateFilms(conn, pipeline)
+	films, err := AggregateFilms(conn, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	return FromInterfaceToFilm(films), nil
 }
 
 func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {
@@ -278,7 +293,11 @@ func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre models.Genre, lim
 		{"$limit": limit},
 		{"$skip": offset},
 	}
-	return AggregateFilms(conn, pipeline)
+	films, err := AggregateFilms(conn, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	return FromInterfaceToFilm(films), nil
 }
 
 func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error) {
@@ -288,7 +307,11 @@ func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year string, limit int, 
 		{"$limit": limit},
 		{"$skip": offset},
 	}
-	return AggregateFilms(conn, pipeline)
+	films, err := AggregateFilms(conn, pipeline)
+	if err != nil {
+		return nil, err
+	}
+	return FromInterfaceToFilm(films), nil
 }
 
 func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {

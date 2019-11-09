@@ -169,12 +169,12 @@ func InsertLike(conn *MongoConnection, in models.Like) *models.Error {
 	return nil
 }
 
-func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]models.Film, *models.Error) {
+func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{}, *models.Error) {
 	curs, err := conn.films.Aggregate(conn.context, pipeline)
 	if err != nil {
 		return nil, Error.New(http.StatusInternalServerError, "error while aggregating films", err.Error())
 	}
-	var result []models.Film
+	var result []interface{}
 	for curs.Next(conn.context) {
 		f := models.Film{}
 		err = curs.Decode(&f)
@@ -182,6 +182,23 @@ func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]models.Film,
 			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in films", err.Error())
 		}
 		result = append(result, f)
+	}
+	return result, nil
+}
+
+func AggregatePersons(conn *MongoConnection, pipeline interface{}) ([]interface{}, *models.Error) {
+	curs, err := conn.persons.Aggregate(conn.context, pipeline)
+	if err != nil {
+		return nil, Error.New(http.StatusInternalServerError, "error while aggregating persons", err.Error())
+	}
+	var result []interface{}
+	for curs.Next(conn.context) {
+		p := models.Person{}
+		err = curs.Decode(&p)
+		if err != nil {
+			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in persons", err.Error())
+		}
+		result = append(result, p)
 	}
 	return result, nil
 }
@@ -201,4 +218,12 @@ func AggregateReviews(conn *MongoConnection, pipeline interface{}) ([]models.Rev
 		result = append(result, f)
 	}
 	return result, nil
+}
+
+func FromInterfaceToFilm(films []interface{}) []models.Film {
+	result := make([]models.Film, len(films))
+	for i, f := range films {
+		result[i] = f.(models.Film)
+	}
+	return result
 }
