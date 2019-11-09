@@ -40,6 +40,11 @@ type DefaultConfig struct {
 	CSRFCookieName string `yaml:"csrf_cookie_name"`
 
 	DefaultEntriesLimit int `yaml:"default_entries_limit"`
+
+	DefaultOrderBy string `yaml:"default_order_by"`
+
+	DefaultYearMin int
+	DefaultYearMax int
 }
 
 var Default DefaultConfig

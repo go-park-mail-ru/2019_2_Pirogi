@@ -6,6 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"github.com/labstack/echo"
 	"io/ioutil"
@@ -73,7 +74,7 @@ func CheckPOSTRequest(ctx echo.Context) (session *http.Cookie, err error) {
 	return ctx.Request().Cookie(configs.Default.CookieAuthName)
 }
 
-func MapQueryListParams(ctx echo.Context) (queryParams models.QuerySearchParams) {
+func MapQueryListParams(ctx echo.Context) (queryParams search.QuerySearchParams) {
 	queryParams.Limit = configs.Default.DefaultEntriesLimit // limit must be positive, default value(0) is not suitable
 	p := reflect.ValueOf(&queryParams).Elem()
 	t := p.Type()
@@ -91,13 +92,15 @@ func MapQueryListParams(ctx echo.Context) (queryParams models.QuerySearchParams)
 	return
 }
 
-func GetByQueryListParams(conn database.Database, qp models.QuerySearchParams) ([]models.Film, *models.Error) {
+func GetByQueryListParams(conn database.Database, qp search.QuerySearchParams) ([]models.Film, *models.Error) {
+
+	// TODO: remove this
 	var (
 		items []models.Film
 		err   *models.Error
 	)
-	if qp.Genre != "" {
-		items, err = conn.GetFilmsOfGenreSortedByMark(models.Genre(qp.Genre), qp.Limit, qp.Offset)
+	if len(qp.Genres) > 0 {
+		items, err = conn.GetFilmsOfGenreSortedByMark(models.Genre(qp.Genres[0]), qp.Limit, qp.Offset)
 	} else {
 		items, err = conn.GetFilmsSortedByMark(qp.Limit, qp.Offset)
 	}

@@ -5,14 +5,14 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
 	"github.com/labstack/echo"
 	"net/http"
 )
 
 func GetHandlerPages(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		films, e := common.GetByQueryListParams(conn, models.QuerySearchParams{
+		films, e := common.GetByQueryListParams(conn, search.QuerySearchParams{
 			Limit: configs.Default.DefaultEntriesLimit + 5,
 		})
 		trailers := makers.MakeTrailersList(films)

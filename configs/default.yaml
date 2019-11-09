@@ -36,3 +36,7 @@ csrf_header: "X-CSRF-TOKEN"
 csrf_cookie_name: "_csrf"
 
 default_entries_limit: 10
+
+default_order_by: "mark"
+default_year_min: 1700
+default_year_max: 2020
