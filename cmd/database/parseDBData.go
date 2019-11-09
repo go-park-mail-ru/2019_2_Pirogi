@@ -12,16 +12,18 @@ import (
 	"path"
 )
 
+// parse files with default filename which is linked to target in configs
 func parse(target string) ([]interface{}, error) {
 	filename := configs.FileTargetMap[target]
 	if filename == "" {
 		return nil, errors.New("unsupported type")
 	}
-	reader, err := openFile(filename)
+	readCloser, err := openFile(filename)
 	if err != nil {
 		return nil, err
 	}
-	dec := json.NewDecoder(reader)
+	defer readCloser.Close()
+	dec := json.NewDecoder(readCloser)
 	_, err = dec.Token()
 	if err != nil {
 		return nil, err
