@@ -2,8 +2,6 @@ package search
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -37,19 +35,8 @@ func (qp *QuerySearchParams) filter() {
 	}
 }
 
-func (qp *QuerySearchParams) GetSearchResultsByQuery(conn database.Database) ([]interface{}, *models.Error) {
+func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 	qp.filter()
-	entries, err := conn.GetByQuery(configs.Default.FilmsCollectionName, qp.getPipelineForMongo(configs.Default.FilmTargetName))
-	if entries == nil || err != nil {
-		entries, err = conn.GetByQuery(configs.Default.PersonsCollectionName, qp.getPipelineForMongo(configs.Default.PersonTargetName))
-		if err != nil {
-			return nil, err
-		}
-	}
-	return entries, nil
-}
-
-func (qp *QuerySearchParams) getPipelineForMongo(target string) interface{} {
 	baseBSON := []bson.M{
 		{"$limit": qp.Limit},
 		{"$skip": qp.Offset},

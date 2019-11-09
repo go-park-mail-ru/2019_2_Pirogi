@@ -34,5 +34,5 @@ func TestQuerySearchParams_GetPipelineForMongo(t *testing.T) {
 		{"personsid": []int{1, 2, 3}},
 		{"country": "[США]"},
 		{"title": primitive.M{"$regex": ".*матри.*"}}}
-	require.Equal(t, expected, qp.getPipelineForMongo("films"))
+	require.Equal(t, expected, qp.GetPipelineForMongo("films"))
 }
