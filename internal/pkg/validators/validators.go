@@ -94,6 +94,14 @@ func InitValidator() {
 		return true
 	})
 
+	valid.CustomTypeTagMap.Set("genre", func(i interface{}, o interface{}) bool {
+		subject, ok := i.(string)
+		if !ok {
+			return false
+		}
+		return validateGenre(subject)
+	})
+
 	valid.CustomTypeTagMap.Set("target", func(i interface{}, o interface{}) bool {
 		subject, ok := i.(models.Target)
 		if !ok {

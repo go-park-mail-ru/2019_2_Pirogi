@@ -37,3 +37,12 @@ var Roles = [...]string{
 	"producer",
 	"compositor",
 }
+
+var FileTargetMap = map[string]string{
+	"person": "persons_data.json",
+	"user":   "users_data.json",
+	"review": "reviews_data.json",
+	"star":   "stars_data.json",
+	"film":   "films_data.json",
+	"like":   "likes_data.json",
+}

@@ -26,3 +26,7 @@ func (qp *QuerySearchParams) GetPipelineForMongo() interface{} {
 		{"$skip": qp.Offset},
 	}
 }
+
+func (qlp *QueryListParams) getBSON() string {
+	return "$limit:" + string(qlp.Limit)
+}
