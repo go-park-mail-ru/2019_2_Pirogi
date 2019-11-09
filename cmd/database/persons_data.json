@@ -1,0 +1,21 @@
+[
+  {
+    "name": "Роберт Редфорд",
+    "birthplace": "США",
+    "birthday": "09.12.1936",
+    "roles": [
+      "actor",
+      "director"
+    ]
+  },
+  {
+    "name": "Роберт Де Нирро",
+    "birthplace": "США",
+    "birthday": "09.12.1945",
+    "roles": [
+      "actor",
+      "director",
+      "producer"
+    ]
+  }
+]

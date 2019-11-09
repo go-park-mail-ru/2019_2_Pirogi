@@ -33,6 +33,8 @@ type DefaultConfig struct {
 	CookieTargetName string `yaml:"cookie_target_name"`
 	PersonTargetName string `yaml:"person_target_name"`
 	ReviewTargetName string `yaml:"review_target_name"`
+	LikeTargetName   string `yaml:"like_target_name"`
+	StarTargetName   string `yaml:"star_target_name"`
 
 	CSRFHeader     string `yaml:"csrf_header"`
 	CSRFCookieName string `yaml:"csrf_cookie_name"`

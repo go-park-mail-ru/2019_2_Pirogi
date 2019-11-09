@@ -27,6 +27,8 @@ film_target_name: "film"
 cookie_target_name: "cookie"
 person_target_name: "person"
 review_target_name: "review"
+like_target_name: "like"
+star_target_name: "star"
 
 api_port: ":8000"
 
