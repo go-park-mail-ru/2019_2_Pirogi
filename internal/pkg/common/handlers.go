@@ -73,7 +73,7 @@ func CheckPOSTRequest(ctx echo.Context) (session *http.Cookie, err error) {
 	return ctx.Request().Cookie(configs.Default.CookieAuthName)
 }
 
-func MapQueryListParams(ctx echo.Context) (queryParams models.QueryListParams) {
+func MapQueryListParams(ctx echo.Context) (queryParams models.QuerySearchParams) {
 	queryParams.Limit = configs.Default.DefaultEntriesLimit // limit must be positive, default value(0) is not suitable
 	p := reflect.ValueOf(&queryParams).Elem()
 	t := p.Type()
@@ -91,7 +91,7 @@ func MapQueryListParams(ctx echo.Context) (queryParams models.QueryListParams) {
 	return
 }
 
-func GetByQueryListParams(conn database.Database, qp models.QueryListParams) ([]models.Film, *models.Error) {
+func GetByQueryListParams(conn database.Database, qp models.QuerySearchParams) ([]models.Film, *models.Error) {
 	var (
 		items []models.Film
 		err   *models.Error

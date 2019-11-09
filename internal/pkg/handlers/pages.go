@@ -12,7 +12,7 @@ import (
 
 func GetHandlerPages(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		films, e := common.GetByQueryListParams(conn, models.QueryListParams{
+		films, e := common.GetByQueryListParams(conn, models.QuerySearchParams{
 			Limit: configs.Default.DefaultEntriesLimit + 5,
 		})
 		trailers := makers.MakeTrailersList(films)
