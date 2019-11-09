@@ -71,9 +71,9 @@ func NormalizePath(path *string) {
 	}
 }
 
-func UnmarshalConfigs(configsPath *string) error {
-	NormalizePath(configsPath)
-	file, err := ioutil.ReadFile(*configsPath + "default.yaml")
+func UnmarshalConfigs(configsPath string) error {
+	NormalizePath(&configsPath)
+	file, err := ioutil.ReadFile(configsPath + "default.yaml")
 	if err != nil {
 		return err
 	}
@@ -82,7 +82,7 @@ func UnmarshalConfigs(configsPath *string) error {
 		return err
 	}
 
-	file, err = ioutil.ReadFile(*configsPath + "headers.yaml")
+	file, err = ioutil.ReadFile(configsPath + "headers.yaml")
 	if err != nil {
 		return err
 	}

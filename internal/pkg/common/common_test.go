@@ -139,8 +139,7 @@ func TestPrepareModelNewUser(t *testing.T) {
 }
 
 func TestCheckPOSTRequest(t *testing.T) {
-	configPath := "../../../configs"
-	err := UnmarshalConfigs(&configPath)
+	err := UnmarshalConfigs("../../../configs")
 	require.NoError(t, err)
 	e := echo.New()
 	cookieCSRF := &http.Cookie{
@@ -165,8 +164,7 @@ func TestCheckPOSTRequest(t *testing.T) {
 }
 
 func TestUnmarshalConfigs(t *testing.T) {
-	configPath := "../../../configs"
-	err := UnmarshalConfigs(&configPath)
+	err := UnmarshalConfigs("../../../configs")
 	require.NoError(t, err)
 	require.Equal(t, "_csrf", configs.Default.CSRFCookieName)
 }

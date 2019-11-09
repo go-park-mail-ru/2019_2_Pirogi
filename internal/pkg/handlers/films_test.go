@@ -105,8 +105,7 @@ type TestCaseGetHandlerFilmCreate struct {
 
 func TestGetHandlerFilmCreate(t *testing.T) {
 	validators.InitValidator()
-	pathConfigs := "../../../configs"
-	err := common.UnmarshalConfigs(&pathConfigs)
+	err := common.UnmarshalConfigs("../../../configs")
 	require.NoError(t, err)
 	t.Parallel()
 	ctrl := gomock.NewController(t)

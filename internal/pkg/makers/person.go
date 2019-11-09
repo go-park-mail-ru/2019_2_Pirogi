@@ -21,10 +21,16 @@ func MakePerson(id models.ID, in models.NewPerson) models.Person {
 }
 
 func MakeTruncPerson(in models.Person) models.PersonTrunc {
+	var image models.Image
+	if len(in.Images) == 0 {
+		image = ""
+	} else {
+		image = in.Images[0]
+	}
 	return models.PersonTrunc{
 		ID:    in.ID,
 		Name:  in.Name,
-		Image: in.Images[0],
+		Image: image,
 	}
 }
 

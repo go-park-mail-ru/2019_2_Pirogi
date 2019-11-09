@@ -138,8 +138,7 @@ func TestExpireInvalidCookiesMiddleware(t *testing.T) {
 }
 
 func TestSetCSRFCookie(t *testing.T) {
-	configPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configPath)
+	err := common.UnmarshalConfigs("../../../configs")
 	require.NoError(t, err)
 	e := echo.New()
 	buf := new(bytes.Buffer)
@@ -155,8 +154,7 @@ func TestSetCSRFCookie(t *testing.T) {
 }
 
 func TestHeaderMiddleware(t *testing.T) {
-	configPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configPath)
+	err := common.UnmarshalConfigs("../../../configs")
 	require.NoError(t, err)
 	e := echo.New()
 	buf := new(bytes.Buffer)
@@ -175,8 +173,7 @@ func TestHeaderMiddleware(t *testing.T) {
 }
 
 func TestAccessLogMiddleware(t *testing.T) {
-	configPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configPath)
+	err := common.UnmarshalConfigs("../../../configs")
 	require.NoError(t, err)
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)

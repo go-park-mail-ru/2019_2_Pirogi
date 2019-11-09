@@ -131,8 +131,7 @@ func TestGenerateCookie(t *testing.T) {
 }
 
 func TestExpireCookie(t *testing.T) {
-	configsPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configsPath)
+	err := common.UnmarshalConfigs("../../../configs")
 	if err != nil {
 		log.Fatal(err.Error())
 	}

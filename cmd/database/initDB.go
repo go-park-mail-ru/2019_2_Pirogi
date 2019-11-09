@@ -275,10 +275,10 @@ func FakeFillDB(conn *database.MongoConnection) {
 }
 
 func main() {
-	configsPath := flag.String("config", "configs/", "directory with configs")
+	configsPath := flag.String("config", "../../configs/", "directory with configs")
 	flag.Parse()
 
-	err := common.UnmarshalConfigs(configsPath)
+	err := common.UnmarshalConfigs(*configsPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}
