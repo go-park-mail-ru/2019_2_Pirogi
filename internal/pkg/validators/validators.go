@@ -8,7 +8,6 @@ import (
 	"time"
 )
 
-var yearPattern = regexp.MustCompile("[1|2][0-9]{3}")
 var datePattern = regexp.MustCompile("([0-9]{2}.){2}[1-2][0-9]{3}")
 var imagePattern = regexp.MustCompile("(([0-9]|[a-z]){40}.(jpeg|jpg|png|gif))|default.png")
 var textPattern = regexp.MustCompile(".+")
@@ -45,11 +44,11 @@ func InitValidator() {
 		return textPattern.MatchString(subject)
 	})
 	valid.CustomTypeTagMap.Set("year", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(string)
+		subject, ok := i.(int)
 		if !ok {
 			return false
 		}
-		return yearPattern.MatchString(subject)
+		return subject > 0
 	})
 
 	valid.CustomTypeTagMap.Set("date", func(i interface{}, o interface{}) bool {
