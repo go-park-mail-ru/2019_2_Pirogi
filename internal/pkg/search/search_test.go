@@ -14,7 +14,7 @@ func TestStringFromStringArray(t *testing.T) {
 
 func TestQuerySearchParams_GetPipelineForMongo(t *testing.T) {
 	qp := QuerySearchParams{
-		Query:      "матри",
+		Query:      "Матри",
 		Genres:     []string{"драма", "боевик"},
 		PersonsIDs: []int{1, 2, 3},
 		YearMin:    1950,
@@ -29,10 +29,10 @@ func TestQuerySearchParams_GetPipelineForMongo(t *testing.T) {
 		{"$limit": 10},
 		{"$skip": 5},
 		{"$sort": primitive.M{"": -1}},
-		{"year": primitive.M{"$range": []int{1950, 2016}}},
-		{"genre": "[драма, боевик]"},
-		{"personsid": []int{1, 2, 3}},
-		{"country": "[США]"},
-		{"title": primitive.M{"$regex": ".*матри.*"}}}
-	require.Equal(t, expected, qp.GetPipelineForMongo("films"))
+		{"$match": primitive.M{"year": primitive.M{"$gt": 1950, "$lt": 2016}}},
+		{"$match": primitive.M{"genres": primitive.M{"$all": []string{"драма", "боевик" }}}},
+		{"$match": primitive.M{"personsid": primitive.M{"$all": []int{1, 2, 3}}}},
+		{"$match": primitive.M{"countries": "США"}},
+		{"$match": primitive.M{"title": primitive.M{"$regex": primitive.Regex{Pattern:".*Матри.*"}}}}}
+	require.Equal(t, expected, qp.getPipelineForMongo("films"))
 }

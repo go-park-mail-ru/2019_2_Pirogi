@@ -10,7 +10,7 @@ func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 	return models.Film{
 		ID:          id,
 		Title:       html.EscapeString(in.Title),
-		Year:        html.EscapeString(in.Year),
+		Year:        in.Year,
 		Genres:      security.XSSFilterGenres(in.Genres),
 		Mark:        models.Mark(0),
 		Description: html.EscapeString(in.Description),

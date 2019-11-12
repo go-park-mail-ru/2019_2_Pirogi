@@ -4,7 +4,7 @@ package models
 type NewFilm struct {
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
 	Description string   `json:"description" valid:"text, stringlength(8|50)"`
-	Year        string   `json:"year" valid:"year"`
+	Year        int      `json:"year" valid:"year"`
 	Countries   []string `json:"countries" valid:"countries"`
 	Genres      []Genre  `json:"genres" valid:"genres"`
 	PersonsID   []ID     `json:"persons_id" valid:"ids, optional"`
@@ -14,7 +14,7 @@ type NewFilm struct {
 type Film struct {
 	ID          ID       `json:"id" bson:"_id" valid:"numeric,optional"`
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
-	Year        string   `json:"year" valid:"year, stringlength(4|4)"`
+	Year        int      `json:"year" valid:"year"`
 	Genres      []Genre  `json:"genres" valid:"genres"`
 	Mark        Mark     `json:"mark" valid:"mark"`
 	Description string   `json:"description" valid:"text, stringlength(8|50)"`
@@ -28,7 +28,7 @@ type Film struct {
 type FilmTrunc struct {
 	ID     ID      `json:"id" valid:"numeric,optional"`
 	Title  string  `json:"title" valid:"text, stringlength(1|50)"`
-	Year   string  `json:"year" valid:"year, stringlength(4|4)"`
+	Year   int     `json:"year" valid:"year"`
 	Genres []Genre `json:"genres" valid:"genres"`
 	Mark   Mark    `json:"mark" valid:"mark"`
 	Image  Image   `json:"image" valid:"image"`
@@ -37,7 +37,7 @@ type FilmTrunc struct {
 type FilmFull struct {
 	ID          ID            `json:"id" bson:"_id" valid:"numeric,optional"`
 	Title       string        `json:"title" valid:"text, stringlength(1|50)"`
-	Year        string        `json:"year" valid:"year, stringlength(4|4)"`
+	Year        int           `json:"year" valid:"year"`
 	Genres      []Genre       `json:"genres" valid:"genres"`
 	Mark        Mark          `json:"mark" valid:"mark"`
 	Description string        `json:"description" valid:"text, stringlength(8|50)"`
