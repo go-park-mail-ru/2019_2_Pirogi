@@ -67,7 +67,7 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 }
 
 func regexp(query string) primitive.M {
-	return bson.M{"$regex": pattern(query), "$options": 'i'}
+	return bson.M{"$regex": pattern(query), "$options": "i"}
 }
 
 func pattern(query string) primitive.Regex {

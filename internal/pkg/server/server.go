@@ -30,6 +30,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	e := echo.New()
 	logger, err := CreateLogger()
+	zap.ReplaceGlobals(logger)
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)
 	}
