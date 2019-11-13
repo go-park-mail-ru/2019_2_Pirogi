@@ -10,8 +10,8 @@ type QuerySearchParams struct {
 	Query      string   `json:"query" valid:"text"`
 	Genres     []string `json:"genres" valid:"text, optional"`
 	PersonsIDs []int    `json:"persons_id" valid:"numeric, optional"`
-	YearMin    int      `json:"year_min" valid:"year, optional"`
-	YearMax    int      `json:"year_max" valid:"year, optional"`
+	YearMin    int      `json:"year_min" valid:"optional"`
+	YearMax    int      `json:"year_max" valid:"optional"`
 	Countries  []string `json:"countries" valid:"text, optional"`
 	RatingMin  float32  `json:"rating_min" valid:"numeric, optional"`
 	Offset     int      `json:"offset" valid:"numeric, optional"`
@@ -23,13 +23,11 @@ func (qp *QuerySearchParams) filter() {
 	switch {
 	case qp.Limit == 0:
 		qp.Limit = configs.Default.DefaultEntriesLimit
-		fallthrough
 	case qp.OrderBy == "":
 		qp.OrderBy = configs.Default.DefaultOrderBy
-		fallthrough
 	case qp.YearMin == 0:
+		print(qp.YearMin)
 		qp.YearMin = configs.Default.DefaultYearMin
-		fallthrough
 	case qp.YearMax == 0:
 		qp.YearMax = configs.Default.DefaultYearMax
 	}
@@ -43,35 +41,45 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
 	var matchBSON []bson.M
+	matchBSON = append(matchBSON, match(primitive.M{"year": primitive.M{"$gt": qp.YearMin,
+		"$lt": qp.YearMax},
+	}))
 	switch {
-	case qp.YearMin > 0 || qp.YearMax > 0:
-		matchBSON = append(matchBSON, bson.M{"year": bson.M{
-			"$range": []int{qp.YearMin, qp.YearMax}},
-		})
-		fallthrough
 	case len(qp.Genres) > 0:
-		matchBSON = append(matchBSON, bson.M{"genre": stringFromStringArray(qp.Genres)})
+		matchBSON = append(matchBSON, match(bson.M{"genre": all(qp.Genres)}))
 		fallthrough
 	case len(qp.PersonsIDs) > 0:
-		matchBSON = append(matchBSON, bson.M{"personsid": qp.PersonsIDs})
+		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIDs)}))
 		fallthrough
 	case len(qp.Countries) > 0:
-		matchBSON = append(matchBSON, bson.M{"country": stringFromStringArray(qp.Countries)})
+		matchBSON = append(matchBSON, match(bson.M{"country": all(qp.Countries)}))
 		fallthrough
 	case qp.Query != "":
 		switch target {
 		case configs.Default.PersonTargetName:
-			matchBSON = append(matchBSON, bson.M{"name": queryWrapper(qp.Query)})
+			matchBSON = append(matchBSON, match(bson.M{"name": regexp(qp.Query)}))
 		default:
-			matchBSON = append(matchBSON, bson.M{"title": queryWrapper(qp.Query)})
+			matchBSON = append(matchBSON, match(bson.M{"title": regexp(qp.Query)}))
 		}
 	}
 	baseBSON = append(baseBSON, matchBSON...)
 	return baseBSON
 }
 
-func queryWrapper(query string) primitive.M {
-	return primitive.M{"$regex": ".*" + query + ".*"}
+func regexp(query string) primitive.M {
+	return bson.M{"$regex": pattern(query), "$options": 'i'}
+}
+
+func pattern(query string) primitive.Regex {
+	return primitive.Regex{Pattern: ".*" + query + ".*"}
+}
+
+func match(query interface{}) primitive.M {
+	return primitive.M{"$match": query}
+}
+
+func all(query interface{}) primitive.M {
+	return primitive.M{"$all": query}
 }
 
 func stringFromStringArray(arr []string) (result string) {

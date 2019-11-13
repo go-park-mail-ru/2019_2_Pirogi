@@ -24,6 +24,8 @@ func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 			case int:
 				e.Error = strconv.Itoa(he.Message.(int))
 			}
+		} else {
+			e.Error = err.Error()
 		}
 		fields := []zapcore.Field{
 			zap.Int("status", e.Status),

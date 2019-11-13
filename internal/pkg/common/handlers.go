@@ -74,26 +74,54 @@ func CheckPOSTRequest(ctx echo.Context) (session *http.Cookie, err error) {
 	return ctx.Request().Cookie(configs.Default.CookieAuthName)
 }
 
-func MapQueryListParams(ctx echo.Context) (queryParams search.QuerySearchParams) {
+func MapQueryParams(ctx echo.Context) (queryParams search.QuerySearchParams) {
 	queryParams.Limit = configs.Default.DefaultEntriesLimit // limit must be positive, default value(0) is not suitable
 	p := reflect.ValueOf(&queryParams).Elem()
-	t := p.Type()
+	t := reflect.TypeOf(queryParams)
 	for i := 0; i < p.NumField(); i++ {
-		if p.Field(i).Kind() == reflect.Int {
+		switch p.Field(i).Kind() {
+		case reflect.Int:
 			val, err := strconv.Atoi(ctx.QueryParam(strings.ToLower(t.Field(i).Name)))
 			if err != nil {
 				continue
 			}
 			p.Field(i).SetInt(int64(val))
 			continue
+		case reflect.String:
+			p.Field(i).SetString(ctx.QueryParam(strings.ToLower(t.Field(i).Name)))
+		case reflect.Slice:
+			switch t.Field(i).Type.Elem().Kind() {
+			case reflect.String:
+				querySlice := strings.Split(ctx.QueryParam(strings.ToLower(t.Field(i).Name)), ",")
+
+				newStringSlice := reflect.MakeSlice(reflect.TypeOf([]string{}), 0, 0)
+				for _, item := range querySlice {
+					newStringSlice = reflect.Append(newStringSlice, reflect.ValueOf(item))
+				}
+				p.Field(i).Set(newStringSlice)
+			case reflect.Int:
+				querySlice := strings.Split(ctx.QueryParam(strings.ToLower(t.Field(i).Name)), ",")
+				println(strings.ToLower(t.Field(i).Name))
+				var newIntValues []int
+				for _, item := range querySlice {
+					value, err := strconv.Atoi(item)
+					if err != nil {
+						continue
+					}
+					newIntValues = append(newIntValues, value)
+				}
+				newIntSlice := reflect.MakeSlice(reflect.TypeOf([]int{}), 0, 0)
+				for _, item := range newIntValues {
+					newIntSlice = reflect.Append(newIntSlice, reflect.ValueOf(item))
+				}
+				p.Field(i).Set(newIntSlice)
+			}
 		}
-		p.Field(i).SetString(ctx.QueryParam(strings.ToLower(t.Field(i).Name)))
 	}
-	return
+	return queryParams
 }
 
 func GetByQueryListParams(conn database.Database, qp search.QuerySearchParams) ([]models.Film, *models.Error) {
-
 	// TODO: remove this
 	var (
 		items []models.Film

@@ -10,7 +10,7 @@ import (
 
 func GetHandlerList(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		queryParams := common.MapQueryListParams(ctx)
+		queryParams := common.MapQueryParams(ctx)
 		films, e := common.GetByQueryListParams(conn, queryParams)
 		filmsTrunc := makers.MakeFilmsTrunc(films)
 		if e != nil {

@@ -4,10 +4,8 @@ import (
 	"encoding/json"
 	"errors"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"io"
-	"log"
 	"os"
 	"path"
 )
@@ -123,9 +121,9 @@ func openFile(filename string) (io.ReadCloser, error) {
 }
 
 func main() {
-	configPath := "configs"
-	err := common.UnmarshalConfigs(&configPath)
-	if err != nil {
-		log.Fatal(err)
-	}
+	//configPath := "configs"
+	//err := common.UnmarshalConfigs(&configPath)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
 }

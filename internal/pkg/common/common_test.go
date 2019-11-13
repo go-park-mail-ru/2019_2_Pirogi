@@ -95,7 +95,7 @@ func TestPrepareModelNewFilm(t *testing.T) {
 	filmNew := models.NewFilm{
 		Title:       "Matrix",
 		Description: "Lalasdadasdasdl",
-		Year:        "1998",
+		Year:        1998,
 		Countries:   []string{"USA"},
 		Genres:      []models.Genre{"драма"},
 		PersonsID:   []models.ID{},
@@ -169,4 +169,49 @@ func TestUnmarshalConfigs(t *testing.T) {
 	err := UnmarshalConfigs(&configPath)
 	require.NoError(t, err)
 	require.Equal(t, "_csrf", configs.Default.CSRFCookieName)
+}
+
+func TestMapQueryParams(t *testing.T) {
+	configPath := "../../../configs"
+	err := UnmarshalConfigs(&configPath)
+	require.NoError(t, err)
+	e := echo.New()
+	reader := bufio.NewReader(nil)
+	req := httptest.NewRequest("POST", "http://cinsear.ru", reader)
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	qp := MapQueryParams(ctx)
+	require.Equal(t, configs.Default.DefaultEntriesLimit, qp.Limit)
+}
+
+func TestMapQueryParamsSliceString(t *testing.T) {
+	configPath := "../../../configs"
+	err := UnmarshalConfigs(&configPath)
+	require.NoError(t, err)
+	e := echo.New()
+	reader := bufio.NewReader(nil)
+	req := httptest.NewRequest("POST", "http://cinsear.ru", reader)
+	q := req.URL.Query()
+	q.Add("countries", "USA,Russia")
+	req.URL.RawQuery = q.Encode()
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	qp := MapQueryParams(ctx)
+	require.Equal(t, []string{"USA", "Russia"}, qp.Countries)
+}
+
+func TestMapQueryParamsSliceInt(t *testing.T) {
+	configPath := "../../../configs"
+	err := UnmarshalConfigs(&configPath)
+	require.NoError(t, err)
+	e := echo.New()
+	reader := bufio.NewReader(nil)
+	req := httptest.NewRequest("POST", "http://cinsear.ru", reader)
+	q := req.URL.Query()
+	q.Add("personsids", "3,4,5")
+	req.URL.RawQuery = q.Encode()
+	rec := httptest.NewRecorder()
+	ctx := e.NewContext(req, rec)
+	qp := MapQueryParams(ctx)
+	require.Equal(t, []int{3, 4, 5}, qp.PersonsIDs)
 }
