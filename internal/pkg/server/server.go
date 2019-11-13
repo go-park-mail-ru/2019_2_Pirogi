@@ -44,7 +44,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	api := e.Group("/api")
 
-	api.GET("/search", handlers.GetHandlerSearch(conn))
+	api.GET("/search/", handlers.GetHandlerSearch(conn))
 
 	users := api.Group("/users")
 	users.GET("/", handlers.GetHandlerUsers(conn))
