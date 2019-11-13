@@ -20,12 +20,12 @@ func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 			e.Status = he.Code
 			switch he.Message.(type) {
 			case string:
-				e.Error = he.Message.(string)
+				e.Error = err.Error()
 			case int:
 				e.Error = strconv.Itoa(he.Message.(int))
+			case *models.Error:
+				e.Error = he.Message.(*models.Error).Error
 			}
-		} else {
-			e.Error = err.Error()
 		}
 		fields := []zapcore.Field{
 			zap.Int("status", e.Status),

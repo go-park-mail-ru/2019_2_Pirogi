@@ -16,11 +16,11 @@ func CreateLogger() (*zap.Logger, error) {
 	cfg := zap.NewDevelopmentConfig()
 	cfg.OutputPaths = []string{
 		"stdout",
-		"/log/cinsear.log",
+		configs.Default.AccessLog,
 	}
 	cfg.ErrorOutputPaths = []string{
 		"stderr",
-		"/log/error.log",
+		configs.Default.ErrorLog,
 	}
 	return cfg.Build()
 }
