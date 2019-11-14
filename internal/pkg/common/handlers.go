@@ -88,15 +88,19 @@ func MapQueryParams(ctx echo.Context) (queryParams search.QuerySearchParams) {
 			p.Field(i).SetInt(int64(val))
 			continue
 		case reflect.String:
-			p.Field(i).SetString(ctx.QueryParam(strings.ToLower(t.Field(i).Name)))
+			param := ctx.QueryParam(strings.ToLower(t.Field(i).Name))
+			if param != "" {
+				p.Field(i).SetString(param)
+			}
 		case reflect.Slice:
 			switch t.Field(i).Type.Elem().Kind() {
 			case reflect.String:
 				querySlice := strings.Split(ctx.QueryParam(strings.ToLower(t.Field(i).Name)), ",")
-
 				newStringSlice := reflect.MakeSlice(reflect.TypeOf([]string{}), 0, 0)
 				for _, item := range querySlice {
-					newStringSlice = reflect.Append(newStringSlice, reflect.ValueOf(item))
+					if item != "" {
+						newStringSlice = reflect.Append(newStringSlice, reflect.ValueOf(item))
+					}
 				}
 				p.Field(i).Set(newStringSlice)
 			case reflect.Int:

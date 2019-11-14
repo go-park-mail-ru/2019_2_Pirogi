@@ -12,7 +12,7 @@ func GetHandlerSearch(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		qp := common.MapQueryParams(ctx)
 		zap.S().Debug("SearchHandler: Query params: ", qp)
-		films, e := conn.GetByQuery(configs.Default.FilmsCollectionName, qp.GetPipelineForMongo("films"))
+		films, e := conn.GetByQuery(configs.Default.FilmsCollectionName, qp.GetPipelineForMongo(configs.Default.FilmTargetName))
 		zap.S().Debug("SearchHandler: Found films: ", films)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)

@@ -43,8 +43,8 @@ type DefaultConfig struct {
 
 	DefaultOrderBy string `yaml:"default_order_by"`
 
-	DefaultYearMin int
-	DefaultYearMax int
+	DefaultYearMin int `yaml:"default_year_min"`
+	DefaultYearMax int `yaml:"default_year_max"`
 }
 
 var Default DefaultConfig
