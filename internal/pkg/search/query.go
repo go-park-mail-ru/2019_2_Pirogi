@@ -41,18 +41,18 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
 	var matchBSON []bson.M
-	matchBSON = append(matchBSON, match(primitive.M{"year": primitive.M{"$gt": qp.YearMin,
+	matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gt": qp.YearMin,
 		"$lt": qp.YearMax},
 	}))
 	switch {
 	case len(qp.Genres) > 0:
-		matchBSON = append(matchBSON, match(bson.M{"genre": all(qp.Genres)}))
+		matchBSON = append(matchBSON, match(bson.M{"genres": all(qp.Genres)}))
 		fallthrough
 	case len(qp.PersonsIDs) > 0:
 		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIDs)}))
 		fallthrough
 	case len(qp.Countries) > 0:
-		matchBSON = append(matchBSON, match(bson.M{"country": all(qp.Countries)}))
+		matchBSON = append(matchBSON, match(bson.M{"countries": all(qp.Countries)}))
 		fallthrough
 	case qp.Query != "":
 		switch target {
@@ -67,11 +67,11 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 }
 
 func regexp(query string) primitive.M {
-	return bson.M{"$regex": pattern(query), "$options": "i"}
+	return bson.M{"$regex": pattern(query)}
 }
 
 func pattern(query string) primitive.Regex {
-	return primitive.Regex{Pattern: ".*" + query + ".*"}
+	return primitive.Regex{Pattern: ".*" + query + ".*", Options: "i"}
 }
 
 func match(query interface{}) primitive.M {

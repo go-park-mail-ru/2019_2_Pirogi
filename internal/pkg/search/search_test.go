@@ -30,9 +30,9 @@ func TestQuerySearchParams_GetPipelineForMongo(t *testing.T) {
 		{"$skip": 5},
 		{"$sort": primitive.M{"": -1}},
 		{"$match": primitive.M{"year": primitive.M{"$gt": 1950, "$lt": 2016}}},
-		{"$match": primitive.M{"genre": primitive.M{"$all": []string{"драма", "боевик"}}}},
+		{"$match": primitive.M{"genres": primitive.M{"$all": []string{"драма", "боевик"}}}},
 		{"$match": primitive.M{"personsid": primitive.M{"$all": []int{1, 2, 3}}}},
-		{"$match": primitive.M{"country": primitive.M{"$all": []string{"США"}}}},
-		{"$match": primitive.M{"title": primitive.M{"$regex": primitive.Regex{Pattern: ".*Матри.*"}, "$options": "i"}}}}
+		{"$match": primitive.M{"countries": primitive.M{"$all": []string{"США"}}}},
+		{"$match": primitive.M{"title": primitive.M{"$regex": primitive.Regex{Pattern: ".*Матри.*", Options: "i"}}}}}
 	require.Equal(t, expected, qp.GetPipelineForMongo("films"))
 }
