@@ -17,6 +17,7 @@ type QuerySearchParams struct {
 	Offset     int      `json:"offset" valid:"numeric, optional"`
 	Limit      int      `json:"limit" valid:"numeric, optional"`
 	OrderBy    string   `json:"order_by" valid:"text, optional"`
+	Year       int      `json:"year" valid:"numeric, optional"`
 }
 
 func (qp *QuerySearchParams) filter() {
@@ -42,8 +43,8 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
 	var matchBSON []bson.M
-	matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gt": qp.YearMin,
-		"$lt": qp.YearMax},
+	matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin,
+		"$lte": qp.YearMax},
 	}))
 	if len(qp.Genres) > 0 {
 		matchBSON = append(matchBSON, match(bson.M{"genres": all(qp.Genres)}))
@@ -53,6 +54,9 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 	}
 	if len(qp.Countries) > 0 {
 		matchBSON = append(matchBSON, match(bson.M{"countries": all(qp.Countries)}))
+	}
+	if qp.Year != 0 {
+		matchBSON = append(matchBSON, match(bson.M{"year": qp.Year}))
 	}
 	if qp.Query != "" {
 		switch target {
