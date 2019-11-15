@@ -222,7 +222,7 @@ func validateRole(role string) bool {
 
 //TODO: в продакшене расскоментировать
 func validatePassword(password string) bool {
-	return len(password) > 7
+	return len(password) > 3
 	//letters := 0
 	//var flags = []bool{false, false, false, false}
 	//for _, c := range password {
