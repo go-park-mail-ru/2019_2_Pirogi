@@ -27,12 +27,6 @@ func (qp *QuerySearchParams) filter() {
 	if qp.OrderBy == "" {
 		qp.OrderBy = configs.Default.DefaultOrderBy
 	}
-	if qp.YearMin == 0 {
-		qp.YearMin = configs.Default.DefaultYearMin
-	}
-	if qp.YearMax == 0 {
-		qp.YearMax = configs.Default.DefaultYearMax
-	}
 }
 
 func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
@@ -43,9 +37,14 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
 	var matchBSON []bson.M
-	matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin,
-		"$lte": qp.YearMax},
-	}))
+	if qp.YearMin != 0 || qp.YearMax != 0  {
+		if qp.YearMin == 0 {
+			qp.YearMin = configs.Default.DefaultYearMin
+		} else if qp.YearMax == 0 {
+			qp.YearMax = configs.Default.DefaultYearMax
+		}
+		matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin, "$lte": qp.YearMax}}))
+	}
 	if len(qp.Genres) > 0 {
 		var regexp_genres []primitive.Regex
 		for _, genre := range qp.Genres {
@@ -74,8 +73,8 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 			matchBSON = append(matchBSON, match(bson.M{"title": regexp(qp.Query)}))
 		}
 	}
-	baseBSON = append(baseBSON, matchBSON...)
-	return baseBSON
+	matchBSON = append(matchBSON, baseBSON...)
+	return matchBSON
 }
 
 func regexp(query string) bson.M {
