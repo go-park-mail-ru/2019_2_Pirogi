@@ -4,6 +4,8 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 )
@@ -23,11 +25,25 @@ func GetHandlerSearch(conn database.Database) echo.HandlerFunc {
 			if e != nil {
 				return echo.NewHTTPError(e.Status, e.Error)
 			}
+			var personsTrunc []models.PersonTrunc
+			for _, person := range queryResult {
+				personsTrunc = append(personsTrunc, makers.MakeTruncPerson(person.(models.Person)))
+			}
+			err := ctx.JSON(200, personsTrunc)
+			if err != nil {
+				return echo.NewHTTPError(500, err)
+			}
+		} else {
+			var filmsTrunc []models.FilmTrunc
+			for _, film := range queryResult {
+				filmsTrunc = append(filmsTrunc, makers.MakeFilmTrunc(film.(models.Film)))
+			}
+			err := ctx.JSON(200, filmsTrunc)
+			if err != nil {
+				return echo.NewHTTPError(500, err)
+			}
 		}
-		err := ctx.JSON(200, queryResult)
-		if err != nil {
-			return echo.NewHTTPError(500, err)
-		}
+
 		return nil
 	}
 }
