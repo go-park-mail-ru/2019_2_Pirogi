@@ -26,12 +26,13 @@ type Film struct {
 }
 
 type FilmTrunc struct {
-	ID     ID      `json:"id" valid:"numeric,optional"`
-	Title  string  `json:"title" valid:"text, stringlength(1|50)"`
-	Year   int     `json:"year" valid:"year"`
-	Genres []Genre `json:"genres" valid:"genres"`
-	Mark   Mark    `json:"mark" valid:"mark"`
-	Image  Image   `json:"image" valid:"image"`
+	ID        ID      `json:"id" valid:"numeric,optional"`
+	Title     string  `json:"title" valid:"text, stringlength(1|50)"`
+	Year      int     `json:"year" valid:"year"`
+	Genres    []Genre `json:"genres" valid:"genres"`
+	Mark      Mark    `json:"mark" valid:"mark"`
+	PersonsID []ID    `json:"persons_id" valid:"ids, optional"`
+	Image     Image   `json:"image" valid:"image"`
 }
 
 type FilmFull struct {
