@@ -11,6 +11,8 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/gommon/log"
 	"io"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 )
@@ -106,6 +108,21 @@ func parse(target string) ([]interface{}, error) {
 			interfaces[i] = val
 		}
 		return interfaces, nil
+	case configs.Default.FilmImageTargetName, configs.Default.PersonImageTargetName:
+		var images []models.Image
+		for dec.More() {
+			var image models.Image
+			err = dec.Decode(&image)
+			if err != nil {
+				return nil, err
+			}
+			images = append(images, image)
+		}
+		interfaces := make([]interface{}, len(images))
+		for i, val := range images {
+			interfaces[i] = val
+		}
+		return interfaces, nil
 	default:
 		return nil, errors.New("unsupported target")
 	}
@@ -122,6 +139,17 @@ func openFile(filename string) (io.ReadCloser, error) {
 	}
 	reader := io.ReadCloser(file)
 	return reader, nil
+}
+
+func uploadAndSaveImage(url string, baseFolder string) (string, error) {
+	response, err := http.Get(url)
+	if err != nil {
+		return "", err
+	}
+	defer response.Body.Close()
+
+	body, err := ioutil.ReadAll(response.Body)
+	return common.WriteFileWithGeneratedName(body, baseFolder)
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
@@ -152,6 +180,24 @@ func FakeFillDB(conn *database.MongoConnection) {
 			conn.Upsert(person)
 		}
 
+	}
+	filmImages, err := parse(configs.Default.FilmImageTargetName)
+	if err != nil {
+		log.Fatal(err)
+	}
+	for i, filmImage := range filmImages {
+		fmt.Printf("inserting %d film image from %d\n", i, len(filmImages))
+		film, e := conn.Get(models.ID(i), configs.Default.FilmTargetName)
+		if e != nil {
+			continue
+		}
+		imagePath, err := uploadAndSaveImage(string(filmImage.(models.Image)), configs.Default.FilmsImageUploadPath)
+		if err != nil {
+			continue
+		}
+		f := film.(models.Film)
+		f.Images = []models.Image{models.Image(imagePath)}
+		conn.Upsert(f)
 	}
 }
 
