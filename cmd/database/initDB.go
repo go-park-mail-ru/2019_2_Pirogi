@@ -191,7 +191,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		if e != nil {
 			continue
 		}
-		imagePath, err := uploadAndSaveImage(string(filmImage.(models.Image)), "/home/liza/images")
+		imagePath, err := uploadAndSaveImage(string(filmImage.(models.Image)), configs.Default.FilmsImageUploadPath)
 		if err != nil {
 			continue
 		}
