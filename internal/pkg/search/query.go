@@ -47,13 +47,21 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		"$lte": qp.YearMax},
 	}))
 	if len(qp.Genres) > 0 {
-		matchBSON = append(matchBSON, match(bson.M{"genres": all(qp.Genres)}))
+		var regexp_genres []primitive.Regex
+		for _, genre := range qp.Genres {
+			regexp_genres = append(regexp_genres, pattern(genre))
+		}
+		matchBSON = append(matchBSON, match(bson.M{"genres": all(regexp_genres)}))
 	}
 	if len(qp.PersonsIDs) > 0 {
 		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIDs)}))
 	}
 	if len(qp.Countries) > 0 {
-		matchBSON = append(matchBSON, match(bson.M{"countries": all(qp.Countries)}))
+		var regexp_countries []primitive.Regex
+		for _, country := range qp.Countries {
+			regexp_countries = append(regexp_countries, pattern(country))
+		}
+		matchBSON = append(matchBSON, match(bson.M{"countries": all(regexp_countries)}))
 	}
 	if qp.Year != 0 {
 		matchBSON = append(matchBSON, match(bson.M{"year": qp.Year}))
@@ -70,7 +78,7 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 	return baseBSON
 }
 
-func regexp(query string) primitive.M {
+func regexp(query string) bson.M {
 	return bson.M{"$regex": pattern(query)}
 }
 
@@ -78,11 +86,11 @@ func pattern(query string) primitive.Regex {
 	return primitive.Regex{Pattern: ".*" + query + ".*", Options: "i"}
 }
 
-func match(query interface{}) primitive.M {
+func match(query interface{}) bson.M {
 	return bson.M{"$match": query}
 }
 
-func all(query interface{}) primitive.M {
+func all(query interface{}) bson.M {
 	return bson.M{"$all": query}
 }
 
