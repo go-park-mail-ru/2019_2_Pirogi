@@ -28,10 +28,10 @@ func MakeTruncPerson(in models.Person) models.PersonTrunc {
 	}
 }
 
-func MakeFullPerson(in models.Person, films []models.Film) models.PersonFull {
+func MakeFullPerson(in models.Person, films []models.Film, filmsPersons [][]models.PersonTrunc) models.PersonFull {
 	var filmsTrunc []models.FilmTrunc
-	for _, film := range films {
-		filmsTrunc = append(filmsTrunc, MakeFilmTrunc(film))
+	for i, film := range films {
+		filmsTrunc = append(filmsTrunc, MakeFilmTrunc(film, filmsPersons[i]))
 	}
 	return models.PersonFull{
 		ID:         in.ID,

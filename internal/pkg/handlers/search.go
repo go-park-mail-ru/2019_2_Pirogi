@@ -36,7 +36,9 @@ func GetHandlerSearch(conn database.Database) echo.HandlerFunc {
 		} else {
 			var filmsTrunc []models.FilmTrunc
 			for _, film := range queryResult {
-				filmsTrunc = append(filmsTrunc, makers.MakeFilmTrunc(film.(models.Film)))
+				persons, _ := conn.FindPersonsByIDs(film.(models.Film).PersonsID)
+				personsTrunc := makers.MakePersonsTrunc(persons)
+				filmsTrunc = append(filmsTrunc, makers.MakeFilmTrunc(film.(models.Film), personsTrunc))
 			}
 			err := ctx.JSON(200, filmsTrunc)
 			if err != nil {

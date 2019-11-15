@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
 	"github.com/labstack/echo"
 	"net/http"
@@ -16,7 +17,13 @@ func GetHandlerPages(conn database.Database) echo.HandlerFunc {
 			Limit: configs.Default.DefaultEntriesLimit + 5,
 		})
 		trailers := makers.MakeTrailersList(films)
-		filmsTrunc := makers.MakeFilmsTrunc(films)
+		var filmPersonsTrunc [][]models.PersonTrunc
+		for _, f := range films {
+			persons, _ := conn.FindPersonsByIDs(f.PersonsID)
+			personsTrunc := makers.MakePersonsTrunc(persons)
+			filmPersonsTrunc = append(filmPersonsTrunc, personsTrunc)
+		}
+		filmsTrunc := makers.MakeFilmsTrunc(films, filmPersonsTrunc)
 		if e != nil {
 			return echo.NewHTTPError(500, e)
 		}

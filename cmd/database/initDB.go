@@ -179,7 +179,6 @@ func FakeFillDB(conn *database.MongoConnection) {
 			person.FilmsID = append(person.FilmsID, models.ID(i))
 			conn.Upsert(person)
 		}
-
 	}
 
 	filmImages, err := parse(configs.Default.FilmImageTargetName)
