@@ -17,19 +17,15 @@ type QuerySearchParams struct {
 	Offset     int      `json:"offset" valid:"numeric, optional"`
 	Limit      int      `json:"limit" valid:"numeric, optional"`
 	OrderBy    string   `json:"order_by" valid:"text, optional"`
+	Year       int      `json:"year" valid:"numeric, optional"`
 }
 
 func (qp *QuerySearchParams) filter() {
-	switch {
-	case qp.Limit == 0:
+	if qp.Limit == 0 {
 		qp.Limit = configs.Default.DefaultEntriesLimit
-	case qp.OrderBy == "":
+	}
+	if qp.OrderBy == "" {
 		qp.OrderBy = configs.Default.DefaultOrderBy
-	case qp.YearMin == 0:
-		print(qp.YearMin)
-		qp.YearMin = configs.Default.DefaultYearMin
-	case qp.YearMax == 0:
-		qp.YearMax = configs.Default.DefaultYearMax
 	}
 }
 
@@ -41,20 +37,35 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
 	var matchBSON []bson.M
-	matchBSON = append(matchBSON, match(primitive.M{"year": primitive.M{"$gt": qp.YearMin,
-		"$lt": qp.YearMax},
-	}))
-	switch {
-	case len(qp.Genres) > 0:
-		matchBSON = append(matchBSON, match(bson.M{"genre": all(qp.Genres)}))
-		fallthrough
-	case len(qp.PersonsIDs) > 0:
+	if qp.YearMin != 0 || qp.YearMax != 0  {
+		if qp.YearMin == 0 {
+			qp.YearMin = configs.Default.DefaultYearMin
+		} else if qp.YearMax == 0 {
+			qp.YearMax = configs.Default.DefaultYearMax
+		}
+		matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin, "$lte": qp.YearMax}}))
+	}
+	if len(qp.Genres) > 0 {
+		var regexp_genres []primitive.Regex
+		for _, genre := range qp.Genres {
+			regexp_genres = append(regexp_genres, pattern(genre))
+		}
+		matchBSON = append(matchBSON, match(bson.M{"genres": all(regexp_genres)}))
+	}
+	if len(qp.PersonsIDs) > 0 {
 		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIDs)}))
-		fallthrough
-	case len(qp.Countries) > 0:
-		matchBSON = append(matchBSON, match(bson.M{"country": all(qp.Countries)}))
-		fallthrough
-	case qp.Query != "":
+	}
+	if len(qp.Countries) > 0 {
+		var regexp_countries []primitive.Regex
+		for _, country := range qp.Countries {
+			regexp_countries = append(regexp_countries, pattern(country))
+		}
+		matchBSON = append(matchBSON, match(bson.M{"countries": all(regexp_countries)}))
+	}
+	if qp.Year != 0 {
+		matchBSON = append(matchBSON, match(bson.M{"year": qp.Year}))
+	}
+	if qp.Query != "" {
 		switch target {
 		case configs.Default.PersonTargetName:
 			matchBSON = append(matchBSON, match(bson.M{"name": regexp(qp.Query)}))
@@ -62,24 +73,24 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 			matchBSON = append(matchBSON, match(bson.M{"title": regexp(qp.Query)}))
 		}
 	}
-	baseBSON = append(baseBSON, matchBSON...)
-	return baseBSON
+	matchBSON = append(matchBSON, baseBSON...)
+	return matchBSON
 }
 
-func regexp(query string) primitive.M {
-	return bson.M{"$regex": pattern(query), "$options": "i"}
+func regexp(query string) bson.M {
+	return bson.M{"$regex": pattern(query)}
 }
 
 func pattern(query string) primitive.Regex {
-	return primitive.Regex{Pattern: ".*" + query + ".*"}
+	return primitive.Regex{Pattern: ".*" + query + ".*", Options: "i"}
 }
 
-func match(query interface{}) primitive.M {
-	return primitive.M{"$match": query}
+func match(query interface{}) bson.M {
+	return bson.M{"$match": query}
 }
 
-func all(query interface{}) primitive.M {
-	return primitive.M{"$all": query}
+func all(query interface{}) bson.M {
+	return bson.M{"$all": query}
 }
 
 func stringFromStringArray(arr []string) (result string) {
