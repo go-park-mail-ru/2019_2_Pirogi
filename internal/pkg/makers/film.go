@@ -24,13 +24,14 @@ func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
 
 func MakeFilmTrunc(in models.Film, persons []models.PersonTrunc) models.FilmTrunc {
 	return models.FilmTrunc{
-		ID:        in.ID,
-		Title:     in.Title,
-		Year:      in.Year,
-		Genres:    in.Genres,
-		Mark:      in.Mark,
-		Persons:   persons,
-		Image:     in.Images[0],
+		ID:          in.ID,
+		Title:       in.Title,
+		Year:        in.Year,
+		Genres:      in.Genres,
+		Mark:        in.Mark,
+		Description: in.Description,
+		Persons:     persons,
+		Image:       in.Images[0],
 	}
 }
 
