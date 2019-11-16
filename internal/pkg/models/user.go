@@ -13,11 +13,12 @@ type NewUser struct {
 }
 
 type UserTrunc struct {
-	ID          ID     `json:"id" valid:"numeric"`
-	Username    string `json:"username" valid:"title"`
-	Mark        Mark   `json:"mark" valid:"mark, optional"`
-	Description string `json:"description" valid:"description"`
-	Image       Image  `json:"image" valid:"image, optional"`
+	ID          ID         `json:"id" valid:"numeric"`
+	Username    string     `json:"username" valid:"title"`
+	Mark        Mark       `json:"mark" valid:"mark, optional"`
+	Description string     `json:"description" valid:"description"`
+	Image       Image      `json:"image" valid:"image, optional"`
+	Reviews     ReviewsNum `json:"reviews_num" valid:"numeric, optional"`
 }
 
 type User struct {
