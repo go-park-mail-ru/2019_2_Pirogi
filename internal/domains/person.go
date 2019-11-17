@@ -1,4 +1,14 @@
-package models
+package domains
+
+type PersonRepository interface {
+	Insert(newPerson NewPerson) (ID, error)
+	Update(id ID, person Person) error
+	Delete(id ID) bool
+	Get(id ID) Person
+	GetMany(target Target, id ID) []Person
+	MakeTrunc(person Person) PersonTrunc
+	MakeFull(person Person) PersonFull
+}
 
 type NewPerson struct {
 	Name       string `json:"name" valid:"text, stringlength(1|50)"`
@@ -37,4 +47,12 @@ type PersonTrunc struct {
 	ID    ID     `json:"id, omitempty" valid:"numeric"`
 	Name  string `json:"name" valid:"text, stringlength(1|50)"`
 	Image Image  `json:"image" valid:"image"`
+}
+
+func (p *Person) AddLike() {
+	p.Likes += 1
+}
+
+func (p *Person) RemoveLike() {
+	p.Likes -= 1
 }

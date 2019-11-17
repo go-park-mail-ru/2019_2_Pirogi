@@ -1,26 +1,27 @@
 package validators
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"testing"
 	"time"
 
 	valid "github.com/asaskevich/govalidator"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/stretchr/testify/require"
 )
 
 func TestTarget(t *testing.T) {
 	InitValidator()
-	target := models.Target("film")
+	target := domains.Target("film")
 	ok := validateTarget(string(target))
 	require.True(t, ok)
 }
 
 func TestLike(t *testing.T) {
 	InitValidator()
-	like := models.Like{
+	like := domains.Like{
 		UserID:   2,
-		Target:   models.Target("film"),
+		Target:   domains.Target("film"),
 		TargetID: 5,
 	}
 	_, err := valid.ValidateStruct(like)
@@ -29,7 +30,7 @@ func TestLike(t *testing.T) {
 
 func TestStars(t *testing.T) {
 	InitValidator()
-	stars := models.Stars{
+	stars := domains.Stars{
 		UserID: 3,
 		FilmID: 4,
 		Mark:   4.2,
@@ -40,7 +41,7 @@ func TestStars(t *testing.T) {
 
 func TestTruncUser(t *testing.T) {
 	InitValidator()
-	userTrunc := models.UserTrunc{
+	userTrunc := domains.UserTrunc{
 		ID:          2,
 		Username:    "Artefakt1",
 		Mark:        3.5,
@@ -52,11 +53,11 @@ func TestTruncUser(t *testing.T) {
 }
 
 func TestTruncFilm(t *testing.T) {
-	filmTrunc := models.FilmTrunc{
+	filmTrunc := domains.FilmTrunc{
 		ID:     2,
 		Title:  "matrix",
 		Year:   "1998",
-		Genres: []models.Genre{"драма"},
+		Genres: []domains.Genre{"драма"},
 		Mark:   3.4,
 	}
 	_, err := valid.ValidateStruct(filmTrunc)
@@ -74,7 +75,7 @@ func TestCredentials(t *testing.T) {
 
 func TestPersonTrunc(t *testing.T) {
 	InitValidator()
-	personTrunc := models.PersonTrunc{
+	personTrunc := domains.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
 	}
@@ -84,25 +85,25 @@ func TestPersonTrunc(t *testing.T) {
 
 func TestPerson(t *testing.T) {
 	InitValidator()
-	image := models.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
+	image := domains.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
 
-	personTrunc := models.PersonTrunc{
+	personTrunc := domains.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
 	}
-	person := models.Person{
+	person := domains.Person{
 		ID:         personTrunc.ID,
 		Name:       personTrunc.Name,
-		Mark:       models.Mark(2.3),
-		Roles:      []models.Role{"actor"},
+		Mark:       domains.Mark(2.3),
+		Roles:      []domains.Role{"actor"},
 		Birthday:   "09.12.1998",
 		Birthplace: "USA",
-		Genres:     []models.Genre{"драма"},
-		FilmsID: []models.ID{
+		Genres:     []domains.Genre{"драма"},
+		FilmsID: []domains.ID{
 			0,
 		},
 		Likes: 2,
-		Images: []models.Image{
+		Images: []domains.Image{
 			image,
 		},
 	}
@@ -111,15 +112,15 @@ func TestPerson(t *testing.T) {
 }
 
 func TestFilm(t *testing.T) {
-	image := models.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
-	filmTrunc := models.FilmTrunc{
+	image := domains.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
+	filmTrunc := domains.FilmTrunc{
 		ID:     2,
 		Title:  "matrix",
 		Year:   "1998",
-		Genres: []models.Genre{"драма"},
+		Genres: []domains.Genre{"драма"},
 		Mark:   3.0,
 	}
-	film := models.Film{
+	film := domains.Film{
 		ID:          filmTrunc.ID,
 		Title:       filmTrunc.Title,
 		Year:        filmTrunc.Year,
@@ -127,10 +128,10 @@ func TestFilm(t *testing.T) {
 		Mark:        filmTrunc.Mark,
 		Countries:   []string{"USA"},
 		Description: "laslasldasldlasdl",
-		PersonsID: []models.ID{
+		PersonsID: []domains.ID{
 			0,
 		},
-		Images: []models.Image{
+		Images: []domains.Image{
 			image,
 		},
 		ReviewsNum: 23,
@@ -140,7 +141,7 @@ func TestFilm(t *testing.T) {
 }
 func TestReview(t *testing.T) {
 	InitValidator()
-	review := models.Review{
+	review := domains.Review{
 		Title:    "Обычный обзор",
 		Body:     "лалааллфылвфлывлфывлфывйцуasd12",
 		FilmID:   2,

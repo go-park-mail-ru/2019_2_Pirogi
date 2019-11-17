@@ -1,10 +1,12 @@
 package makers
 
-import "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+)
 
-func MakeTrailersList(films []models.Film) (trailers []models.TrailerWithTitle) {
+func MakeTrailersList(films []domains.Film) (trailers []domains.TrailerWithTitle) {
 	for _, film := range films {
-		trailer := models.TrailerWithTitle{
+		trailer := domains.TrailerWithTitle{
 			Title:   film.Title,
 			Trailer: film.Trailer,
 		}

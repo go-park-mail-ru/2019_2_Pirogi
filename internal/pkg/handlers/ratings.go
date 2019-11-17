@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"io/ioutil"
 	"net/http"
@@ -8,7 +9,6 @@ import (
 	"github.com/asaskevich/govalidator"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
 
@@ -28,7 +28,7 @@ func GetHandlerRatingsCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		newStars := models.Stars{}
+		newStars := domains.Stars{}
 		err = newStars.UnmarshalJSON(rawBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())

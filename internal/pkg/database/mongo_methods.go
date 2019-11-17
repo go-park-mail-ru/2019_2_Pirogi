@@ -1,28 +1,29 @@
 package database
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
 
 	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
-func (conn *MongoConnection) GetNextSequence(target string) (models.ID, error) {
+func (conn *MongoConnection) GetNextSequence(target string) (domains.ID, error) {
 	result := struct {
 		Seq int `bson:"seq"`
 	}{}
 	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
 		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
-	return models.ID(result.Seq), errors.Wrap(err, "get next sequence failed")
+	return domains.ID(result.Seq), errors.Wrap(err, "get next sequence failed")
 }
 
-func InsertUser(conn *MongoConnection, in models.NewUser) *models.Error {
+func InsertUser(conn *MongoConnection, in domains.NewUser) *domains.Error {
 	_, ok := conn.FindUserByEmail(in.Email)
 	if ok {
 		return Error.New(http.StatusBadRequest, "user with the email already exists")
@@ -42,7 +43,7 @@ func InsertUser(conn *MongoConnection, in models.NewUser) *models.Error {
 	return nil
 }
 
-func UpdateUser(conn *MongoConnection, in models.User) *models.Error {
+func UpdateUser(conn *MongoConnection, in domains.User) *domains.Error {
 	filter := bson.M{"usertrunc.id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.users.UpdateOne(conn.context, filter, update)
@@ -53,7 +54,7 @@ func UpdateUser(conn *MongoConnection, in models.User) *models.Error {
 }
 
 // It is supposed that there cannot be films with the same title
-func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
+func InsertFilm(conn *MongoConnection, in domains.NewFilm) *domains.Error {
 	_, ok := conn.FindFilmByTitle(in.Title)
 	if ok {
 		return Error.New(http.StatusBadRequest, "film with the title already exists")
@@ -70,7 +71,7 @@ func InsertFilm(conn *MongoConnection, in models.NewFilm) *models.Error {
 	return nil
 }
 
-func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
+func UpdateFilm(conn *MongoConnection, in domains.Film) *domains.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.films.UpdateOne(conn.context, filter, update)
@@ -80,7 +81,7 @@ func UpdateFilm(conn *MongoConnection, in models.Film) *models.Error {
 	return nil
 }
 
-func UpsertUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error {
+func UpsertUserCookie(conn *MongoConnection, in models.UserCookie) *domains.Error {
 	filter := bson.M{"_id": in.UserID}
 	foundCookie := models.UserCookie{}
 	err := conn.cookies.FindOne(conn.context, filter).Decode(&foundCookie)
@@ -97,7 +98,7 @@ func UpsertUserCookie(conn *MongoConnection, in models.UserCookie) *models.Error
 }
 
 // It is supposed that there cannot be persons with the same name and birthday
-func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
+func InsertPerson(conn *MongoConnection, in domains.NewPerson) *domains.Error {
 	_, ok := conn.FindPersonByNameAndBirthday(in.Name, in.Birthday)
 	if ok {
 		return Error.New(http.StatusBadRequest, "person with this name and birthday already exists")
@@ -115,7 +116,7 @@ func InsertPerson(conn *MongoConnection, in models.NewPerson) *models.Error {
 	return nil
 }
 
-func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
+func UpdatePerson(conn *MongoConnection, in domains.Person) *domains.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.persons.UpdateOne(conn.context, filter, update)
@@ -126,7 +127,7 @@ func UpdatePerson(conn *MongoConnection, in models.Person) *models.Error {
 }
 
 // TODO: check that user and film of review exist
-func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
+func InsertReview(conn *MongoConnection, in domains.NewReview) *domains.Error {
 	id, err := conn.GetNextSequence(configs.Default.ReviewTargetName)
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert review in database")
@@ -139,7 +140,7 @@ func InsertReview(conn *MongoConnection, in models.NewReview) *models.Error {
 	return nil
 }
 
-func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
+func UpdateReview(conn *MongoConnection, in domains.Review) *domains.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.reviews.UpdateOne(conn.context, filter, update)
@@ -149,7 +150,7 @@ func UpdateReview(conn *MongoConnection, in models.Review) *models.Error {
 	return nil
 }
 
-func InsertStars(conn *MongoConnection, in models.Stars) *models.Error {
+func InsertStars(conn *MongoConnection, in domains.Stars) *domains.Error {
 	filter := bson.M{"_id": in.FilmID}
 	// TODO: рассчитывать newMark
 	newMark := in.Mark
@@ -161,7 +162,7 @@ func InsertStars(conn *MongoConnection, in models.Stars) *models.Error {
 	return nil
 }
 
-func InsertLike(conn *MongoConnection, in models.Like) *models.Error {
+func InsertLike(conn *MongoConnection, in domains.Like) *domains.Error {
 	_, err := conn.likes.InsertOne(conn.context, in)
 	if err != nil {
 		return Error.New(http.StatusInternalServerError, "cannot insert like in database")
@@ -169,14 +170,14 @@ func InsertLike(conn *MongoConnection, in models.Like) *models.Error {
 	return nil
 }
 
-func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{}, *models.Error) {
+func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{}, *domains.Error) {
 	curs, err := conn.films.Aggregate(conn.context, pipeline)
 	if err != nil {
 		return nil, Error.New(http.StatusInternalServerError, "error while aggregating films", err.Error())
 	}
 	var result []interface{}
 	for curs.Next(conn.context) {
-		f := models.Film{}
+		f := domains.Film{}
 		err = curs.Decode(&f)
 		if err != nil {
 			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in films", err.Error())
@@ -186,14 +187,14 @@ func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{},
 	return result, nil
 }
 
-func AggregatePersons(conn *MongoConnection, pipeline interface{}) ([]interface{}, *models.Error) {
+func AggregatePersons(conn *MongoConnection, pipeline interface{}) ([]interface{}, *domains.Error) {
 	curs, err := conn.persons.Aggregate(conn.context, pipeline)
 	if err != nil {
 		return nil, Error.New(http.StatusInternalServerError, "error while aggregating persons", err.Error())
 	}
 	var result []interface{}
 	for curs.Next(conn.context) {
-		p := models.Person{}
+		p := domains.Person{}
 		err = curs.Decode(&p)
 		if err != nil {
 			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in persons", err.Error())
@@ -203,14 +204,14 @@ func AggregatePersons(conn *MongoConnection, pipeline interface{}) ([]interface{
 	return result, nil
 }
 
-func AggregateReviews(conn *MongoConnection, pipeline interface{}) ([]models.Review, *models.Error) {
+func AggregateReviews(conn *MongoConnection, pipeline interface{}) ([]domains.Review, *domains.Error) {
 	curs, err := conn.reviews.Aggregate(conn.context, pipeline)
 	if err != nil {
 		return nil, Error.New(http.StatusInternalServerError, "error while aggregating reviews")
 	}
-	var result []models.Review
+	var result []domains.Review
 	for curs.Next(conn.context) {
-		f := models.Review{}
+		f := domains.Review{}
 		err = curs.Decode(&f)
 		if err != nil {
 			return nil, Error.New(http.StatusInternalServerError, "error while decoding aggregated result in reviews")
@@ -220,10 +221,10 @@ func AggregateReviews(conn *MongoConnection, pipeline interface{}) ([]models.Rev
 	return result, nil
 }
 
-func FromInterfaceToFilm(films []interface{}) []models.Film {
-	result := make([]models.Film, len(films))
+func FromInterfaceToFilm(films []interface{}) []domains.Film {
+	result := make([]domains.Film, len(films))
 	for i, f := range films {
-		result[i] = f.(models.Film)
+		result[i] = f.(domains.Film)
 	}
 	return result
 }

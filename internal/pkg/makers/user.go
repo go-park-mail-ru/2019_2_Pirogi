@@ -1,9 +1,11 @@
 package makers
 
-import "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+)
 
-func MakeUserTrunc(in models.User) models.UserTrunc {
-	return models.UserTrunc{
+func MakeUserTrunc(in domains.User) domains.UserTrunc {
+	return domains.UserTrunc{
 		ID:          in.ID,
 		Username:    in.Username,
 		Mark:        in.Mark,

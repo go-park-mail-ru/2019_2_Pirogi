@@ -3,7 +3,7 @@ package validators
 import (
 	valid "github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"regexp"
 	"time"
 )
@@ -24,7 +24,7 @@ func InitValidator() {
 		return linkPattern.MatchString(subject)
 	})
 	valid.CustomTypeTagMap.Set("ids", func(i interface{}, o interface{}) bool {
-		subject, ok := i.([]models.ID)
+		subject, ok := i.([]domains.ID)
 		if !ok {
 			return false
 		}
@@ -60,7 +60,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("mark", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(models.Mark)
+		subject, ok := i.(domains.Mark)
 		if !ok {
 			return false
 		}
@@ -81,7 +81,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("genres", func(i interface{}, o interface{}) bool {
-		subject, ok := i.([]models.Genre)
+		subject, ok := i.([]domains.Genre)
 		if !ok {
 			return false
 		}
@@ -102,7 +102,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("target", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(models.Target)
+		subject, ok := i.(domains.Target)
 		if !ok {
 			return false
 		}
@@ -126,7 +126,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("role", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(models.Target)
+		subject, ok := i.(domains.Target)
 		if !ok {
 			return false
 		}
@@ -134,7 +134,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("roles", func(i interface{}, o interface{}) bool {
-		subject, ok := i.([]models.Role)
+		subject, ok := i.([]domains.Role)
 		if !ok {
 			return false
 		}
@@ -156,7 +156,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("image", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(models.Image)
+		subject, ok := i.(domains.Image)
 		if !ok {
 			return false
 		}
@@ -164,7 +164,7 @@ func InitValidator() {
 	})
 
 	valid.CustomTypeTagMap.Set("images", func(i interface{}, o interface{}) bool {
-		subject, ok := i.([]models.Image)
+		subject, ok := i.([]domains.Image)
 		if !ok {
 			return false
 		}

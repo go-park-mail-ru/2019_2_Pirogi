@@ -1,6 +1,15 @@
-package models
+package domains
 
-// idk how to remove data duplication in case of new object
+type FilmRepository interface {
+	Insert(newFilm NewFilm) (ID, error)
+	Update(id ID, film Film) error
+	Delete(id ID) bool
+	Get(id ID) Film
+	GetMany(target Target, id ID) []Film
+	MakeTrunc(film Film) FilmTrunc
+	MakeFull(film Film) FilmFull
+}
+
 type NewFilm struct {
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
 	Description string   `json:"description" valid:"text, stringlength(8|50)"`
@@ -46,4 +55,8 @@ type FilmFull struct {
 	Images      []Image       `json:"images" valid:"images, optional"`
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string        `json:"trailer" valid:"link, optional"`
+}
+
+func (f *Film) SetMark(mark Mark) {
+	f.Mark = mark
 }

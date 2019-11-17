@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -12,7 +12,7 @@ import (
 
 func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 	return func(err error, ctx echo.Context) {
-		e := models.Error{
+		e := domains.Error{
 			Status: http.StatusInternalServerError,
 			Error:  "internal server error",
 		}
@@ -23,8 +23,8 @@ func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 				e.Error = err.Error()
 			case int:
 				e.Error = strconv.Itoa(he.Message.(int))
-			case *models.Error:
-				e.Error = he.Message.(*models.Error).Error
+			case *domains.Error:
+				e.Error = he.Message.(*domains.Error).Error
 			}
 		}
 		fields := []zapcore.Field{

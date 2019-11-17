@@ -4,7 +4,8 @@ import (
 	"bufio"
 	"bytes"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
@@ -77,9 +78,9 @@ func TestReadBody(t *testing.T) {
 
 func TestPrepareModelNewPerson(t *testing.T) {
 	validators.InitValidator()
-	userNew := models.NewPerson{
+	userNew := domains.NewPerson{
 		Name:       "Artyom",
-		Roles:      []models.Role{"actor", "director"},
+		Roles:      []domains.Role{"actor", "director"},
 		Birthday:   "09.12.1998",
 		Birthplace: "USA",
 	}
@@ -92,13 +93,13 @@ func TestPrepareModelNewPerson(t *testing.T) {
 
 func TestPrepareModelNewFilm(t *testing.T) {
 	validators.InitValidator()
-	filmNew := models.NewFilm{
+	filmNew := domains.NewFilm{
 		Title:       "Matrix",
 		Description: "Lalasdadasdasdl",
 		Year:        1998,
 		Countries:   []string{"USA"},
-		Genres:      []models.Genre{"драма"},
-		PersonsID:   []models.ID{},
+		Genres:      []domains.Genre{"драма"},
+		PersonsID:   []domains.ID{},
 	}
 	body, err := filmNew.MarshalJSON()
 	require.NoError(t, err)
@@ -109,7 +110,7 @@ func TestPrepareModelNewFilm(t *testing.T) {
 
 func TestPrepareModelNewReview(t *testing.T) {
 	validators.InitValidator()
-	reviewNew := models.NewReview{
+	reviewNew := domains.NewReview{
 		Title:    "Matrix",
 		Body:     "asdasdasdasd",
 		FilmID:   2,
@@ -124,7 +125,7 @@ func TestPrepareModelNewReview(t *testing.T) {
 
 func TestPrepareModelNewUser(t *testing.T) {
 	validators.InitValidator()
-	userNew := models.NewUser{
+	userNew := domains.NewUser{
 		Credentials: models.Credentials{
 			Email:    "i@artbakulev.com",
 			Password: "1234567890",

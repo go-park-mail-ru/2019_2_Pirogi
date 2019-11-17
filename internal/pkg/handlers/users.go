@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"io/ioutil"
 	"net/http"
@@ -9,9 +10,9 @@ import (
 	"github.com/asaskevich/govalidator"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
 
@@ -39,11 +40,11 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
 		}
-		obj, e := conn.Get(models.ID(id), configs.Default.UserTargetName)
+		obj, e := conn.Get(domains.ID(id), configs.Default.UserTargetName)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
-		user := obj.(models.User)
+		user := obj.(domains.User)
 		userInfo := user.UserTrunc
 		jsonBody, err := userInfo.MarshalJSON()
 		if err != nil {
@@ -71,7 +72,7 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		newUser := models.NewUser{}
+		newUser := domains.NewUser{}
 		err = newUser.UnmarshalJSON(rawBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())

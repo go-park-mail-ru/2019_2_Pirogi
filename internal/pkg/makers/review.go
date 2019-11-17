@@ -1,13 +1,13 @@
 package makers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"html"
 	"time"
 )
 
-func MakeReview(id models.ID, in models.NewReview) models.Review {
-	return models.Review{
+func MakeReview(id domains.ID, in domains.NewReview) domains.Review {
+	return domains.Review{
 		ID:       id,
 		Date:     time.Now(),
 		Likes:    0,
@@ -18,8 +18,8 @@ func MakeReview(id models.ID, in models.NewReview) models.Review {
 	}
 }
 
-func MakeReviewFull(in models.Review, author models.UserTrunc, mark models.Mark) models.ReviewFull {
-	return models.ReviewFull{
+func MakeReviewFull(in domains.Review, author domains.UserTrunc, mark domains.Mark) domains.ReviewFull {
+	return domains.ReviewFull{
 		ID:     in.ID,
 		Title:  in.Title,
 		Body:   in.Body,

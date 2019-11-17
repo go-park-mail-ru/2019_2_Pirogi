@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"io/ioutil"
 	"net/http"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
 
@@ -33,7 +33,7 @@ func GetHandlerLikesCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		newLike := models.Like{}
+		newLike := domains.Like{}
 		err = newLike.UnmarshalJSON(rawBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())

@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
@@ -8,7 +9,6 @@ import (
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
 
@@ -18,11 +18,11 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusNotFound, err.Error())
 		}
-		obj, e := conn.Get(models.ID(id), configs.Default.FilmTargetName)
+		obj, e := conn.Get(domains.ID(id), configs.Default.FilmTargetName)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
-		film := obj.(models.Film)
+		film := obj.(domains.Film)
 		persons, _ := conn.FindPersonsByIDs(film.PersonsID)
 		filmFull := makers.MakeFilmFull(film, persons)
 		jsonBody, err := filmFull.MarshalJSON()
@@ -47,11 +47,11 @@ func GetHandlerFilmCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		model, err := common.PrepareModel(rawBody, models.NewFilm{})
+		model, err := common.PrepareModel(rawBody, domains.NewFilm{})
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		newFilm, _ := model.(models.NewFilm)
+		newFilm, _ := model.(domains.NewFilm)
 		//TODO: было бы классно, если он возвращал ID
 		e := conn.Upsert(newFilm)
 		if e != nil {

@@ -1,7 +1,7 @@
 package makers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/stretchr/testify/require"
 	"testing"
 	"time"
@@ -9,27 +9,27 @@ import (
 
 const imageFilename = "9d16a00dcbc3778f4e48962c3b8c8f0b4d662410.png"
 
-var personNew = models.NewPerson{
+var personNew = domains.NewPerson{
 	Name:       personFull.Name,
 	Roles:      personFull.Roles,
 	Birthday:   personFull.Birthday,
 	Birthplace: personFull.Birthplace,
 }
 
-var personFull = models.PersonFull{
+var personFull = domains.PersonFull{
 	ID:         2,
 	Name:       "Artyom",
-	Mark:       models.Mark(3.5),
-	Roles:      []models.Role{"actor", "director"},
+	Mark:       domains.Mark(3.5),
+	Roles:      []domains.Role{"actor", "director"},
 	Birthday:   "09.12.1998",
 	Birthplace: "Russia",
-	Genres:     []models.Genre{"трагикомедия"},
-	Films:      []models.FilmTrunc{filmTrunc},
+	Genres:     []domains.Genre{"трагикомедия"},
+	Films:      []domains.FilmTrunc{filmTrunc},
 	Likes:      34,
-	Images:     []models.Image{imageFilename, imageFilename},
+	Images:     []domains.Image{imageFilename, imageFilename},
 }
 
-var person = models.Person{
+var person = domains.Person{
 	ID:         personFull.ID,
 	Name:       personFull.Name,
 	Mark:       personFull.Mark,
@@ -37,17 +37,17 @@ var person = models.Person{
 	Birthday:   personFull.Birthday,
 	Birthplace: personFull.Birthplace,
 	Genres:     personFull.Genres,
-	FilmsID:    []models.ID{2},
+	FilmsID:    []domains.ID{2},
 	Likes:      personFull.Likes,
 	Images:     personFull.Images,
 }
 
-var personTrunc = models.PersonTrunc{
+var personTrunc = domains.PersonTrunc{
 	ID:   2,
 	Name: "Artyom",
 }
 
-var filmNew = models.NewFilm{
+var filmNew = domains.NewFilm{
 	Title:       filmFull.Title,
 	Description: filmFull.Title,
 	Year:        filmFull.Year,
@@ -56,20 +56,20 @@ var filmNew = models.NewFilm{
 	PersonsID:   film.PersonsID,
 }
 
-var filmFull = models.FilmFull{
+var filmFull = domains.FilmFull{
 	ID:          2,
 	Title:       "Matrix",
 	Year:        "1998",
-	Genres:      []models.Genre{"драма"},
-	Mark:        models.Mark(3.5),
+	Genres:      []domains.Genre{"драма"},
+	Mark:        domains.Mark(3.5),
 	Description: "film about matrix",
 	Countries:   []string{"USA", "Russia"},
-	Persons:     []models.PersonTrunc{personTrunc},
-	Images:      []models.Image{imageFilename, imageFilename},
+	Persons:     []domains.PersonTrunc{personTrunc},
+	Images:      []domains.Image{imageFilename, imageFilename},
 	ReviewsNum:  5,
 }
 
-var film = models.Film{
+var film = domains.Film{
 	ID:          filmFull.ID,
 	Title:       filmFull.Title,
 	Year:        filmFull.Year,
@@ -77,27 +77,27 @@ var film = models.Film{
 	Mark:        filmFull.Mark,
 	Description: filmFull.Description,
 	Countries:   filmFull.Countries,
-	PersonsID:   []models.ID{2},
+	PersonsID:   []domains.ID{2},
 	Images:      filmFull.Images,
 	ReviewsNum:  5,
 }
 
-var filmTrunc = models.FilmTrunc{
+var filmTrunc = domains.FilmTrunc{
 	ID:     2,
 	Title:  "Matrix",
 	Year:   "1998",
-	Genres: []models.Genre{"драма"},
-	Mark:   models.Mark(3.5),
+	Genres: []domains.Genre{"драма"},
+	Mark:   domains.Mark(3.5),
 }
 
-var reviewNew = models.NewReview{
+var reviewNew = domains.NewReview{
 	Title:    review.Title,
 	Body:     review.Body,
 	FilmID:   review.FilmID,
 	AuthorID: review.AuthorID,
 }
 
-var review = models.Review{
+var review = domains.Review{
 	ID:       2,
 	Title:    "title",
 	Body:     "body",
@@ -114,16 +114,16 @@ func TestMakeTruncFilm(t *testing.T) {
 }
 
 func TestMakeFilm(t *testing.T) {
-	expected := models.Film{
+	expected := domains.Film{
 		ID:          2,
 		Title:       filmNew.Title,
 		Year:        filmNew.Year,
 		Genres:      filmNew.Genres,
-		Mark:        models.Mark(0),
+		Mark:        domains.Mark(0),
 		Description: filmNew.Description,
 		Countries:   filmNew.Countries,
 		PersonsID:   filmNew.PersonsID,
-		Images:      []models.Image{"default.png"},
+		Images:      []domains.Image{"default.png"},
 		ReviewsNum:  0,
 	}
 	actual := MakeFilm(2, &filmNew)
@@ -132,7 +132,7 @@ func TestMakeFilm(t *testing.T) {
 
 func TestMakeFullFilm(t *testing.T) {
 	expected := filmFull
-	actual := MakeFilmFull(film, []models.Person{person})
+	actual := MakeFilmFull(film, []domains.Person{person})
 	require.Equal(t, expected, actual)
 }
 
@@ -143,17 +143,17 @@ func TestMakeTruncPerson(t *testing.T) {
 }
 
 func TestMakePerson(t *testing.T) {
-	expected := models.Person{
+	expected := domains.Person{
 		ID:         person.ID,
 		Name:       person.Name,
 		Mark:       0,
 		Roles:      person.Roles,
 		Birthday:   personFull.Birthday,
 		Birthplace: personFull.Birthplace,
-		Genres:     []models.Genre{},
-		FilmsID:    []models.ID{},
+		Genres:     []domains.Genre{},
+		FilmsID:    []domains.ID{},
 		Likes:      0,
-		Images:     []models.Image{"default.png"},
+		Images:     []domains.Image{"default.png"},
 	}
 	actual := MakePerson(2, personNew)
 	require.Equal(t, expected, actual)
@@ -161,7 +161,7 @@ func TestMakePerson(t *testing.T) {
 
 func TestMakeFullPerson(t *testing.T) {
 	expected := personFull
-	actual := MakeFullPerson(person, []models.Film{film})
+	actual := MakeFullPerson(person, []domains.Film{film})
 	require.Equal(t, expected, actual)
 }
 

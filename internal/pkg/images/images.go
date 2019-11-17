@@ -1,17 +1,17 @@
 package images
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"mime"
 	"net/http"
 
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
 const MaxUploadSize = 2 * 1024 * 1024
 
-func DetectContentType(data []byte) (ending string, err *models.Error) {
+func DetectContentType(data []byte) (ending string, err *domains.Error) {
 	fileType := http.DetectContentType(data)
 	switch fileType {
 	case "image/jpeg", "image/jpg":

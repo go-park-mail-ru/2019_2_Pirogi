@@ -2,8 +2,9 @@ package middleware
 
 import (
 	"bytes"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
@@ -15,15 +16,15 @@ import (
 
 type DatabaseMock struct{}
 
-func (DatabaseMock) Upsert(in interface{}) *models.Error {
+func (DatabaseMock) Upsert(in interface{}) *domains.Error {
 	return nil
 }
 
-func (DatabaseMock) Get(id models.ID, target string) (interface{}, *models.Error) {
+func (DatabaseMock) Get(id domains.ID, target string) (interface{}, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) Delete(in interface{}) *models.Error {
+func (DatabaseMock) Delete(in interface{}) *domains.Error {
 	return nil
 }
 
@@ -35,80 +36,80 @@ func (DatabaseMock) CheckCookie(cookie *http.Cookie) bool {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindUserByEmail(email string) (models.User, bool) {
-	return models.User{
+func (DatabaseMock) FindUserByEmail(email string) (domains.User, bool) {
+	return domains.User{
 		Credentials: models.Credentials{
 			Email:    "i@artbakulev.com",
 			Password: "12345678",
 		},
-		UserTrunc: models.UserTrunc{},
+		UserTrunc: domains.UserTrunc{},
 	}, true
 }
 
-func (DatabaseMock) FindUserByID(id models.ID) (models.User, bool) {
+func (DatabaseMock) FindUserByID(id domains.ID) (domains.User, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
+func (DatabaseMock) FindUserByCookie(cookie *http.Cookie) (domains.User, bool) {
 	if cookie.Value == "ok" {
-		return models.User{}, true
+		return domains.User{}, true
 	}
-	return models.User{}, false
+	return domains.User{}, false
 }
 
-func (DatabaseMock) FindUsersByIDs(ids []models.ID) ([]models.User, bool) {
+func (DatabaseMock) FindUsersByIDs(ids []domains.ID) ([]domains.User, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindFilmByTitle(title string) (models.Film, bool) {
+func (DatabaseMock) FindFilmByTitle(title string) (domains.Film, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindFilmByID(id models.ID) (models.Film, bool) {
+func (DatabaseMock) FindFilmByID(id domains.ID) (domains.Film, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindFilmsByIDs(ids []models.ID) ([]models.Film, bool) {
+func (DatabaseMock) FindFilmsByIDs(ids []domains.ID) ([]domains.Film, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool) {
+func (DatabaseMock) FindPersonByNameAndBirthday(name string, birthday string) (domains.Person, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindPersonByID(id models.ID) (models.Person, bool) {
+func (DatabaseMock) FindPersonByID(id domains.ID) (domains.Person, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindPersonsByIDs(ids []models.ID) ([]models.Person, bool) {
+func (DatabaseMock) FindPersonsByIDs(ids []domains.ID) ([]domains.Person, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindReviewByID(id models.ID) (models.Review, bool) {
+func (DatabaseMock) FindReviewByID(id domains.ID) (domains.Review, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error) {
+func (DatabaseMock) GetFilmsSortedByMark(limit int, offset int) ([]domains.Film, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {
+func (DatabaseMock) GetFilmsOfGenreSortedByMark(genre domains.Genre, limit int, offset int) ([]domains.Film, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error) {
+func (DatabaseMock) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]domains.Film, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {
+func (DatabaseMock) GetReviewsSortedByDate(limit int, offset int) ([]domains.Review, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
+func (DatabaseMock) GetReviewsOfFilmSortedByDate(filmID domains.ID, limit int, offset int) ([]domains.Review, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetReviewsOfAuthorSortedByDate(authorID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
+func (DatabaseMock) GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit int, offset int) ([]domains.Review, *domains.Error) {
 	panic("implement me")
 }
 

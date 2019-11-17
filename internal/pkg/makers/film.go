@@ -1,29 +1,29 @@
 package makers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"html"
 )
 
-func MakeFilm(id models.ID, in *models.NewFilm) models.Film {
-	return models.Film{
+func MakeFilm(id domains.ID, in *domains.NewFilm) domains.Film {
+	return domains.Film{
 		ID:          id,
 		Title:       html.EscapeString(in.Title),
 		Year:        in.Year,
 		Genres:      security.XSSFilterGenres(in.Genres),
-		Mark:        models.Mark(0),
+		Mark:        domains.Mark(0),
 		Description: html.EscapeString(in.Description),
 		Countries:   security.XSSFilterStrings(in.Countries),
 		PersonsID:   in.PersonsID,
-		Images:      []models.Image{"default.png"},
+		Images:      []domains.Image{"default.png"},
 		ReviewsNum:  0,
 		Trailer:     in.Trailer,
 	}
 }
 
-func MakeFilmTrunc(in models.Film) models.FilmTrunc {
-	return models.FilmTrunc{
+func MakeFilmTrunc(in domains.Film) domains.FilmTrunc {
+	return domains.FilmTrunc{
 		ID:     in.ID,
 		Title:  in.Title,
 		Year:   in.Year,
@@ -33,12 +33,12 @@ func MakeFilmTrunc(in models.Film) models.FilmTrunc {
 	}
 }
 
-func MakeFilmFull(in models.Film, persons []models.Person) models.FilmFull {
-	var personsTrunc []models.PersonTrunc
+func MakeFilmFull(in domains.Film, persons []domains.Person) domains.FilmFull {
+	var personsTrunc []domains.PersonTrunc
 	for _, person := range persons {
 		personsTrunc = append(personsTrunc, MakeTruncPerson(person))
 	}
-	return models.FilmFull{
+	return domains.FilmFull{
 		ID:          in.ID,
 		Title:       in.Title,
 		Year:        in.Year,
@@ -53,7 +53,7 @@ func MakeFilmFull(in models.Film, persons []models.Person) models.FilmFull {
 	}
 }
 
-func MakeFilmsTrunc(in []models.Film) (out []models.FilmTrunc) {
+func MakeFilmsTrunc(in []domains.Film) (out []domains.FilmTrunc) {
 	for _, film := range in {
 		out = append(out, MakeFilmTrunc(film))
 	}

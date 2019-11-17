@@ -2,9 +2,9 @@ package handlers
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	mockdatabase "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database/mock"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo"
@@ -18,12 +18,12 @@ import (
 
 type TestCaseGetHandlerFilm struct {
 	ParseErrorExpected bool
-	FilmID             models.ID
-	ExpectedFilm       models.Film
-	ExpectedGetError   *models.Error
-	ExpectedPersons    []models.Person
+	FilmID             domains.ID
+	ExpectedFilm       domains.Film
+	ExpectedGetError   *domains.Error
+	ExpectedPersons    []domains.Person
 	ExpectedFindRV     bool
-	ExpectedFullFilm   models.FilmFull
+	ExpectedFullFilm   domains.FilmFull
 	ExpectedEchoError  *echo.HTTPError
 }
 
@@ -34,21 +34,21 @@ func TestGetHandlerFilm(t *testing.T) {
 	testCases := []TestCaseGetHandlerFilm{
 		{
 			FilmID: 0,
-			ExpectedFilm: models.Film{
+			ExpectedFilm: domains.Film{
 				ID:        0,
-				PersonsID: []models.ID{1},
+				PersonsID: []domains.ID{1},
 			},
-			ExpectedPersons: []models.Person{{ID: 1, Name: "actor"}},
+			ExpectedPersons: []domains.Person{{ID: 1, Name: "actor"}},
 			ExpectedFindRV:  true,
-			ExpectedFullFilm: models.FilmFull{
+			ExpectedFullFilm: domains.FilmFull{
 				ID:      0,
-				Persons: []models.PersonTrunc{{ID: 1, Name: "actor"}},
+				Persons: []domains.PersonTrunc{{ID: 1, Name: "actor"}},
 			},
 		},
 		{
 			FilmID:            -1,
-			ExpectedFilm:      models.Film{},
-			ExpectedGetError:  &models.Error{Status: http.StatusNotFound, Error: "no film with the id: -1"},
+			ExpectedFilm:      domains.Film{},
+			ExpectedGetError:  &domains.Error{Status: http.StatusNotFound, Error: "no film with the id: -1"},
 			ExpectedEchoError: &echo.HTTPError{Code: http.StatusNotFound, Message: "no film with the id: -1"},
 		},
 		{
@@ -94,11 +94,11 @@ func TestGetHandlerFilm(t *testing.T) {
 type TestCaseGetHandlerFilmCreate struct {
 	JsonRequestBody       string
 	ParseErrorExpected    bool
-	NewFilm               models.NewFilm
-	ExpectedUpsertError   *models.Error
-	ExpectedFilm          models.Film
+	NewFilm               domains.NewFilm
+	ExpectedUpsertError   *domains.Error
+	ExpectedFilm          domains.Film
 	ExpectedFindFilmRV    bool
-	ExpectedPersons       []models.Person
+	ExpectedPersons       []domains.Person
 	ExpectedFindPersonsRV bool
 	ExpectedEchoError     *echo.HTTPError
 }
@@ -113,25 +113,25 @@ func TestGetHandlerFilmCreate(t *testing.T) {
 	mockDb := mockdatabase.NewMockDatabase(ctrl)
 	testCases := []TestCaseGetHandlerFilmCreate{
 		{
-			NewFilm: models.NewFilm{
+			NewFilm: domains.NewFilm{
 				Title:       "Best",
 				Description: "Best description",
 				Year:        "2008",
 				Countries:   []string{"Germany"},
-				Genres:      []models.Genre{"боевик"},
+				Genres:      []domains.Genre{"боевик"},
 			},
-			ExpectedFilm: models.Film{
+			ExpectedFilm: domains.Film{
 				ID:          0,
 				Title:       "Best",
 				Description: "Best description",
 				Year:        "2008",
 				Countries:   []string{"Germany"},
-				Genres:      []models.Genre{"боевик"},
+				Genres:      []domains.Genre{"боевик"},
 			},
 			ExpectedFindFilmRV: true,
 		},
 		{
-			NewFilm: models.NewFilm{
+			NewFilm: domains.NewFilm{
 				Title:       "Best",
 				Description: "Best description",
 				Year:        "2008",

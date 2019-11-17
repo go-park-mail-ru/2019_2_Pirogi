@@ -3,9 +3,10 @@ package user
 import (
 	"crypto/md5"
 	"encoding/hex"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"testing"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/stretchr/testify/require"
 )
 
@@ -15,7 +16,7 @@ func TestCreateNewUser(t *testing.T) {
 		Email:    "123",
 		Password: "qwerty123",
 	}
-	newUser := models.NewUser{
+	newUser := domains.NewUser{
 		Credentials: newCredentials,
 		Username:    "qwerty",
 	}

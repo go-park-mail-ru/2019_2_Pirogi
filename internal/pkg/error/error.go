@@ -1,13 +1,12 @@
 package error
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"strings"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 )
 
-func New(status int, details ...string) *models.Error {
-	return &models.Error{
+func New(status int, details ...string) *domains.Error {
+	return &domains.Error{
 		Status: status,
 		Error:  strings.Join(details, "; "),
 	}

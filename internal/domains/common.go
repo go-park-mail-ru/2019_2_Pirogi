@@ -1,4 +1,4 @@
-package models
+package domains
 
 import (
 	"fmt"
@@ -7,11 +7,10 @@ import (
 
 type ID int
 
-func (id ID) String() string {
-	return strconv.Itoa(int(id))
+func (id *ID) String() string {
+	return strconv.Itoa(int(*id))
 }
 
-// number of stars
 type Mark float32
 
 func (fm Mark) String() string {
@@ -30,8 +29,6 @@ type Target string
 type Genre string
 
 type Image string
-
-type ReviewsNum int
 
 type TrailerWithTitle struct {
 	Title   string `json:"title" valid:"text"`

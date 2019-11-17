@@ -1,15 +1,16 @@
 package auth
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"net/http"
 	"time"
 
 	"github.com/labstack/echo"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 )
 
@@ -27,14 +28,14 @@ func GenerateCookie(cookieName, value string) http.Cookie {
 	return cookie
 }
 
-func GetUserByRequest(r *http.Request, conn database.Database) (models.User, bool) {
+func GetUserByRequest(r *http.Request, conn database.Database) (domains.User, bool) {
 	session, err := r.Cookie(configs.Default.CookieAuthName)
 	if err != nil {
-		return models.User{}, false
+		return domains.User{}, false
 	}
 	foundUser, ok := conn.FindUserByCookie(session)
 	if !ok {
-		return models.User{}, false
+		return domains.User{}, false
 	}
 	return foundUser, true
 }
@@ -45,7 +46,7 @@ func ExpireCookie(cookie *http.Cookie) {
 	cookie.HttpOnly = true
 }
 
-func Login(ctx echo.Context, db database.Database, email, password string) *models.Error {
+func Login(ctx echo.Context, db database.Database, email, password string) *domains.Error {
 	_, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		u, ok := db.FindUserByEmail(email)
@@ -72,7 +73,7 @@ func LoginCheck(ctx echo.Context, db database.Database) bool {
 	return ok
 }
 
-func Logout(ctx echo.Context, db database.Database) *models.Error {
+func Logout(ctx echo.Context, db database.Database) *domains.Error {
 	session, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 	if err != nil {
 		return error.New(http.StatusUnauthorized, "user is not authorized")

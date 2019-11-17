@@ -4,8 +4,8 @@ import (
 	"errors"
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"github.com/labstack/echo"
@@ -30,32 +30,32 @@ func ReadBody(ctx echo.Context) ([]byte, error) {
 
 func PrepareModel(body []byte, in interface{}) (out interface{}, err error) {
 	switch in.(type) {
-	case models.NewFilm:
-		newModel := in.(models.NewFilm)
+	case domains.NewFilm:
+		newModel := in.(domains.NewFilm)
 		err = newModel.UnmarshalJSON(body)
 		if err != nil {
 			return nil, err
 		}
 		_, err = govalidator.ValidateStruct(newModel)
 		return newModel, err
-	case models.NewReview:
-		newModel := in.(models.NewReview)
+	case domains.NewReview:
+		newModel := in.(domains.NewReview)
 		err = newModel.UnmarshalJSON(body)
 		if err != nil {
 			return nil, err
 		}
 		_, err = govalidator.ValidateStruct(newModel)
 		return newModel, err
-	case models.NewUser:
-		newModel := in.(models.NewUser)
+	case domains.NewUser:
+		newModel := in.(domains.NewUser)
 		err = newModel.UnmarshalJSON(body)
 		if err != nil {
 			return nil, err
 		}
 		_, err = govalidator.ValidateStruct(newModel)
 		return newModel, err
-	case models.NewPerson:
-		newModel := in.(models.NewPerson)
+	case domains.NewPerson:
+		newModel := in.(domains.NewPerson)
 		err = newModel.UnmarshalJSON(body)
 		if err != nil {
 			return nil, err
@@ -125,14 +125,14 @@ func MapQueryParams(ctx echo.Context) (queryParams search.QuerySearchParams) {
 	return queryParams
 }
 
-func GetByQueryListParams(conn database.Database, qp search.QuerySearchParams) ([]models.Film, *models.Error) {
+func GetByQueryListParams(conn database.Database, qp search.QuerySearchParams) ([]domains.Film, *domains.Error) {
 	// TODO: remove this
 	var (
-		items []models.Film
-		err   *models.Error
+		items []domains.Film
+		err   *domains.Error
 	)
 	if len(qp.Genres) > 0 {
-		items, err = conn.GetFilmsOfGenreSortedByMark(models.Genre(qp.Genres[0]), qp.Limit, qp.Offset)
+		items, err = conn.GetFilmsOfGenreSortedByMark(domains.Genre(qp.Genres[0]), qp.Limit, qp.Offset)
 	} else {
 		items, err = conn.GetFilmsSortedByMark(qp.Limit, qp.Offset)
 	}

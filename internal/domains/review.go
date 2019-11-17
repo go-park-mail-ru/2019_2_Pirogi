@@ -1,6 +1,14 @@
-package models
+package domains
 
 import "time"
+
+type ReviewRepository interface {
+	Insert(newReview NewReview) (ID, error)
+	Update(id ID, review Review) error
+	Delete(id ID) bool
+	Get(id ID) Review
+	GetMany(id []ID) []Review
+}
 
 type NewReview struct {
 	Title  string `json:"title" valid:"title, stringlength(2|50)"`
@@ -18,6 +26,7 @@ type Review struct {
 	AuthorID ID        `json:"author_id, omitempty" valid:"numeric"`
 	Date     time.Time `json:"date" valid:"time"`
 	Likes    int       `json:"likes" valid:"numeric, optional"`
+	Mark     Mark      `json:"mark" valid:"numeric, optional"`
 }
 
 type ReviewFull struct {
@@ -29,4 +38,16 @@ type ReviewFull struct {
 	Date   time.Time `json:"date" valid:"time"`
 	Likes  int       `json:"likes" valid:"numeric, optional"`
 	Mark   Mark      `json:"mark" valid:"numeric, optional"`
+}
+
+func (rev *Review) AddLike() {
+	rev.Likes += 1
+}
+
+func (rev *Review) RemoveLike() {
+	rev.Likes -= 1
+}
+
+func (rev *Review) SetMark(mark Mark) {
+	rev.Mark = mark
 }

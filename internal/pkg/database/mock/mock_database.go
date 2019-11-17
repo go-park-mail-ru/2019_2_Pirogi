@@ -5,7 +5,7 @@
 package mock_database
 
 import (
-	models "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	gomock "github.com/golang/mock/gomock"
 	http "net/http"
 	reflect "reflect"
@@ -35,10 +35,10 @@ func (m *MockDatabase) EXPECT() *MockDatabaseMockRecorder {
 }
 
 // Upsert mocks base method
-func (m *MockDatabase) Upsert(in interface{}) *models.Error {
+func (m *MockDatabase) Upsert(in interface{}) *domains.Error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Upsert", in)
-	ret0, _ := ret[0].(*models.Error)
+	ret0, _ := ret[0].(*domains.Error)
 	return ret0
 }
 
@@ -49,11 +49,11 @@ func (mr *MockDatabaseMockRecorder) Upsert(in interface{}) *gomock.Call {
 }
 
 // Get mocks base method
-func (m *MockDatabase) Get(id models.ID, target string) (interface{}, *models.Error) {
+func (m *MockDatabase) Get(id domains.ID, target string) (interface{}, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Get", id, target)
 	ret0, _ := ret[0].(interface{})
-	ret1, _ := ret[1].(*models.Error)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 
@@ -64,10 +64,10 @@ func (mr *MockDatabaseMockRecorder) Get(id, target interface{}) *gomock.Call {
 }
 
 // Delete mocks base method
-func (m *MockDatabase) Delete(in interface{}) *models.Error {
+func (m *MockDatabase) Delete(in interface{}) *domains.Error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "Delete", in)
-	ret0, _ := ret[0].(*models.Error)
+	ret0, _ := ret[0].(*domains.Error)
 	return ret0
 }
 
@@ -104,10 +104,10 @@ func (mr *MockDatabaseMockRecorder) CheckCookie(cookie interface{}) *gomock.Call
 }
 
 // FindUserByEmail mocks base method
-func (m *MockDatabase) FindUserByEmail(email string) (models.User, bool) {
+func (m *MockDatabase) FindUserByEmail(email string) (domains.User, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByEmail", email)
-	ret0, _ := ret[0].(models.User)
+	ret0, _ := ret[0].(domains.User)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -119,10 +119,10 @@ func (mr *MockDatabaseMockRecorder) FindUserByEmail(email interface{}) *gomock.C
 }
 
 // FindUserByID mocks base method
-func (m *MockDatabase) FindUserByID(id models.ID) (models.User, bool) {
+func (m *MockDatabase) FindUserByID(id domains.ID) (domains.User, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByID", id)
-	ret0, _ := ret[0].(models.User)
+	ret0, _ := ret[0].(domains.User)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -134,10 +134,10 @@ func (mr *MockDatabaseMockRecorder) FindUserByID(id interface{}) *gomock.Call {
 }
 
 // FindUserByCookie mocks base method
-func (m *MockDatabase) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
+func (m *MockDatabase) FindUserByCookie(cookie *http.Cookie) (domains.User, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUserByCookie", cookie)
-	ret0, _ := ret[0].(models.User)
+	ret0, _ := ret[0].(domains.User)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -149,10 +149,10 @@ func (mr *MockDatabaseMockRecorder) FindUserByCookie(cookie interface{}) *gomock
 }
 
 // FindUsersByIDs mocks base method
-func (m *MockDatabase) FindUsersByIDs(ids []models.ID) ([]models.User, bool) {
+func (m *MockDatabase) FindUsersByIDs(ids []domains.ID) ([]domains.User, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindUsersByIDs", ids)
-	ret0, _ := ret[0].([]models.User)
+	ret0, _ := ret[0].([]domains.User)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -164,10 +164,10 @@ func (mr *MockDatabaseMockRecorder) FindUsersByIDs(ids interface{}) *gomock.Call
 }
 
 // FindFilmByTitle mocks base method
-func (m *MockDatabase) FindFilmByTitle(title string) (models.Film, bool) {
+func (m *MockDatabase) FindFilmByTitle(title string) (domains.Film, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindFilmByTitle", title)
-	ret0, _ := ret[0].(models.Film)
+	ret0, _ := ret[0].(domains.Film)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -179,10 +179,10 @@ func (mr *MockDatabaseMockRecorder) FindFilmByTitle(title interface{}) *gomock.C
 }
 
 // FindFilmByID mocks base method
-func (m *MockDatabase) FindFilmByID(id models.ID) (models.Film, bool) {
+func (m *MockDatabase) FindFilmByID(id domains.ID) (domains.Film, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindFilmByID", id)
-	ret0, _ := ret[0].(models.Film)
+	ret0, _ := ret[0].(domains.Film)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -194,10 +194,10 @@ func (mr *MockDatabaseMockRecorder) FindFilmByID(id interface{}) *gomock.Call {
 }
 
 // FindFilmsByIDs mocks base method
-func (m *MockDatabase) FindFilmsByIDs(ids []models.ID) ([]models.Film, bool) {
+func (m *MockDatabase) FindFilmsByIDs(ids []domains.ID) ([]domains.Film, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindFilmsByIDs", ids)
-	ret0, _ := ret[0].([]models.Film)
+	ret0, _ := ret[0].([]domains.Film)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -209,10 +209,10 @@ func (mr *MockDatabaseMockRecorder) FindFilmsByIDs(ids interface{}) *gomock.Call
 }
 
 // FindPersonByNameAndBirthday mocks base method
-func (m *MockDatabase) FindPersonByNameAndBirthday(name, birthday string) (models.Person, bool) {
+func (m *MockDatabase) FindPersonByNameAndBirthday(name, birthday string) (domains.Person, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindPersonByNameAndBirthday", name, birthday)
-	ret0, _ := ret[0].(models.Person)
+	ret0, _ := ret[0].(domains.Person)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -224,10 +224,10 @@ func (mr *MockDatabaseMockRecorder) FindPersonByNameAndBirthday(name, birthday i
 }
 
 // FindPersonByID mocks base method
-func (m *MockDatabase) FindPersonByID(id models.ID) (models.Person, bool) {
+func (m *MockDatabase) FindPersonByID(id domains.ID) (domains.Person, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindPersonByID", id)
-	ret0, _ := ret[0].(models.Person)
+	ret0, _ := ret[0].(domains.Person)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -239,10 +239,10 @@ func (mr *MockDatabaseMockRecorder) FindPersonByID(id interface{}) *gomock.Call 
 }
 
 // FindPersonsByIDs mocks base method
-func (m *MockDatabase) FindPersonsByIDs(ids []models.ID) ([]models.Person, bool) {
+func (m *MockDatabase) FindPersonsByIDs(ids []domains.ID) ([]domains.Person, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindPersonsByIDs", ids)
-	ret0, _ := ret[0].([]models.Person)
+	ret0, _ := ret[0].([]domains.Person)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -254,10 +254,10 @@ func (mr *MockDatabaseMockRecorder) FindPersonsByIDs(ids interface{}) *gomock.Ca
 }
 
 // FindReviewByID mocks base method
-func (m *MockDatabase) FindReviewByID(id models.ID) (models.Review, bool) {
+func (m *MockDatabase) FindReviewByID(id domains.ID) (domains.Review, bool) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "FindReviewByID", id)
-	ret0, _ := ret[0].(models.Review)
+	ret0, _ := ret[0].(domains.Review)
 	ret1, _ := ret[1].(bool)
 	return ret0, ret1
 }
@@ -269,11 +269,11 @@ func (mr *MockDatabaseMockRecorder) FindReviewByID(id interface{}) *gomock.Call 
 }
 
 // GetFilmsSortedByMark mocks base method
-func (m *MockDatabase) GetFilmsSortedByMark(limit, offset int) ([]models.Film, *models.Error) {
+func (m *MockDatabase) GetFilmsSortedByMark(limit, offset int) ([]domains.Film, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetFilmsSortedByMark", limit, offset)
-	ret0, _ := ret[0].([]models.Film)
-	ret1, _ := ret[1].(*models.Error)
+	ret0, _ := ret[0].([]domains.Film)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 
@@ -284,11 +284,11 @@ func (mr *MockDatabaseMockRecorder) GetFilmsSortedByMark(limit, offset interface
 }
 
 // GetFilmsOfGenreSortedByMark mocks base method
-func (m *MockDatabase) GetFilmsOfGenreSortedByMark(genre models.Genre, limit, offset int) ([]models.Film, *models.Error) {
+func (m *MockDatabase) GetFilmsOfGenreSortedByMark(genre domains.Genre, limit, offset int) ([]domains.Film, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetFilmsOfGenreSortedByMark", genre, limit, offset)
-	ret0, _ := ret[0].([]models.Film)
-	ret1, _ := ret[1].(*models.Error)
+	ret0, _ := ret[0].([]domains.Film)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 
@@ -299,11 +299,11 @@ func (mr *MockDatabaseMockRecorder) GetFilmsOfGenreSortedByMark(genre, limit, of
 }
 
 // GetFilmsOfYearSortedByMark mocks base method
-func (m *MockDatabase) GetFilmsOfYearSortedByMark(year string, limit, offset int) ([]models.Film, *models.Error) {
+func (m *MockDatabase) GetFilmsOfYearSortedByMark(year string, limit, offset int) ([]domains.Film, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetFilmsOfYearSortedByMark", year, limit, offset)
-	ret0, _ := ret[0].([]models.Film)
-	ret1, _ := ret[1].(*models.Error)
+	ret0, _ := ret[0].([]domains.Film)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 
@@ -314,11 +314,11 @@ func (mr *MockDatabaseMockRecorder) GetFilmsOfYearSortedByMark(year, limit, offs
 }
 
 // GetReviewsSortedByDate mocks base method
-func (m *MockDatabase) GetReviewsSortedByDate(limit, offset int) ([]models.Review, *models.Error) {
+func (m *MockDatabase) GetReviewsSortedByDate(limit, offset int) ([]domains.Review, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReviewsSortedByDate", limit, offset)
-	ret0, _ := ret[0].([]models.Review)
-	ret1, _ := ret[1].(*models.Error)
+	ret0, _ := ret[0].([]domains.Review)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 
@@ -329,11 +329,11 @@ func (mr *MockDatabaseMockRecorder) GetReviewsSortedByDate(limit, offset interfa
 }
 
 // GetReviewsOfFilmSortedByDate mocks base method
-func (m *MockDatabase) GetReviewsOfFilmSortedByDate(filmID models.ID, limit, offset int) ([]models.Review, *models.Error) {
+func (m *MockDatabase) GetReviewsOfFilmSortedByDate(filmID domains.ID, limit, offset int) ([]domains.Review, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReviewsOfFilmSortedByDate", filmID, limit, offset)
-	ret0, _ := ret[0].([]models.Review)
-	ret1, _ := ret[1].(*models.Error)
+	ret0, _ := ret[0].([]domains.Review)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 
@@ -344,11 +344,11 @@ func (mr *MockDatabaseMockRecorder) GetReviewsOfFilmSortedByDate(filmID, limit, 
 }
 
 // GetReviewsOfAuthorSortedByDate mocks base method
-func (m *MockDatabase) GetReviewsOfAuthorSortedByDate(authorID models.ID, limit, offset int) ([]models.Review, *models.Error) {
+func (m *MockDatabase) GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit, offset int) ([]domains.Review, *domains.Error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetReviewsOfAuthorSortedByDate", authorID, limit, offset)
-	ret0, _ := ret[0].([]models.Review)
-	ret1, _ := ret[1].(*models.Error)
+	ret0, _ := ret[0].([]domains.Review)
+	ret1, _ := ret[1].(*domains.Error)
 	return ret0, ret1
 }
 

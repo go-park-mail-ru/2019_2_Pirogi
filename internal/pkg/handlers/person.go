@@ -1,13 +1,13 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
 	"strconv"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
 
@@ -17,11 +17,11 @@ func GetHandlerPerson(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
 		}
-		obj, e := conn.Get(models.ID(id), "person")
+		obj, e := conn.Get(domains.ID(id), "person")
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
-		person := obj.(models.Person)
+		person := obj.(domains.Person)
 		films, _ := conn.FindFilmsByIDs(person.FilmsID)
 		personFull := makers.MakeFullPerson(person, films)
 		jsonBody, err := personFull.MarshalJSON()
@@ -46,8 +46,8 @@ func GetHandlerPersonsCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		model, err := common.PrepareModel(rawBody, models.NewPerson{})
-		newPerson := model.(models.NewPerson)
+		model, err := common.PrepareModel(rawBody, domains.NewPerson{})
+		newPerson := model.(domains.NewPerson)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}

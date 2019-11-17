@@ -1,41 +1,40 @@
 package database
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"net/http"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 )
 
 type Database interface {
-	Upsert(in interface{}) *models.Error
-	Get(id models.ID, target string) (interface{}, *models.Error)
-	Delete(in interface{}) *models.Error
+	Upsert(in interface{}) *domains.Error
+	Get(id domains.ID, target string) (interface{}, *domains.Error)
+	Delete(in interface{}) *domains.Error
 	ClearDB()
 
 	CheckCookie(cookie *http.Cookie) bool
 
-	FindUserByEmail(email string) (models.User, bool)
-	FindUserByID(id models.ID) (models.User, bool)
-	FindUserByCookie(cookie *http.Cookie) (models.User, bool)
-	FindUsersByIDs(ids []models.ID) ([]models.User, bool)
+	FindUserByEmail(email string) (domains.User, bool)
+	FindUserByID(id domains.ID) (domains.User, bool)
+	FindUserByCookie(cookie *http.Cookie) (domains.User, bool)
+	FindUsersByIDs(ids []domains.ID) ([]domains.User, bool)
 
-	FindFilmByTitle(title string) (models.Film, bool)
-	FindFilmByID(id models.ID) (models.Film, bool)
-	FindFilmsByIDs(ids []models.ID) ([]models.Film, bool)
+	FindFilmByTitle(title string) (domains.Film, bool)
+	FindFilmByID(id domains.ID) (domains.Film, bool)
+	FindFilmsByIDs(ids []domains.ID) ([]domains.Film, bool)
 
-	FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool)
-	FindPersonByID(id models.ID) (models.Person, bool)
-	FindPersonsByIDs(ids []models.ID) ([]models.Person, bool)
+	FindPersonByNameAndBirthday(name string, birthday string) (domains.Person, bool)
+	FindPersonByID(id domains.ID) (domains.Person, bool)
+	FindPersonsByIDs(ids []domains.ID) ([]domains.Person, bool)
 
-	FindReviewByID(id models.ID) (models.Review, bool)
+	FindReviewByID(id domains.ID) (domains.Review, bool)
 
-	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *models.Error)
+	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *domains.Error)
 
-	GetFilmsSortedByMark(limit, offset int) ([]models.Film, *models.Error)
-	GetFilmsOfGenreSortedByMark(genre models.Genre, limit, offset int) ([]models.Film, *models.Error)
-	GetFilmsOfYearSortedByMark(year, limit, offset int) ([]models.Film, *models.Error)
+	GetFilmsSortedByMark(limit, offset int) ([]domains.Film, *domains.Error)
+	GetFilmsOfGenreSortedByMark(genre domains.Genre, limit, offset int) ([]domains.Film, *domains.Error)
+	GetFilmsOfYearSortedByMark(year, limit, offset int) ([]domains.Film, *domains.Error)
 
-	GetReviewsSortedByDate(limit, offset int) ([]models.Review, *models.Error)
-	GetReviewsOfFilmSortedByDate(filmID models.ID, limit, offset int) ([]models.Review, *models.Error)
-	GetReviewsOfAuthorSortedByDate(authorID models.ID, limit, offset int) ([]models.Review, *models.Error)
+	GetReviewsSortedByDate(limit, offset int) ([]domains.Review, *domains.Error)
+	GetReviewsOfFilmSortedByDate(filmID domains.ID, limit, offset int) ([]domains.Review, *domains.Error)
+	GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit, offset int) ([]domains.Review, *domains.Error)
 }

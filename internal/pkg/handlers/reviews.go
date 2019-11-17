@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"io/ioutil"
@@ -12,7 +13,6 @@ import (
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 )
 
@@ -68,15 +68,15 @@ func GetHandlerReviews(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			limit = 10
 		}
-		reviews, _ := conn.GetReviewsOfFilmSortedByDate(models.ID(filmID), limit, offset)
+		reviews, _ := conn.GetReviewsOfFilmSortedByDate(domains.ID(filmID), limit, offset)
 		var items [][]byte
 		for _, review := range reviews {
 			reviewUser, err := conn.Get(review.AuthorID, "user")
-			reviewUserTrunc := makers.MakeUserTrunc(reviewUser.(models.User))
+			reviewUserTrunc := makers.MakeUserTrunc(reviewUser.(domains.User))
 			if err != nil {
 				continue
 			}
-			reviewFull := makers.MakeReviewFull(review, reviewUserTrunc, models.Mark(rand.Float32()*5))
+			reviewFull := makers.MakeReviewFull(review, reviewUserTrunc, domains.Mark(rand.Float32()*5))
 			jsonModel, e := reviewFull.MarshalJSON()
 			if e != nil {
 				continue
@@ -108,7 +108,7 @@ func GetHandlerReviewsCreate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		newReview := models.NewReview{}
+		newReview := domains.NewReview{}
 		err = newReview.UnmarshalJSON(rawBody)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())

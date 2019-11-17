@@ -2,13 +2,14 @@ package database
 
 import (
 	"context"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"net/http"
 
 	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -81,30 +82,30 @@ func (conn *MongoConnection) InitCounters() error {
 	return errors.Wrap(err, "init counters collection failed")
 }
 
-func (conn *MongoConnection) Upsert(in interface{}) *models.Error {
-	var e *models.Error
+func (conn *MongoConnection) Upsert(in interface{}) *domains.Error {
+	var e *domains.Error
 	switch in := in.(type) {
-	case models.NewUser:
+	case domains.NewUser:
 		e = InsertUser(conn, in)
-	case models.User:
+	case domains.User:
 		e = UpdateUser(conn, in)
-	case models.NewFilm:
+	case domains.NewFilm:
 		e = InsertFilm(conn, in)
-	case models.Film:
+	case domains.Film:
 		e = UpdateFilm(conn, in)
 	case models.UserCookie:
 		e = UpsertUserCookie(conn, in)
-	case models.NewPerson:
+	case domains.NewPerson:
 		e = InsertPerson(conn, in)
-	case models.Person:
+	case domains.Person:
 		e = UpdatePerson(conn, in)
-	case models.NewReview:
+	case domains.NewReview:
 		e = InsertReview(conn, in)
-	case models.Review:
+	case domains.Review:
 		e = UpdateReview(conn, in)
-	case models.Stars:
+	case domains.Stars:
 		e = InsertStars(conn, in)
-	case models.Like:
+	case domains.Like:
 		e = InsertLike(conn, in)
 	default:
 		e = Error.New(http.StatusBadRequest, "not supported type")
@@ -112,7 +113,7 @@ func (conn *MongoConnection) Upsert(in interface{}) *models.Error {
 	return e
 }
 
-func (conn *MongoConnection) Get(id models.ID, target string) (interface{}, *models.Error) {
+func (conn *MongoConnection) Get(id domains.ID, target string) (interface{}, *domains.Error) {
 	switch target {
 	case configs.Default.UserTargetName:
 		u, ok := conn.FindUserByID(id)
@@ -136,7 +137,7 @@ func (conn *MongoConnection) Get(id models.ID, target string) (interface{}, *mod
 	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
 
-func (conn *MongoConnection) Delete(in interface{}) *models.Error {
+func (conn *MongoConnection) Delete(in interface{}) *domains.Error {
 	switch in := in.(type) {
 	case http.Cookie:
 		u, ok := conn.FindUserByCookie(&in)
@@ -168,29 +169,29 @@ func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
 	return err == nil
 }
 
-func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
-	result := models.User{}
+func (conn *MongoConnection) FindUserByEmail(email string) (domains.User, bool) {
+	result := domains.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"credentials.email": email}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindUserByID(id models.ID) (models.User, bool) {
-	result := models.User{}
+func (conn *MongoConnection) FindUserByID(id domains.ID) (domains.User, bool) {
+	result := domains.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"usertrunc.id": id}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (models.User, bool) {
+func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (domains.User, bool) {
 	foundCookie := models.UserCookie{}
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
 	if err != nil {
-		return models.User{}, false
+		return domains.User{}, false
 	}
 	return conn.FindUserByID(foundCookie.UserID)
 }
 
-func (conn *MongoConnection) FindUsersByIDs(ids []models.ID) ([]models.User, bool) {
-	var result []models.User
+func (conn *MongoConnection) FindUsersByIDs(ids []domains.ID) ([]domains.User, bool) {
+	var result []domains.User
 	ok := true
 	for _, id := range ids {
 		u, found := conn.FindUserByID(id)
@@ -204,8 +205,8 @@ func (conn *MongoConnection) FindUsersByIDs(ids []models.ID) ([]models.User, boo
 }
 
 //TODO: надо будет переделать на один запрос к базе)))
-func (conn *MongoConnection) FindPersonsByIDs(ids []models.ID) ([]models.Person, bool) {
-	var result []models.Person
+func (conn *MongoConnection) FindPersonsByIDs(ids []domains.ID) ([]domains.Person, bool) {
+	var result []domains.Person
 	ok := true
 	for _, id := range ids {
 		u, found := conn.FindPersonByID(id)
@@ -218,8 +219,8 @@ func (conn *MongoConnection) FindPersonsByIDs(ids []models.ID) ([]models.Person,
 	return result, ok
 }
 
-func (conn *MongoConnection) FindFilmsByIDs(ids []models.ID) ([]models.Film, bool) {
-	var result []models.Film
+func (conn *MongoConnection) FindFilmsByIDs(ids []domains.ID) ([]domains.Film, bool) {
+	var result []domains.Film
 	ok := true
 	for _, id := range ids {
 		u, found := conn.FindFilmByID(id)
@@ -232,37 +233,37 @@ func (conn *MongoConnection) FindFilmsByIDs(ids []models.ID) ([]models.Film, boo
 	return result, ok
 }
 
-func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
-	result := models.Film{}
+func (conn *MongoConnection) FindFilmByTitle(title string) (domains.Film, bool) {
+	result := domains.Film{}
 	err := conn.films.FindOne(conn.context, bson.M{"title": title}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindFilmByID(id models.ID) (models.Film, bool) {
-	result := models.Film{}
+func (conn *MongoConnection) FindFilmByID(id domains.ID) (domains.Film, bool) {
+	result := domains.Film{}
 	err := conn.films.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool) {
-	result := models.Person{}
+func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday string) (domains.Person, bool) {
+	result := domains.Person{}
 	err := conn.persons.FindOne(conn.context, bson.M{"name": name, "birthday": birthday}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) {
-	result := models.Person{}
+func (conn *MongoConnection) FindPersonByID(id domains.ID) (domains.Person, bool) {
+	result := domains.Person{}
 	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) {
-	result := models.Review{}
+func (conn *MongoConnection) FindReviewByID(id domains.ID) (domains.Review, bool) {
+	result := domains.Review{}
 	err := conn.reviews.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *models.Error) {
+func (conn *MongoConnection) GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *domains.Error) {
 	switch collectionName {
 	case configs.Default.FilmsCollectionName:
 		return AggregateFilms(conn, pipeline)
@@ -273,7 +274,7 @@ func (conn *MongoConnection) GetByQuery(collectionName string, pipeline interfac
 	}
 }
 
-func (conn *MongoConnection) GetFilmsSortedByMark(limit, offset int) ([]models.Film, *models.Error) {
+func (conn *MongoConnection) GetFilmsSortedByMark(limit, offset int) ([]domains.Film, *domains.Error) {
 	pipeline := []bson.M{
 		{"$sort": bson.M{"mark": -1}},
 		{"$limit": limit},
@@ -286,7 +287,7 @@ func (conn *MongoConnection) GetFilmsSortedByMark(limit, offset int) ([]models.F
 	return FromInterfaceToFilm(films), nil
 }
 
-func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre models.Genre, limit, offset int) ([]models.Film, *models.Error) {
+func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre domains.Genre, limit, offset int) ([]domains.Film, *domains.Error) {
 	pipeline := []bson.M{
 		{"$match": bson.M{"genres": genre}},
 		{"$sort": bson.M{"mark": -1}},
@@ -300,7 +301,7 @@ func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre models.Genre, lim
 	return FromInterfaceToFilm(films), nil
 }
 
-func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year, limit, offset int) ([]models.Film, *models.Error) {
+func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year, limit, offset int) ([]domains.Film, *domains.Error) {
 	pipeline := []bson.M{
 		{"$match": bson.M{"year": year}},
 		{"$sort": bson.M{"mark": -1}},
@@ -314,7 +315,7 @@ func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year, limit, offset int)
 	return FromInterfaceToFilm(films), nil
 }
 
-func (conn *MongoConnection) GetReviewsSortedByDate(limit, offset int) ([]models.Review, *models.Error) {
+func (conn *MongoConnection) GetReviewsSortedByDate(limit, offset int) ([]domains.Review, *domains.Error) {
 	pipeline := []bson.M{
 		{"$sort": bson.M{"date": -1}},
 		{"$limit": limit},
@@ -323,7 +324,7 @@ func (conn *MongoConnection) GetReviewsSortedByDate(limit, offset int) ([]models
 	return AggregateReviews(conn, pipeline)
 }
 
-func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID models.ID, limit, offset int) ([]models.Review, *models.Error) {
+func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID domains.ID, limit, offset int) ([]domains.Review, *domains.Error) {
 	pipeline := []bson.M{
 		{"$match": bson.M{"filmid": filmID}},
 		{"$sort": bson.M{"date": -1}},
@@ -333,7 +334,7 @@ func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID models.ID, limi
 	return AggregateReviews(conn, pipeline)
 }
 
-func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID models.ID, limit, offset int) ([]models.Review, *models.Error) {
+func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit, offset int) ([]domains.Review, *domains.Error) {
 	pipeline := []bson.M{
 		{"$match": bson.M{"authorid": authorID}},
 		{"$sort": bson.M{"date": -1}},
