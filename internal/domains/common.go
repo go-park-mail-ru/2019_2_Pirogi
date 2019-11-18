@@ -2,6 +2,7 @@ package domains
 
 import (
 	"fmt"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"strconv"
 )
 
@@ -17,11 +18,6 @@ func (fm Mark) String() string {
 	return fmt.Sprintf("%f", fm)
 }
 
-type Error struct {
-	Status int    `json:"status" valid:"numeric"`
-	Error  string `json:"error" valid:"optional"`
-}
-
 type Role string
 
 type Target string
@@ -33,4 +29,8 @@ type Image string
 type TrailerWithTitle struct {
 	Title   string `json:"title" valid:"text"`
 	Trailer string `json:"trailer" valid:"link"`
+}
+
+func (i *Image) Hash() {
+	*i = Image(hash.SHA1(string(*i)))
 }

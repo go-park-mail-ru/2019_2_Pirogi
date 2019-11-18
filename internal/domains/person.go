@@ -1,7 +1,14 @@
 package domains
 
+import (
+	"github.com/asaskevich/govalidator"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/security"
+	"golang.org/x/net/html"
+)
+
 type PersonRepository interface {
-	Insert(newPerson NewPerson) (ID, error)
+	Insert(newPerson PersonNew) (ID, error)
 	Update(id ID, person Person) error
 	Delete(id ID) bool
 	Get(id ID) Person
@@ -10,11 +17,34 @@ type PersonRepository interface {
 	MakeFull(person Person) PersonFull
 }
 
-type NewPerson struct {
+type PersonNew struct {
 	Name       string `json:"name" valid:"text, stringlength(1|50)"`
 	Roles      []Role `json:"roles" valid:"roles"`
 	Birthday   string `json:"birthday" valid:"date"`
 	Birthplace string `json:"birthplace" valid:"text, stringlength(2|50)"`
+}
+
+func (np *PersonNew) ToPerson(id ID) Person {
+	return Person{
+		ID:         id,
+		Name:       html.EscapeString(np.Name),
+		Roles:      security.XSSFilterRoles(np.Roles),
+		Birthday:   html.EscapeString(np.Birthday),
+		Birthplace: html.EscapeString(np.Birthplace),
+		Genres:     []Genre{},
+		FilmsID:    []ID{},
+		Likes:      0,
+		Images:     []Image{configs.Default.DefaultImageName},
+	}
+}
+
+func (np *PersonNew) Make(body []byte) error {
+	err := np.UnmarshalJSON(body)
+	if err != nil {
+		return err
+	}
+	_, err = govalidator.ValidateStruct(np)
+	return err
 }
 
 type Person struct {
@@ -55,4 +85,31 @@ func (p *Person) AddLike() {
 
 func (p *Person) RemoveLike() {
 	p.Likes -= 1
+}
+
+func (p *Person) Trunc() PersonTrunc {
+	return PersonTrunc{
+		ID:    p.ID,
+		Name:  p.Name,
+		Image: p.Images[0],
+	}
+}
+
+func (p *Person) Full(films []Film) PersonFull {
+	var filmsTrunc []FilmTrunc
+	for _, film := range films {
+		filmsTrunc = append(filmsTrunc, film.Trunc())
+	}
+	return PersonFull{
+		ID:         p.ID,
+		Name:       p.Name,
+		Mark:       p.Mark,
+		Roles:      p.Roles,
+		Birthday:   p.Birthday,
+		Birthplace: p.Birthplace,
+		Genres:     p.Genres,
+		Films:      filmsTrunc,
+		Likes:      p.Likes,
+		Images:     p.Images,
+	}
 }

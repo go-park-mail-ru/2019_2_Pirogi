@@ -7,8 +7,13 @@ import (
 	"fmt"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/film"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/person"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/review"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/stars"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/user"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/labstack/gommon/log"
 	"io"
 	"io/ioutil"
@@ -34,9 +39,9 @@ func parse(target string) ([]interface{}, error) {
 	}
 	switch target {
 	case configs.Default.PersonTargetName:
-		var newPersons []domains.NewPerson
+		var newPersons []domains.PersonNew
 		for dec.More() {
-			var newPerson domains.NewPerson
+			var newPerson domains.PersonNew
 			err = dec.Decode(&newPerson)
 			if err != nil {
 				return nil, err
@@ -49,9 +54,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.FilmTargetName:
-		var newFilms []domains.NewFilm
+		var newFilms []film.FilmNew
 		for dec.More() {
-			var newFilm domains.NewFilm
+			var newFilm film.FilmNew
 			err = dec.Decode(&newFilm)
 			if err != nil {
 				return nil, err
@@ -64,9 +69,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.ReviewTargetName:
-		var newReviews []domains.NewReview
+		var newReviews []review.ReviewNew
 		for dec.More() {
-			var newReview domains.NewReview
+			var newReview review.ReviewNew
 			err = dec.Decode(&newReview)
 			if err != nil {
 				return nil, err
@@ -79,9 +84,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.StarTargetName:
-		var newStars []domains.Stars
+		var newStars []stars.Stars
 		for dec.More() {
-			var newStar domains.Stars
+			var newStar stars.Stars
 			err = dec.Decode(&newStar)
 			if err != nil {
 				return nil, err
@@ -94,9 +99,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.UserTargetName:
-		var newUsers []domains.NewUser
+		var newUsers []user.UserNew
 		for dec.More() {
-			var newUser domains.NewUser
+			var newUser user.UserNew
 			err = dec.Decode(&newUser)
 			if err != nil {
 				return nil, err
@@ -169,7 +174,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 	for i, film := range films {
 		fmt.Printf("inserting %d film from %d\n", i, len(films))
 		conn.Upsert(film)
-		newFilm := film.(domains.NewFilm)
+		newFilm := film.(film.FilmNew)
 		for _, id := range newFilm.PersonsID {
 			data, err := conn.Get(id, configs.Default.PersonTargetName)
 			if err != nil {
@@ -195,7 +200,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		if err != nil {
 			continue
 		}
-		f := film.(domains.Film)
+		f := film.(film.Film)
 		f.Images = []domains.Image{domains.Image(imagePath)}
 		conn.Upsert(f)
 	}

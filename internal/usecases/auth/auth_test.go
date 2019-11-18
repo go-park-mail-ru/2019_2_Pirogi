@@ -3,7 +3,10 @@ package usecases
 import (
 	"bufio"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/person"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/review"
 	"github.com/labstack/echo"
 	"log"
 	"net/http"
@@ -64,15 +67,15 @@ func (DatabaseMock) FindUsersByIDs(ids []domains.ID) ([]domains.User, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindFilmByTitle(title string) (domains.Film, bool) {
+func (DatabaseMock) FindFilmByTitle(title string) (film.Film, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindFilmByID(id domains.ID) (domains.Film, bool) {
+func (DatabaseMock) FindFilmByID(id domains.ID) (film.Film, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) FindFilmsByIDs(ids []domains.ID) ([]domains.Film, bool) {
+func (DatabaseMock) FindFilmsByIDs(ids []domains.ID) ([]film.Film, bool) {
 	panic("implement me")
 }
 
@@ -88,31 +91,31 @@ func (DatabaseMock) FindPersonsByIDs(ids []domains.ID) ([]domains.Person, bool) 
 	panic("implement me")
 }
 
-func (DatabaseMock) FindReviewByID(id domains.ID) (domains.Review, bool) {
+func (DatabaseMock) FindReviewByID(id domains.ID) (review.Review, bool) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetFilmsSortedByMark(limit int, offset int) ([]domains.Film, *domains.Error) {
+func (DatabaseMock) GetFilmsSortedByMark(limit int, offset int) ([]film.Film, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetFilmsOfGenreSortedByMark(genre domains.Genre, limit int, offset int) ([]domains.Film, *domains.Error) {
+func (DatabaseMock) GetFilmsOfGenreSortedByMark(genre domains.Genre, limit int, offset int) ([]film.Film, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]domains.Film, *domains.Error) {
+func (DatabaseMock) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]film.Film, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetReviewsSortedByDate(limit int, offset int) ([]domains.Review, *domains.Error) {
+func (DatabaseMock) GetReviewsSortedByDate(limit int, offset int) ([]review.Review, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetReviewsOfFilmSortedByDate(filmID domains.ID, limit int, offset int) ([]domains.Review, *domains.Error) {
+func (DatabaseMock) GetReviewsOfFilmSortedByDate(filmID domains.ID, limit int, offset int) ([]review.Review, *domains.Error) {
 	panic("implement me")
 }
 
-func (DatabaseMock) GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit int, offset int) ([]domains.Review, *domains.Error) {
+func (DatabaseMock) GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit int, offset int) ([]review.Review, *domains.Error) {
 	panic("implement me")
 }
 func TestGenerateCookie(t *testing.T) {

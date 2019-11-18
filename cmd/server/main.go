@@ -7,8 +7,8 @@ import (
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/infrastructure/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/infrastructure/server"
 	"github.com/labstack/gommon/log"
 )
 

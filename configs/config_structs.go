@@ -1,6 +1,9 @@
 package configs
 
-import "time"
+import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+	"time"
+)
 
 type DefaultConfig struct {
 	APIPort string `yaml:"api_port"`
@@ -28,15 +31,16 @@ type DefaultConfig struct {
 	ReviewsCollectionName  string `yaml:"reviews_collection_name"`
 	CountersCollectionName string `yaml:"counters_collection_name"`
 
-	UserTargetName        string `yaml:"user_target_name"`
-	FilmTargetName        string `yaml:"film_target_name"`
-	CookieTargetName      string `yaml:"cookie_target_name"`
-	PersonTargetName      string `yaml:"person_target_name"`
-	ReviewTargetName      string `yaml:"review_target_name"`
-	LikeTargetName        string `yaml:"like_target_name"`
-	StarTargetName        string `yaml:"star_target_name"`
-	FilmImageTargetName   string `yaml:"film_image_target_name"`
-	PersonImageTargetName string `yaml:"person_image_target_name"`
+	UserTargetName        string        `yaml:"user_target_name"`
+	FilmTargetName        string        `yaml:"film_target_name"`
+	CookieTargetName      string        `yaml:"cookie_target_name"`
+	PersonTargetName      string        `yaml:"person_target_name"`
+	ReviewTargetName      string        `yaml:"review_target_name"`
+	LikeTargetName        string        `yaml:"like_target_name"`
+	StarTargetName        string        `yaml:"star_target_name"`
+	FilmImageTargetName   string        `yaml:"film_image_target_name"`
+	PersonImageTargetName string        `yaml:"person_image_target_name"`
+	DefaultImageName      domains.Image `yaml:"default_image_name"`
 
 	CSRFHeader     string `yaml:"csrf_header"`
 	CSRFCookieName string `yaml:"csrf_cookie_name"`

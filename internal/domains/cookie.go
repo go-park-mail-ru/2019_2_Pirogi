@@ -2,7 +2,7 @@ package domains
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/labstack/echo"
 	"net/http"
 	"time"
@@ -36,7 +36,7 @@ func (c *Cookie) Generate(cookieName, value string) {
 	expiration := time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour)
 	c.Cookie.Name = cookieName
 	c.Cookie.Expires = expiration
-	c.Cookie.Value = user.Hash(value)
+	c.Cookie.Value = hash.SHA1(value)
 	c.Cookie.HttpOnly = true
 	c.Cookie.Path = "/"
 	c.Cookie.SameSite = http.SameSiteStrictMode

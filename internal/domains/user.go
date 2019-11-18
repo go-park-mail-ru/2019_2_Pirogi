@@ -1,7 +1,12 @@
 package domains
 
+import (
+	"github.com/asaskevich/govalidator"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+)
+
 type UserRepository interface {
-	Insert(newUser NewUser) (ID, error)
+	Insert(newUser UserNew) (ID, error)
 	Update(id ID, user User) error
 	Delete(id ID) bool
 	Get(id ID) User
@@ -11,10 +16,19 @@ type UserRepository interface {
 	MakeTrunc(user User) UserTrunc
 }
 
-type NewUser struct {
+type UserNew struct {
 	Email    string `json:"email" valid:"email"`
 	Password string `json:"password" valid:"password"`
 	Username string `json:"username" valid:"stringlength(2|50)"`
+}
+
+func (un *UserNew) Make(body []byte) error {
+	err := un.UnmarshalJSON(body)
+	if err != nil {
+		return err
+	}
+	_, err = govalidator.ValidateStruct(un)
+	return err
 }
 
 type UserTrunc struct {
@@ -39,12 +53,28 @@ func (u *User) CheckPassword(password string) bool {
 	return u.Password == password
 }
 
-func (u *User) Create(email, password, username string) {
-	u.ID = -1
-	u.Email = email
-	u.Username = username
-	u.Password = password
-	u.Description = ""
-	u.Mark = 0
-	u.Image = "default.png"
+func (un *UserNew) Create(email, password, username string) {
+
+}
+
+func (un *UserNew) ToUser(id ID) User {
+	return User{
+		ID:          id,
+		Email:       un.Email,
+		Password:    un.Password,
+		Username:    un.Username,
+		Mark:        0,
+		Description: "",
+		Image:       configs.Default.DefaultImageName,
+	}
+}
+
+func (u *User) Trunc() UserTrunc {
+	return UserTrunc{
+		ID:          u.ID,
+		Username:    u.Username,
+		Mark:        u.Mark,
+		Description: u.Description,
+		Image:       u.Image,
+	}
 }
