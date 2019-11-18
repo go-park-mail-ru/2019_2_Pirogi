@@ -2,13 +2,13 @@ package middleware
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/usecases/auth"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"net/http"
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/labstack/echo"
 )

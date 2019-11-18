@@ -5,7 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/usecases/search"
 	"github.com/labstack/echo"
 	"net/http"
 )
