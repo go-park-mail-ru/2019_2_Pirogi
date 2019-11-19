@@ -24,6 +24,7 @@ type MongoConnection struct {
 	persons  *mongo.Collection
 	likes    *mongo.Collection
 	reviews  *mongo.Collection
+	lists    *mongo.Collection
 	counters *mongo.Collection
 }
 
@@ -65,6 +66,7 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 		persons:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
 		likes:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
 		reviews:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
+		lists:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.ListsCollectionName),
 		counters: client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
 	}
 
@@ -106,6 +108,8 @@ func (conn *MongoConnection) Upsert(in interface{}) *models.Error {
 		e = InsertStars(conn, in)
 	case models.Like:
 		e = InsertLike(conn, in)
+	case models.List:
+		e = InsertList(conn, in)
 	default:
 		e = Error.New(http.StatusBadRequest, "not supported type")
 	}
@@ -132,6 +136,12 @@ func (conn *MongoConnection) Get(id models.ID, target string) (interface{}, *mod
 			return f, nil
 		}
 		return nil, Error.New(http.StatusNotFound, "no person with the id: "+id.String())
+	case configs.Default.ListTargetName:
+		f, ok := conn.FindListByID(id)
+		if ok {
+			return f, nil
+		}
+		return nil, Error.New(http.StatusNotFound, "no list with the id: "+id.String())
 	}
 	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
@@ -253,6 +263,12 @@ func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday s
 func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) {
 	result := models.Person{}
 	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindListByID(id models.ID) (models.List, bool) {
+	result := models.List{}
+	err := conn.lists.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 

@@ -29,6 +29,8 @@ type Database interface {
 
 	FindReviewByID(id models.ID) (models.Review, bool)
 
+	FindListByID(id models.ID) (models.List, bool)
+
 	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *models.Error)
 
 	GetFilmsSortedByMark(limit, offset int) ([]models.Film, *models.Error)

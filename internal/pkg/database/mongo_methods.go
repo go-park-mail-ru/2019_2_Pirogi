@@ -176,6 +176,19 @@ func InsertLike(conn *MongoConnection, in models.Like) *models.Error {
 	return nil
 }
 
+func InsertList(conn *MongoConnection, in models.List) *models.Error {
+	filter := bson.M{"_id": in.ID}
+	update := bson.M{"$set": in}
+	_, err := conn.lists.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		_, err = conn.lists.InsertOne(conn.context, in)
+		if err != nil {
+			return Error.New(http.StatusInternalServerError, "cannot insert list in database")
+		}
+	}
+	return nil
+}
+
 func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{}, *models.Error) {
 	curs, err := conn.films.Aggregate(conn.context, pipeline)
 	if err != nil {
