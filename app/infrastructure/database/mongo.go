@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -114,9 +115,9 @@ func (conn *MongoConnection) Get(id model.ID, target string) (interface{}, *mode
 	case configs.Default.UserTargetName:
 		u, err := conn.FindUserByID(id)
 		if err != nil {
-			return u, err
+			return nil, err
 		}
-		return nil, model.NewError(http.StatusNotFound, "no user with id: "+id.String())
+		return u, nil
 	case configs.Default.FilmTargetName:
 		f, ok := conn.FindFilmByID(id)
 		if ok {
@@ -167,7 +168,7 @@ func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
 
 func (conn *MongoConnection) FindUserByEmail(email string) (model.User, *model.Error) {
 	result := model.User{}
-	err := conn.users.FindOne(conn.context, bson.M{"credentials.email": email}).Decode(&result)
+	err := conn.users.FindOne(conn.context, bson.M{"email": email}).Decode(&result)
 	if err != nil {
 		return model.User{}, model.NewError(500, err.Error())
 	}
@@ -176,9 +177,9 @@ func (conn *MongoConnection) FindUserByEmail(email string) (model.User, *model.E
 
 func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error) {
 	result := model.User{}
-	err := conn.users.FindOne(conn.context, bson.M{"usertrunc.id": id}).Decode(&result)
+	err := conn.users.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
 	if err != nil {
-		return model.User{}, model.NewError(500, err.Error())
+		return model.User{}, model.NewError(404, "Пользователя с таким ID не существует")
 	}
 	return result, nil
 }
@@ -186,6 +187,7 @@ func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error
 func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (model.User, *model.Error) {
 	foundCookie := model.Cookie{}
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
+	zap.S().Debug(cookie.Value)
 	if err != nil {
 		return model.User{}, model.NewError(404, err.Error())
 	}

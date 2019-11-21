@@ -11,4 +11,5 @@ type UserRepository interface {
 	Get(id model.ID) (model.User, *model.Error)
 	GetMany(ids []model.ID) []model.User
 	GetByEmail(email string) (model.User, *model.Error)
+	PrepareUserNew(userNew *model.UserNew) *model.Error
 }

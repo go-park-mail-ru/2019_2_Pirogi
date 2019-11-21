@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
+	"go.uber.org/zap"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -15,6 +16,7 @@ func GetHandlerUsers(userUsecase usecase.UserUsecase) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(401, "no auth")
 		}
+		user.Password = ""
 		jsonBody, e := user.MarshalJSON()
 		if e != nil {
 			return echo.NewHTTPError(400, "invalid request data")
@@ -41,11 +43,12 @@ func GetHandlerUser(userUsecase usecase.UserUsecase) echo.HandlerFunc {
 
 func GetHandlerUsersCreate(userUsecase usecase.UserUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		_, err := userUsecase.GetUserByContext(ctx)
-		if err == nil {
+		user, _ := userUsecase.GetUserByContext(ctx)
+		zap.S().Debug(user)
+		if user.Email != "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "already logged in")
 		}
-		err = userUsecase.CreateUserNewFromContext(ctx)
+		err := userUsecase.CreateUserNewFromContext(ctx)
 		if err != nil {
 			return err.HTTP()
 		}

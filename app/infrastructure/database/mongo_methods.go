@@ -35,7 +35,7 @@ func InsertUser(conn *MongoConnection, in model.UserNew) *model.Error {
 }
 
 func UpdateUser(conn *MongoConnection, in model.User) *model.Error {
-	filter := bson.M{"usertrunc.id": in.ID}
+	filter := bson.M{"id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.users.UpdateOne(conn.context, filter, update)
 	if err != nil {

@@ -59,7 +59,7 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) *model.Err
 		return model.NewError(400, "invalid credentials")
 	}
 	cookie := model.Cookie{}
-	cookie.Generate(configs.Default.CookieAuthName, email)
+	cookie.GenerateAuthCookie(user.ID, configs.Default.CookieAuthName, email)
 	e := u.cookieRepo.Insert(cookie)
 	if e != nil {
 		return e
@@ -85,6 +85,7 @@ func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
 	if err != nil {
 		return model.NewError(http.StatusUnauthorized, "user is not authorized")
 	}
+	session.Expire()
 	u.cookieRepo.SetOnResponse(ctx.Response(), &session)
 	u.cookieRepo.Delete(session)
 	return nil

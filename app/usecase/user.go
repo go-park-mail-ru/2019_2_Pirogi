@@ -8,7 +8,9 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 	"net/http"
+	"time"
 )
 
 type UserUsecase interface {
@@ -40,6 +42,7 @@ func (u userUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.Erro
 
 func (u userUsecase) GetUserTruncByteByID(id model.ID) ([]byte, *model.Error) {
 	user, err := u.userRepo.Get(id)
+	zap.S().Debug(user)
 	if err != nil {
 		return nil, err
 	}
@@ -61,12 +64,22 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	if e != nil {
 		return model.NewError(400, e.Error())
 	}
+	zap.S().Debug(userNew)
+	_, err = u.userRepo.GetByEmail(userNew.Email)
+	if err == nil {
+		return model.NewError(400, "user with the email is already existed")
+	}
+	err = u.userRepo.PrepareUserNew(&userNew)
+	if err != nil {
+		return err
+	}
 	err = u.userRepo.Insert(userNew)
 	if err != nil {
 		return err
 	}
+	user, err := u.userRepo.GetByEmail(userNew.Email)
 	var cookie model.Cookie
-	cookie.Generate(configs.Default.CookieAuthName, hash.SHA1(userNew.Username+userNew.Email))
+	cookie.GenerateAuthCookie(user.ID, configs.Default.CookieAuthName, hash.SHA1(userNew.Password+userNew.Email+time.Now().String()))
 	err = u.cookieRepo.Insert(cookie)
 	if err != nil {
 		return err
@@ -104,6 +117,8 @@ func (u userUsecase) UpdateUserFromContext(ctx echo.Context) *model.Error {
 	case updateUser.Description != "":
 		user.Description = updateUser.Description
 	}
+	zap.S().Debug(updateUser)
+	zap.S().Debug(user)
 	err = u.userRepo.Update(user)
 	return err
 }

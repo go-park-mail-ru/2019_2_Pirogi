@@ -113,7 +113,7 @@ func TestGenerateCookie(t *testing.T) {
 	const cookieName = "test"
 	const value = "testValue"
 	cookie := model.Cookie{}
-	cookie.Generate(cookieName, value)
+	cookie.GenerateAuthCookie(cookieName, value)
 	expectedCookie := http.Cookie{
 		Name:     cookieName,
 		Value:    hash.SHA1(value),
@@ -133,7 +133,7 @@ func TestExpireCookie(t *testing.T) {
 	const cookieName = "test"
 	const value = "testValue"
 	cookie := model.Cookie{}
-	cookie.Generate(cookieName, value)
+	cookie.GenerateAuthCookie(cookieName, value)
 	require.True(t, cookie.Cookie.Expires.After(time.Now()))
 	cookie.Expire()
 	require.True(t, cookie.Cookie.Expires.Before(time.Now()))

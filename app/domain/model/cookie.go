@@ -25,12 +25,15 @@ func (c *Cookie) CopyFromCommon(cookie *http.Cookie) {
 	c.Cookie = cookie
 }
 
-func (c *Cookie) Generate(cookieName, value string) {
-	expiration := time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour)
-	c.Cookie.Name = cookieName
-	c.Cookie.Expires = expiration
-	c.Cookie.Value = hash.SHA1(value)
-	c.Cookie.HttpOnly = true
-	c.Cookie.Path = "/"
-	c.Cookie.SameSite = http.SameSiteStrictMode
+func (c *Cookie) GenerateAuthCookie(id ID, cookieName, value string) {
+	cookie := &http.Cookie{
+		Name:       cookieName,
+		Value:      hash.SHA1(value),
+		Path:       "/",
+		Expires:    time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
+		HttpOnly:   true,
+		SameSite:   http.SameSiteStrictMode,
+	}
+	c.Cookie = cookie
+	c.UserID = id
 }

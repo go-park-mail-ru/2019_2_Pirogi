@@ -8,7 +8,6 @@ import (
 type UserNew struct {
 	Email    string `json:"email" valid:"email"`
 	Password string `json:"password" valid:"password"`
-	Username string `json:"username" valid:"stringlength(2|50)"`
 }
 
 type UserCredentials struct {
@@ -34,13 +33,13 @@ type UserTrunc struct {
 }
 
 type User struct {
-	ID          ID     `json:"id" valid:"numeric"`
-	Email       string `json:"email" valid:"email"`
-	Password    string `json:"password" valid:"password"`
-	Username    string `json:"username" valid:"title"`
-	Mark        Mark   `json:"mark" valid:"mark, optional"`
-	Description string `json:"description" valid:"description"`
-	Image       Image  `json:"image" valid:"image, optional"`
+	ID          ID     `json:"id" valid:"numeric,optional"`
+	Email       string `json:"email" valid:"email,optional"`
+	Password    string `json:"password,omitempty" valid:"password,optional"`
+	Username    string `json:"username" valid:"title,optional"`
+	Mark        Mark   `json:"mark" valid:"mark,optional"`
+	Description string `json:"description" valid:"description,optional"`
+	Image       Image  `json:"image" valid:"image,optional"`
 }
 
 func (u *User) CheckPassword(password string) bool {
@@ -56,7 +55,6 @@ func (un *UserNew) ToUser(id ID) User {
 		ID:          id,
 		Email:       un.Email,
 		Password:    un.Password,
-		Username:    un.Username,
 		Mark:        0,
 		Description: "",
 		Image:       Image(configs.Default.DefaultImageName),
