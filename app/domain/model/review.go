@@ -54,7 +54,7 @@ type ReviewFull struct {
 	Author UserTrunc `json:"author, omitempty" valid:"numeric"`
 	Date   time.Time `json:"date" valid:"time"`
 	Likes  int       `json:"likes" valid:"numeric, optional"`
-	Mark   Mark      `json:"mark" valid:"numeric, optional"`
+	Mark   Mark      `json:"stars" valid:"numeric, optional"`
 }
 
 func (r *Review) AddLike() {
@@ -69,7 +69,7 @@ func (r *Review) SetMark(mark Mark) {
 	r.Mark = mark
 }
 
-func (r *Review) Full(author UserTrunc, mark Mark) ReviewFull {
+func (r *Review) Full(author UserTrunc) ReviewFull {
 	return ReviewFull{
 		ID:     r.ID,
 		Title:  r.Title,
@@ -78,6 +78,6 @@ func (r *Review) Full(author UserTrunc, mark Mark) ReviewFull {
 		Author: author,
 		Date:   r.Date,
 		Likes:  r.Likes,
-		Mark:   mark,
+		Mark:   r.Mark,
 	}
 }

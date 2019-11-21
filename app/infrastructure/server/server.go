@@ -48,12 +48,14 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	personRepo := interfaces.NewPersonRepository(conn)
 	userRepo := interfaces.NewUserRepository(conn)
 	cookieRepo := interfaces.NewCookieRepository(conn)
+	reviewRepo := interfaces.NewReviewRepository(conn)
 
 	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
 	authUsecase := usecase.NewAuthUsecase(userRepo, cookieRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo, cookieRepo)
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo)
+	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
 
 	api := e.Group("/api")
 
@@ -83,10 +85,10 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	//persons.POST("/", handlers.GetHandlerPersonsCreate(personUsecase))
 	//persons.POST("/images/", handlers.GetImagesHandler(personUsecase))
 	//
-	//reviews := api.Group("/reviews")
-	//reviews.GET("/:film_id/", handlers.GetHandlerReviews(conn))
-	//reviews.GET("/", handlers.GetHandlerProfileReviews(conn))
-	//reviews.POST("/", handlers.GetHandlerReviewsCreate(conn))
+	reviews := api.Group("/reviews")
+	reviews.GET("/:film_id/", handlers.GetHandlerReviews(reviewUsecase))
+	reviews.GET("/", handlers.GetHandlerProfileReviews(reviewUsecase))
+	reviews.POST("/", handlers.GetHandlerReviewsCreate(reviewUsecase))
 	//
 	//likes := api.Group("/likes")
 	//likes.POST("/", handlers.GetHandlerLikesCreate(conn))

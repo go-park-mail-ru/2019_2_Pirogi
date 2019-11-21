@@ -42,7 +42,7 @@ func (c *cookieRepository) Get(id model.ID) (model.Cookie, *model.Error) {
 	}
 }
 
-func (c *cookieRepository) GetFromRequest(r *http.Request, name string) (model.Cookie, *model.Error) {
+func (c *cookieRepository) GetCookieFromRequest(r *http.Request, name string) (model.Cookie, *model.Error) {
 	cookieCommon, err := r.Cookie(name)
 	if err != nil {
 		return model.Cookie{}, model.NewError(400, err.Error())
@@ -56,6 +56,12 @@ func (c *cookieRepository) SetOnResponse(res *echo.Response, r *model.Cookie) {
 	http.SetCookie(res, r.Cookie)
 }
 
-func (c *cookieRepository) GetUserByCookie(cookie model.Cookie) (model.User, *model.Error) {
+func (c *cookieRepository) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
+	cookieCommon, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
+	if err != nil {
+		return model.User{}, model.NewError(400, err.Error())
+	}
+	var cookie model.Cookie
+	cookie.CopyFromCommon(cookieCommon)
 	return c.conn.FindUserByCookie(cookie.Cookie)
 }

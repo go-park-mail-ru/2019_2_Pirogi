@@ -8,11 +8,10 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelSlice"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/queryWorker"
 	"github.com/labstack/echo"
-	"go.uber.org/zap"
 )
 
 type SearchUsecase interface {
-	GetFilmsJSONByGetParams(ctx echo.Context) ([]byte, *model.Error)
+	GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error)
 	GetPersonsByGetParams(ctx echo.Context) ([]byte, *model.Error)
 }
 
@@ -28,11 +27,9 @@ type searchUsecase struct {
 	personRepo repository.PersonRepository
 }
 
-func (u *searchUsecase) GetFilmsJSONByGetParams(ctx echo.Context) ([]byte, *model.Error) {
+func (u *searchUsecase) GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error) {
 	pipeline := queryWorker.GetPipelineForMongo(ctx, configs.Default.FilmTargetName)
-	zap.S().Debug(pipeline)
 	films, err := u.filmRepo.GetByPipeline(pipeline)
-	zap.S().Debug(len(films))
 	if err != nil {
 		return nil, err
 	}

@@ -23,3 +23,25 @@ func MarshalPersonsTrunc(personsTrunc []model.PersonTrunc) (body [][]byte) {
 	}
 	return body
 }
+
+func MarshalReviews(reviews []model.Review) (body [][]byte) {
+	for _, review := range reviews {
+		raw, err := review.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}
+
+func MarshalReviewsFull(reviewsFull []model.ReviewFull) (body [][]byte) {
+	for _, reviewFull := range reviewsFull {
+		raw, err := reviewFull.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}

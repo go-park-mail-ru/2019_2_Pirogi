@@ -11,7 +11,7 @@ type CookieRepository interface {
 	Update(cookie model.Cookie) *model.Error
 	Delete(cookie model.Cookie) *model.Error
 	Get(id model.ID) (model.Cookie, *model.Error)
-	GetFromRequest(r *http.Request, name string) (model.Cookie, *model.Error)
+	GetCookieFromRequest(r *http.Request, name string) (model.Cookie, *model.Error)
 	SetOnResponse(res *echo.Response, r *model.Cookie)
-	GetUserByCookie(cookie model.Cookie) (model.User, *model.Error)
+	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
 }

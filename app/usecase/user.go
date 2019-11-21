@@ -33,11 +33,7 @@ type userUsecase struct {
 }
 
 func (u userUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
-	cookie, err := u.cookieRepo.GetFromRequest(ctx.Request(), configs.Default.CookieAuthName)
-	if err != nil {
-		return model.User{}, err
-	}
-	return u.cookieRepo.GetUserByCookie(cookie)
+	return u.cookieRepo.GetUserByContext(ctx)
 }
 
 func (u userUsecase) GetUserTruncByteByID(id model.ID) ([]byte, *model.Error) {
@@ -102,11 +98,7 @@ func (u userUsecase) UpdateUserFromContext(ctx echo.Context) *model.Error {
 	if e != nil {
 		return model.NewError(http.StatusBadRequest, e.Error())
 	}
-	session, err := u.cookieRepo.GetFromRequest(ctx.Request(), configs.Default.CookieAuthName)
-	if err != nil {
-		return err
-	}
-	user, err := u.cookieRepo.GetUserByCookie(session)
+	user, err := u.cookieRepo.GetUserByContext(ctx)
 	if err != nil {
 		return err
 	}
@@ -117,8 +109,6 @@ func (u userUsecase) UpdateUserFromContext(ctx echo.Context) *model.Error {
 	case updateUser.Description != "":
 		user.Description = updateUser.Description
 	}
-	zap.S().Debug(updateUser)
-	zap.S().Debug(user)
 	err = u.userRepo.Update(user)
 	return err
 }

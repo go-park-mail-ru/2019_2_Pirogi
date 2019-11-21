@@ -9,7 +9,6 @@ import (
 )
 
 type AuthUsecase interface {
-	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
 	Login(ctx echo.Context, email, password string) *model.Error
 	LoginCheck(ctx echo.Context) bool
 	Logout(ctx echo.Context) *model.Error
@@ -36,21 +35,8 @@ func (u *authUsecase) CheckCookieExisting(ctx echo.Context, cookieName string) b
 	return true
 }
 
-func (u *authUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
-	cookie, err := u.GetCookie(ctx, configs.Default.CookieAuthName)
-	if err != nil {
-		return model.User{}, err
-	}
-
-	user, err := u.cookieRepo.GetUserByCookie(cookie)
-	if err != nil {
-		return model.User{}, err
-	}
-	return user, nil
-}
-
 func (u *authUsecase) Login(ctx echo.Context, email, password string) *model.Error {
-	_, err := u.cookieRepo.GetFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	_, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err == nil {
 		return model.NewError(400, "already logged in")
 	}
@@ -69,7 +55,7 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) *model.Err
 }
 
 func (u *authUsecase) LoginCheck(ctx echo.Context) bool {
-	session, err := u.cookieRepo.GetFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	session, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err != nil {
 		return false
 	}
@@ -81,7 +67,7 @@ func (u *authUsecase) LoginCheck(ctx echo.Context) bool {
 }
 
 func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
-	session, err := u.cookieRepo.GetFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	session, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err != nil {
 		return model.NewError(http.StatusUnauthorized, "user is not authorized")
 	}

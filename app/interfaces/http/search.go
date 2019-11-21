@@ -8,7 +8,7 @@ import (
 
 func GetHandlerSearch(usecase usecase2.SearchUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		jsonBody, e := usecase.GetFilmsJSONByGetParams(ctx)
+		jsonBody, e := usecase.GetFilmsByGetParamsJSONBlob(ctx)
 		if e == nil {
 			network.WriteJSONToResponse(ctx, 200, jsonBody)
 			return nil
