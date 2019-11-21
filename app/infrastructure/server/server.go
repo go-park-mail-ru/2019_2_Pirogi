@@ -53,12 +53,13 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
 	authUsecase := usecase.NewAuthUsecase(userRepo, cookieRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo, cookieRepo)
+	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo)
 
 	api := e.Group("/api")
 
 	films := api.Group("/films")
 	films.GET("/:film_id/", handlers.GetHandlerFilm(filmUsecase))
-	films.POST("/", handlers.GetHandlerFilmCreate(filmUsecase))
+	//films.POST("/", handlers.GetHandlerFilmCreate(filmUsecase))
 
 	//films.POST("/images/", handlers.GetImagesHandler(f))
 	//films.DELETE("/:film_id", handlers.GetHandlerFilmDelete(filmUsecase))
@@ -77,10 +78,10 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	users.PUT("/", handlers.GetHandlerUsersUpdate(userUsecase))
 	//users.POST("/images/", handlers.GetImagesHandler(conn))
 
-	//persons := api.Group("/persons")
-	//persons.GET("/:person_id/", handlers.GetHandlerPerson(conn))
-	//persons.POST("/", handlers.GetHandlerPersonsCreate(conn))
-	//persons.POST("/images/", handlers.GetImagesHandler(conn))
+	persons := api.Group("/persons")
+	persons.GET("/:person_id/", handlers.GetHandlerPerson(personUsecase))
+	//persons.POST("/", handlers.GetHandlerPersonsCreate(personUsecase))
+	//persons.POST("/images/", handlers.GetImagesHandler(personUsecase))
 	//
 	//reviews := api.Group("/reviews")
 	//reviews.GET("/:film_id/", handlers.GetHandlerReviews(conn))

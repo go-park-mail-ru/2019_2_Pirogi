@@ -1,13 +1,13 @@
-package interfaces
+package http
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
-	usecase "github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase/person"
+	usecase2 "github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
 )
 
-func GetHandlerPerson(u usecase.PersonUsecase) echo.HandlerFunc {
+func GetHandlerPerson(u usecase2.PersonUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		id, err := network.GetIntParam(ctx, "person_id")
 		if err != nil {
@@ -17,15 +17,12 @@ func GetHandlerPerson(u usecase.PersonUsecase) echo.HandlerFunc {
 		if err != nil {
 			return err.HTTP()
 		}
-		err = network.WriteJSONToResponse(ctx, 200, body)
-		if err != nil {
-			return err.HTTP()
-		}
+		network.WriteJSONToResponse(ctx, 200, body)
 		return nil
 	}
 }
 
-func GetHandlerPersonsCreate(u usecase.PersonUsecase) echo.HandlerFunc {
+func GetHandlerPersonsCreate(u usecase2.PersonUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		rawBody, err := network.ReadBody(ctx)
 		if err != nil {
