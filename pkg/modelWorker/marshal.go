@@ -1,4 +1,4 @@
-package modelSlice
+package modelWorker
 
 import "github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 
@@ -38,6 +38,17 @@ func MarshalReviews(reviews []model.Review) (body [][]byte) {
 func MarshalReviewsFull(reviewsFull []model.ReviewFull) (body [][]byte) {
 	for _, reviewFull := range reviewsFull {
 		raw, err := reviewFull.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}
+
+func MarshalTrailers(trailers []model.TrailerWithTitle) (body [][]byte) {
+	for _, trailer := range trailers {
+		raw, err := trailer.MarshalJSON()
 		if err != nil {
 			continue
 		}

@@ -56,6 +56,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	userUsecase := usecase.NewUserUsecase(userRepo, cookieRepo)
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo)
 	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
+	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 
 	api := e.Group("/api")
 
@@ -99,11 +100,11 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	//lists := api.Group("/lists")
 	//lists.GET("/", handlers.GetHandlerList(conn))
 	//
-	//common := api.Group("/common")
-	//common.GET("/:variable/", handlers.HandlerCommon())
+	common := api.Group("/common")
+	common.GET("/:variable/", handlers.HandlerCommon())
 	//
-	//pages := api.Group("/pages")
-	//pages.GET("/", handlers.GetHandlerPages(conn))
+	pages := api.Group("/pages")
+	pages.GET("/", handlers.GetHandlerPages(pagesUsecase))
 
 	e.Use(echoMid.CORSWithConfig(echoMid.CORSConfig{
 		AllowOrigins:     []string{"https://cinsear.ru", "http://localhost:8080"},

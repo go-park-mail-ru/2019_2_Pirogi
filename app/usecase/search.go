@@ -5,7 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelSlice"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/queryWorker"
 	"github.com/labstack/echo"
 )
@@ -28,25 +28,25 @@ type searchUsecase struct {
 }
 
 func (u *searchUsecase) GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error) {
-	pipeline := queryWorker.GetPipelineForMongo(ctx, configs.Default.FilmTargetName)
+	pipeline := queryWorker.GetPipelineForMongoByContext(ctx, configs.Default.FilmTargetName)
 	films, err := u.filmRepo.GetByPipeline(pipeline)
 	if err != nil {
 		return nil, err
 	}
-	filmsTrunc := modelSlice.TruncFilms(films)
-	body := modelSlice.MarshalFilmsTrunc(filmsTrunc)
+	filmsTrunc := modelWorker.TruncFilms(films)
+	body := modelWorker.MarshalFilmsTrunc(filmsTrunc)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil
 }
 
 func (u *searchUsecase) GetPersonsByGetParams(ctx echo.Context) ([]byte, *model.Error) {
-	pipeline := queryWorker.GetPipelineForMongo(ctx, configs.Default.PersonTargetName)
+	pipeline := queryWorker.GetPipelineForMongoByContext(ctx, configs.Default.PersonTargetName)
 	persons, err := u.personRepo.GetByPipeline(pipeline)
 	if err != nil {
 		return nil, err
 	}
-	personsTrunc := modelSlice.TruncPersons(persons)
-	body := modelSlice.MarshalPersonsTrunc(personsTrunc)
+	personsTrunc := modelWorker.TruncPersons(persons)
+	body := modelWorker.MarshalPersonsTrunc(personsTrunc)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil
 }

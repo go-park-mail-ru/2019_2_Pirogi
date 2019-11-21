@@ -116,11 +116,11 @@ func (qp *querySearchParams) generatePipeline(target string) interface{} {
 		matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin, "$lte": qp.YearMax}}))
 	}
 	if len(qp.Genres) > 0 {
-		var regexp_genres []primitive.Regex
+		var regexpGenres []primitive.Regex
 		for _, genre := range qp.Genres {
-			regexp_genres = append(regexp_genres, pattern(genre))
+			regexpGenres = append(regexpGenres, pattern(genre))
 		}
-		matchBSON = append(matchBSON, match(bson.M{"genres": all(regexp_genres)}))
+		matchBSON = append(matchBSON, match(bson.M{"genres": all(regexpGenres)}))
 	}
 	if len(qp.PersonsIDs) > 0 {
 		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIDs)}))
@@ -147,8 +147,15 @@ func (qp *querySearchParams) generatePipeline(target string) interface{} {
 	return matchBSON
 }
 
-func GetPipelineForMongo(ctx echo.Context, target string) interface{} {
+func GetPipelineForMongoByContext(ctx echo.Context, target string) interface{} {
 	qp := querySearchParams{}
 	qp.mapQueryParams(ctx)
+	return qp.generatePipeline(target)
+}
+
+func GetCustomPipelineForMongo(limit, offset int, target string) interface{} {
+	qp := querySearchParams{}
+	qp.Limit = limit
+	qp.Offset = offset
 	return qp.generatePipeline(target)
 }

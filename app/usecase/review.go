@@ -6,7 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelSlice"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"strconv"
@@ -44,7 +44,7 @@ func (u *reviewUsecase) GetUserReviewsJSONBlob(user model.User, limit, offset in
 	if err != nil {
 		return nil, err
 	}
-	body := modelSlice.MarshalReviews(reviews)
+	body := modelWorker.MarshalReviews(reviews)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil
 }
@@ -64,7 +64,7 @@ func (u *reviewUsecase) GetFilmReviewsFullJSONBlob(filmID model.ID, limit, offse
 		reviewsFull = append(reviewsFull, review.Full(user.Trunc()))
 	}
 	zap.S().Debug(reviewsFull)
-	body := modelSlice.MarshalReviewsFull(reviewsFull)
+	body := modelWorker.MarshalReviewsFull(reviewsFull)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil
 }
