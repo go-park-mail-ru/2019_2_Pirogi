@@ -51,8 +51,8 @@ func all(query interface{}) bson.M {
 
 func (qp *querySearchParams) mapQueryParams(ctx echo.Context) {
 	qp.Limit = configs.Default.DefaultEntriesLimit // limit must be positive, default value(0) is not suitable
-	p := reflect.ValueOf(&qp).Elem()
-	t := reflect.TypeOf(qp)
+	p := reflect.ValueOf(qp).Elem()
+	t := reflect.TypeOf(*qp)
 	for i := 0; i < p.NumField(); i++ {
 		switch p.Field(i).Kind() {
 		case reflect.Int:

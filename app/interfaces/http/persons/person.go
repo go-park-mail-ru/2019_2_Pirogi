@@ -17,7 +17,7 @@ func GetHandlerPerson(u usecase.PersonUsecase) echo.HandlerFunc {
 		if err != nil {
 			return err.HTTP()
 		}
-		err = network.WriteJSON(ctx, 200, body)
+		err = network.WriteJSONToResponse(ctx, 200, body)
 		if err != nil {
 			return err.HTTP()
 		}

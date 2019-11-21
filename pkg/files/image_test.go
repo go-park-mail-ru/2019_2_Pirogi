@@ -5,7 +5,6 @@ import (
 	"os"
 	"testing"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"github.com/stretchr/testify/require"
 )
 
@@ -26,10 +25,4 @@ func TestDetectContentTypeFail(t *testing.T) {
 	var image []byte
 	_, e := DetectContentType(image)
 	require.NotNil(t, e)
-}
-
-func TestGenerateFilename(t *testing.T) {
-	expectedFilename := user.GetMD5Hash("gooze") + ".png"
-	actualFilename := GenerateFilename("go", "oze", ".png")
-	require.Equal(t, expectedFilename, actualFilename)
 }

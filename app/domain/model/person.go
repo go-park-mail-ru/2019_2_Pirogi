@@ -3,8 +3,6 @@ package model
 import (
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/security"
-	"golang.org/x/net/html"
 )
 
 type PersonNew struct {
@@ -14,26 +12,26 @@ type PersonNew struct {
 	Birthplace string `json:"birthplace" valid:"text, stringlength(2|50)"`
 }
 
-func (np *PersonNew) ToPerson(id ID) Person {
+func (pn *PersonNew) ToPerson(id ID) Person {
 	return Person{
 		ID:         id,
-		Name:       html.EscapeString(np.Name),
-		Roles:      security.XSSFilterRoles(np.Roles),
-		Birthday:   html.EscapeString(np.Birthday),
-		Birthplace: html.EscapeString(np.Birthplace),
+		Name:       pn.Name,
+		Roles:      pn.Roles,
+		Birthday:   pn.Birthday,
+		Birthplace: pn.Birthplace,
 		Genres:     []Genre{},
 		FilmsID:    []ID{},
 		Likes:      0,
-		Images:     []Image{configs.Default.DefaultImageName},
+		Images:     []Image{Image(configs.Default.DefaultImageName)},
 	}
 }
 
-func (np *PersonNew) Make(body []byte) error {
-	err := np.UnmarshalJSON(body)
+func (pn *PersonNew) Make(body []byte) error {
+	err := pn.UnmarshalJSON(body)
 	if err != nil {
 		return err
 	}
-	_, err = govalidator.ValidateStruct(np)
+	_, err = govalidator.ValidateStruct(pn)
 	return err
 }
 

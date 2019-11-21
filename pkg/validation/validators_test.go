@@ -1,28 +1,26 @@
 package validation
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/user"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"testing"
 	"time"
 
 	valid "github.com/asaskevich/govalidator"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
 	"github.com/stretchr/testify/require"
 )
 
 func TestTarget(t *testing.T) {
 	InitValidator()
-	target := domains.Target("film")
+	target := model.Target("film")
 	ok := validateTarget(string(target))
 	require.True(t, ok)
 }
 
 func TestLike(t *testing.T) {
 	InitValidator()
-	like := domains.Like{
+	like := model.Like{
 		UserID:   2,
-		Target:   domains.Target("film"),
+		Target:   model.Target("film"),
 		TargetID: 5,
 	}
 	_, err := valid.ValidateStruct(like)
@@ -31,7 +29,7 @@ func TestLike(t *testing.T) {
 
 func TestStars(t *testing.T) {
 	InitValidator()
-	stars := domains.Stars{
+	stars := model.Stars{
 		UserID: 3,
 		FilmID: 4,
 		Mark:   4.2,
@@ -42,7 +40,7 @@ func TestStars(t *testing.T) {
 
 func TestTruncUser(t *testing.T) {
 	InitValidator()
-	userTrunc := user.UserTrunc{
+	userTrunc := model.UserTrunc{
 		ID:          2,
 		Username:    "Artefakt1",
 		Mark:        3.5,
@@ -54,11 +52,11 @@ func TestTruncUser(t *testing.T) {
 }
 
 func TestTruncFilm(t *testing.T) {
-	filmTrunc := domains.FilmTrunc{
+	filmTrunc := model.FilmTrunc{
 		ID:     2,
 		Title:  "matrix",
-		Year:   "1998",
-		Genres: []domains.Genre{"драма"},
+		Year:   1998,
+		Genres: []model.Genre{"драма"},
 		Mark:   3.4,
 	}
 	_, err := valid.ValidateStruct(filmTrunc)
@@ -66,7 +64,7 @@ func TestTruncFilm(t *testing.T) {
 }
 
 func TestCredentials(t *testing.T) {
-	credentials := models.Credentials{
+	credentials := model.UserCredentials{
 		Email:    "bakulev.artyom@artbakulev.com",
 		Password: "qwertyiop12",
 	}
@@ -76,7 +74,7 @@ func TestCredentials(t *testing.T) {
 
 func TestPersonTrunc(t *testing.T) {
 	InitValidator()
-	personTrunc := domains.PersonTrunc{
+	personTrunc := model.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
 	}
@@ -86,25 +84,25 @@ func TestPersonTrunc(t *testing.T) {
 
 func TestPerson(t *testing.T) {
 	InitValidator()
-	image := domains.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
+	image := model.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
 
-	personTrunc := domains.PersonTrunc{
+	personTrunc := model.PersonTrunc{
 		ID:   12,
 		Name: "artefakt",
 	}
-	person := domains.Person{
+	person := model.Person{
 		ID:         personTrunc.ID,
 		Name:       personTrunc.Name,
-		Mark:       domains.Mark(2.3),
-		Roles:      []domains.Role{"actor"},
+		Mark:       model.Mark(2.3),
+		Roles:      []model.Role{"actor"},
 		Birthday:   "09.12.1998",
 		Birthplace: "USA",
-		Genres:     []domains.Genre{"драма"},
-		FilmsID: []domains.ID{
+		Genres:     []model.Genre{"драма"},
+		FilmsID: []model.ID{
 			0,
 		},
 		Likes: 2,
-		Images: []domains.Image{
+		Images: []model.Image{
 			image,
 		},
 	}
@@ -113,15 +111,15 @@ func TestPerson(t *testing.T) {
 }
 
 func TestFilm(t *testing.T) {
-	image := domains.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
-	filmTrunc := domains.FilmTrunc{
+	image := model.Image("cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg")
+	filmTrunc := model.FilmTrunc{
 		ID:     2,
 		Title:  "matrix",
-		Year:   "1998",
-		Genres: []domains.Genre{"драма"},
+		Year:   1998,
+		Genres: []model.Genre{"драма"},
 		Mark:   3.0,
 	}
-	film := domains.Film{
+	film := model.Film{
 		ID:          filmTrunc.ID,
 		Title:       filmTrunc.Title,
 		Year:        filmTrunc.Year,
@@ -129,10 +127,10 @@ func TestFilm(t *testing.T) {
 		Mark:        filmTrunc.Mark,
 		Countries:   []string{"USA"},
 		Description: "laslasldasldlasdl",
-		PersonsID: []domains.ID{
+		PersonsID: []model.ID{
 			0,
 		},
-		Images: []domains.Image{
+		Images: []model.Image{
 			image,
 		},
 		ReviewsNum: 23,
@@ -142,7 +140,7 @@ func TestFilm(t *testing.T) {
 }
 func TestReview(t *testing.T) {
 	InitValidator()
-	review := domains.Review{
+	review := model.Review{
 		Title:    "Обычный обзор",
 		Body:     "лалааллфылвфлывлфывлфывйцуasd12",
 		FilmID:   2,

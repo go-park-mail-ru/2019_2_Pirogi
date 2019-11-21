@@ -59,7 +59,7 @@ func (un *UserNew) ToUser(id ID) User {
 		Username:    un.Username,
 		Mark:        0,
 		Description: "",
-		Image:       configs.Default.DefaultImageName,
+		Image:       Image(configs.Default.DefaultImageName),
 	}
 }
 

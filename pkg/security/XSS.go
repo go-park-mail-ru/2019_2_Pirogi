@@ -1,20 +1,20 @@
 package security
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"html"
 )
 
-func XSSFilterRoles(roles []domains.Role) []domains.Role {
+func XSSFilterRoles(roles []model.Role) []model.Role {
 	for idx := range roles {
-		roles[idx] = domains.Role(html.EscapeString(string(roles[idx])))
+		roles[idx] = model.Role(html.EscapeString(string(roles[idx])))
 	}
 	return roles
 }
 
-func XSSFilterGenres(genres []domains.Genre) []domains.Genre {
+func XSSFilterGenres(genres []model.Genre) []model.Genre {
 	for idx := range genres {
-		genres[idx] = domains.Genre(html.EscapeString(string(genres[idx])))
+		genres[idx] = model.Genre(html.EscapeString(string(genres[idx])))
 	}
 	return genres
 }

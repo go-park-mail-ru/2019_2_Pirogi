@@ -2,8 +2,8 @@ package validation
 
 import (
 	valid "github.com/asaskevich/govalidator"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
 	"regexp"
 	"time"
 )
@@ -26,7 +26,7 @@ func InitValidator() {
 			return linkPattern.MatchString(subject)
 		},
 		"ids": func(i interface{}, o interface{}) bool {
-			subject, ok := i.([]domains.ID)
+			subject, ok := i.([]model.ID)
 			if !ok {
 				return false
 			}
@@ -52,7 +52,7 @@ func InitValidator() {
 			return subject > 0
 		},
 		"mark": func(i interface{}, o interface{}) bool {
-			subject, ok := i.(domains.Mark)
+			subject, ok := i.(model.Mark)
 			if !ok {
 				return false
 			}
@@ -71,7 +71,7 @@ func InitValidator() {
 			return true
 		},
 		"genres": func(i interface{}, o interface{}) bool {
-			subject, ok := i.([]domains.Genre)
+			subject, ok := i.([]model.Genre)
 			if !ok {
 				return false
 			}
@@ -90,7 +90,7 @@ func InitValidator() {
 			return validateGenre(subject)
 		},
 		"target": func(i interface{}, o interface{}) bool {
-			subject, ok := i.(domains.Target)
+			subject, ok := i.(model.Target)
 			if !ok {
 				return false
 			}
@@ -111,14 +111,14 @@ func InitValidator() {
 			return len(subject) < 500
 		},
 		"role": func(i interface{}, o interface{}) bool {
-			subject, ok := i.(domains.Target)
+			subject, ok := i.(model.Target)
 			if !ok {
 				return false
 			}
 			return validateRole(string(subject))
 		},
 		"roles": func(i interface{}, o interface{}) bool {
-			subject, ok := i.([]domains.Role)
+			subject, ok := i.([]model.Role)
 			if !ok {
 				return false
 			}
@@ -138,14 +138,14 @@ func InitValidator() {
 			return subject.Year() <= time.Now().Year()
 		},
 		"image": func(i interface{}, o interface{}) bool {
-			subject, ok := i.(domains.Image)
+			subject, ok := i.(model.Image)
 			if !ok {
 				return false
 			}
 			return imagePattern.MatchString(string(subject))
 		},
 		"images": func(i interface{}, o interface{}) bool {
-			subject, ok := i.([]domains.Image)
+			subject, ok := i.([]model.Image)
 			if !ok {
 				return false
 			}

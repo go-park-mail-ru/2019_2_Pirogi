@@ -12,9 +12,10 @@ import (
 
 func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 	return func(err error, ctx echo.Context) {
+		zap.S().Debug(err)
 		e := model.Error{
 			Status: http.StatusInternalServerError,
-			Error:  "internal server error",
+			Error:  err.Error(),
 		}
 		if he, ok := err.(*echo.HTTPError); ok {
 			e.Status = he.Code

@@ -29,8 +29,7 @@ func (u *personUsecase) Create(body []byte) *model.Error {
 	if err != nil {
 		return model.NewError(400, "Person: Create: ", err.Error())
 	}
-	_, e := u.personRepo.Insert(personNew)
-	return e
+	return u.personRepo.Insert(personNew)
 }
 
 func (u *personUsecase) List(ids []model.ID) []model.Person {
@@ -38,12 +37,15 @@ func (u *personUsecase) List(ids []model.ID) []model.Person {
 }
 
 func (u *personUsecase) GetPersonFullByte(id model.ID) ([]byte, *model.Error) {
-	person := u.personRepo.Get(id)
+	person, err := u.personRepo.Get(id)
+	if err != nil {
+		return nil, err
+	}
 	films := u.filmRepo.GetMany(person.FilmsID)
 	personFull := person.Full(films)
-	body, err := personFull.MarshalJSON()
-	if err != nil {
-		return nil, model.NewError(500, err.Error())
+	body, e := personFull.MarshalJSON()
+	if e != nil {
+		return nil, model.NewError(500, e.Error())
 	}
 	return body, nil
 }

@@ -2,149 +2,19 @@ package middleware
 
 import (
 	"bytes"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/film"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/person"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/review"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/domains/user"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
 	"net/http"
 	"net/http/httptest"
 	"testing"
-	"time"
 )
 
-type DatabaseMock struct{}
-
-func (DatabaseMock) Upsert(in interface{}) *domains.Error {
-	return nil
-}
-
-func (DatabaseMock) Get(id domains.ID, target string) (interface{}, *domains.Error) {
-	panic("implement me")
-}
-
-func (DatabaseMock) Delete(in interface{}) *domains.Error {
-	return nil
-}
-
-func (DatabaseMock) ClearDB() {
-	panic("implement me")
-}
-
-func (DatabaseMock) CheckCookie(cookie *http.Cookie) bool {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindUserByEmail(email string) (user.User, bool) {
-	return user.User{
-		Credentials: models.Credentials{
-			Email:    "i@artbakulev.com",
-			Password: "12345678",
-		},
-		UserTrunc: user.UserTrunc{},
-	}, true
-}
-
-func (DatabaseMock) FindUserByID(id domains.ID) (user.User, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindUserByCookie(cookie *http.Cookie) (user.User, bool) {
-	if cookie.Value == "ok" {
-		return user.User{}, true
-	}
-	return user.User{}, false
-}
-
-func (DatabaseMock) FindUsersByIDs(ids []domains.ID) ([]user.User, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindFilmByTitle(title string) (film.Film, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindFilmByID(id domains.ID) (film.Film, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindFilmsByIDs(ids []domains.ID) ([]film.Film, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindPersonByNameAndBirthday(name string, birthday string) (domains.Person, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindPersonByID(id domains.ID) (domains.Person, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindPersonsByIDs(ids []domains.ID) ([]domains.Person, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) FindReviewByID(id domains.ID) (review.Review, bool) {
-	panic("implement me")
-}
-
-func (DatabaseMock) GetFilmsSortedByMark(limit int, offset int) ([]film.Film, *domains.Error) {
-	panic("implement me")
-}
-
-func (DatabaseMock) GetFilmsOfGenreSortedByMark(genre domains.Genre, limit int, offset int) ([]film.Film, *domains.Error) {
-	panic("implement me")
-}
-
-func (DatabaseMock) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]film.Film, *domains.Error) {
-	panic("implement me")
-}
-
-func (DatabaseMock) GetReviewsSortedByDate(limit int, offset int) ([]review.Review, *domains.Error) {
-	panic("implement me")
-}
-
-func (DatabaseMock) GetReviewsOfFilmSortedByDate(filmID domains.ID, limit int, offset int) ([]review.Review, *domains.Error) {
-	panic("implement me")
-}
-
-func (DatabaseMock) GetReviewsOfAuthorSortedByDate(authorID domains.ID, limit int, offset int) ([]review.Review, *domains.Error) {
-	panic("implement me")
-}
-
-func TestExpireInvalidCookiesMiddleware(t *testing.T) {
-	e := echo.New()
-	buf := new(bytes.Buffer)
-	e.Logger.SetOutput(buf)
-	req := httptest.NewRequest(http.MethodGet, "/", nil)
-	expiredCookie := &http.Cookie{
-		Name:    "cinsear_session",
-		Value:   "test",
-		Path:    "",
-		Domain:  "",
-		Expires: time.Now(),
-	}
-	req.AddCookie(expiredCookie)
-	rec := httptest.NewRecorder()
-	c := e.NewContext(req, rec)
-	h := ExpireInvalidCookiesMiddleware(DatabaseMock{})(func(c echo.Context) error {
-		return nil
-	})
-	err := h(c)
-	require.NoError(t, err)
-	session, err := req.Cookie("cinsear_session")
-	require.NoError(t, err)
-	require.True(t, session.Expires.Before(time.Now()))
-}
+const configsPath = "../../../configs"
 
 func TestSetCSRFCookie(t *testing.T) {
-	configPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configPath)
+	err := configuration.UnmarshalConfigs(configsPath)
 	require.NoError(t, err)
 	e := echo.New()
 	buf := new(bytes.Buffer)
@@ -160,8 +30,7 @@ func TestSetCSRFCookie(t *testing.T) {
 }
 
 func TestHeaderMiddleware(t *testing.T) {
-	configPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configPath)
+	err := configuration.UnmarshalConfigs(configsPath)
 	require.NoError(t, err)
 	e := echo.New()
 	buf := new(bytes.Buffer)
@@ -180,8 +49,7 @@ func TestHeaderMiddleware(t *testing.T) {
 }
 
 func TestAccessLogMiddleware(t *testing.T) {
-	configPath := "../../../configs"
-	err := common.UnmarshalConfigs(&configPath)
+	err := configuration.UnmarshalConfigs(configsPath)
 	require.NoError(t, err)
 	logger, err := zap.NewDevelopment()
 	require.NoError(t, err)

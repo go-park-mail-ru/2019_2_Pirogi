@@ -3,6 +3,7 @@ package network
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 	"io/ioutil"
 	"strconv"
 )
@@ -34,15 +35,14 @@ func NormalizePath(path string) {
 func GetIntParam(ctx echo.Context, param string) (int, *model.Error) {
 	id, err := strconv.Atoi(ctx.Param(param))
 	if err != nil {
-		return -1, model.NewError(400, err.Error())
+		return -1, model.NewError(400, param, err.Error())
 	}
 	return id, nil
 }
 
-func WriteJSON(ctx echo.Context, status int, body []byte) *model.Error {
-	err := ctx.JSON(status, body)
+func WriteJSONToResponse(ctx echo.Context, status int, body []byte) {
+	err := ctx.JSONBlob(status, body)
 	if err != nil {
-		return model.NewError(500, err.Error())
+		zap.S().Warn(err.Error())
 	}
-	return nil
 }

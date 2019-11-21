@@ -1,10 +1,6 @@
 package model
 
-import (
-	"github.com/asaskevich/govalidator"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/security"
-	"html"
-)
+import "github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 
 type FilmNew struct {
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
@@ -19,14 +15,14 @@ type FilmNew struct {
 func (fn *FilmNew) ToFilm(id ID) Film {
 	return Film{
 		ID:          id,
-		Title:       html.EscapeString(fn.Title),
+		Title:       fn.Title,
 		Year:        fn.Year,
-		Genres:      security.XSSFilterGenres(fn.Genres),
+		Genres:      fn.Genres,
 		Mark:        Mark(0),
-		Description: html.EscapeString(fn.Description),
-		Countries:   security.XSSFilterStrings(fn.Countries),
+		Description: fn.Description,
+		Countries:   fn.Countries,
 		PersonsID:   fn.PersonsID,
-		Images:      []Image{"default.png"},
+		Images:      []Image{Image(configs.Default.DefaultImageName)},
 		ReviewsNum:  0,
 		Trailer:     fn.Trailer,
 	}
@@ -37,7 +33,6 @@ func (fn *FilmNew) Make(body []byte) error {
 	if err != nil {
 		return err
 	}
-	_, err = govalidator.ValidateStruct(fn)
 	return nil
 }
 
@@ -77,7 +72,6 @@ type FilmFull struct {
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string        `json:"trailer" valid:"link, optional"`
 }
-
 
 func (f *Film) SetMark(mark Mark) {
 	f.Mark = mark

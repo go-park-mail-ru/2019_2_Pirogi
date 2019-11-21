@@ -3,7 +3,6 @@ package model
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
-	"github.com/labstack/echo"
 	"net/http"
 	"time"
 )
@@ -20,6 +19,10 @@ func (c *Cookie) String() string {
 func (c *Cookie) Expire() {
 	c.Cookie.Expires = time.Unix(0, 0)
 	c.Cookie.Path = "/"
+}
+
+func (c *Cookie) CopyFromCommon(cookie *http.Cookie) {
+	c.Cookie = cookie
 }
 
 func (c *Cookie) Generate(cookieName, value string) {

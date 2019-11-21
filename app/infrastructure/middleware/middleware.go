@@ -2,7 +2,7 @@ package middleware
 
 import (
 	"errors"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/security"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
@@ -10,27 +10,8 @@ import (
 	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/infrastructure/database"
 	"github.com/labstack/echo"
 )
-
-func ExpireInvalidCookiesMiddleware(conn database.Database) func(next echo.HandlerFunc) echo.HandlerFunc {
-	return func(next echo.HandlerFunc) echo.HandlerFunc {
-		return func(c echo.Context) error {
-			session, err := c.Request().Cookie(configs.Default.CookieAuthName)
-			if err != nil {
-				return next(c)
-			}
-			_, ok := conn.FindUserByCookie(session)
-			if !ok {
-				auth.ExpireCookie(session)
-				http.SetCookie(c.Response(), session)
-				return next(c)
-			}
-			return next(c)
-		}
-	}
-}
 
 func setDefaultHeaders(w http.ResponseWriter) {
 	for k, v := range configs.Headers.HeadersMap {
@@ -47,7 +28,7 @@ func HeaderMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 
 func PostCheckMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		if !security.CheckNoCSRF(ctx) {
+		if ctx.Request().Method == http.MethodPost && !security.CheckNoCSRF(ctx) {
 			return errors.New("invalid csrf token")
 		}
 		return next(ctx)
@@ -101,7 +82,7 @@ func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
 		}
 		csrfCookie := &http.Cookie{
 			Name:     configs.Default.CSRFCookieName,
-			Value:    user.GetMD5Hash(time.Now().String() + ctx.Request().RemoteAddr),
+			Value:    hash.SHA1(time.Now().String() + ctx.Request().RemoteAddr),
 			Path:     "/",
 			Expires:  time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
 			HttpOnly: false,
