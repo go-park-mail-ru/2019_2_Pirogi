@@ -17,11 +17,11 @@ func GetImagesHandler(usecase usecase.ImageUsecase) echo.HandlerFunc {
 			return err.HTTP()
 		}
 
-		filename, err := usecase.GenerateFilename(ctx, fileBytes)
+		fullPath, filename, err := usecase.GenerateFilename(ctx, fileBytes)
 		if err != nil {
 			return err.HTTP()
 		}
-		err = files.WriteFile(filename, fileBytes)
+		err = files.WriteFile(fullPath, fileBytes)
 		if err != nil {
 			return err.HTTP()
 		}

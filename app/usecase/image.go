@@ -16,7 +16,7 @@ import (
 type ImageUsecase interface {
 	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
 	UpdateUserImage(user model.User, filename string) *model.Error
-	GenerateFilename(ctx echo.Context, body []byte) (filename string, err *model.Error)
+	GenerateFilename(ctx echo.Context, body []byte) (fullPath, filename string, err *model.Error)
 }
 
 type imageUsecase struct {
@@ -41,7 +41,7 @@ func (u *imageUsecase) UpdateUserImage(user model.User, filename string) *model.
 	return err
 }
 
-func (u *imageUsecase) GenerateFilename(ctx echo.Context, body []byte) (filenames string, err *model.Error) {
+func (u *imageUsecase) GenerateFilename(ctx echo.Context, body []byte) (fullPath, filename string, err *model.Error) {
 	var base string
 	switch {
 	case strings.Contains(ctx.Request().URL.Path, "users"):
@@ -51,12 +51,13 @@ func (u *imageUsecase) GenerateFilename(ctx echo.Context, body []byte) (filename
 	case strings.Contains(ctx.Request().URL.Path, "persons"):
 		base = configs.Default.PersonsImageUploadPath
 	default:
-		return "", model.NewError(http.StatusBadRequest, "wrong path")
+		return "", "", model.NewError(http.StatusBadRequest, "wrong path")
 	}
 	ending, err := files.DetectContentType(body)
 	if err != nil {
-		return "", err
+		return "", "", err
 	}
-	filename := path.Join(base, hash.SHA1(path.Join(time.Now().String()))+ending)
-	return filename, nil
+	filename = hash.SHA1(path.Join(time.Now().String())) + ending
+	fullPath = path.Join(base, filename)
+	return fullPath, filename, nil
 }
