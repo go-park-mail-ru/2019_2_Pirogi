@@ -1,9 +1,12 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"io/ioutil"
 	"net/http"
 	"strconv"
+
+	"github.com/asaskevich/govalidator"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"
@@ -36,12 +39,12 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "invalid id")
 		}
-		obj, e := conn.Get(id, "user")
+		obj, e := conn.Get(models.ID(id), configs.Default.UserTargetName)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
 		user := obj.(models.User)
-		userInfo := user.UserInfo
+		userInfo := user.UserTrunc
 		jsonBody, err := userInfo.MarshalJSON()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
@@ -56,6 +59,9 @@ func GetHandlerUser(conn database.Database) echo.HandlerFunc {
 
 func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
+		if !security.CheckNoCSRF(ctx) {
+			return echo.NewHTTPError(http.StatusBadRequest, "no or invalid CSRF header")
+		}
 		_, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
 		if err == nil {
 			return echo.NewHTTPError(http.StatusBadRequest, "already logged in")
@@ -70,7 +76,11 @@ func GetHandlerUsersCreate(conn database.Database) echo.HandlerFunc {
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
-		e := conn.InsertOrUpdate(newUser)
+		_, err = govalidator.ValidateStruct(newUser)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		e := conn.Upsert(newUser)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}
@@ -89,8 +99,12 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
 		defer ctx.Request().Body.Close()
-		updateUser := &models.UserInfo{}
+		updateUser := &models.UpdateUser{}
 		err = updateUser.UnmarshalJSON(rawBody)
+		if err != nil {
+			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
+		}
+		_, err = govalidator.ValidateStruct(updateUser)
 		if err != nil {
 			return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 		}
@@ -109,7 +123,7 @@ func GetHandlerUsersUpdate(conn database.Database) echo.HandlerFunc {
 		case updateUser.Description != "":
 			user.Description = updateUser.Description
 		}
-		e := conn.InsertOrUpdate(user)
+		e := conn.Upsert(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

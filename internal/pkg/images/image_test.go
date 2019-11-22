@@ -1,11 +1,12 @@
 package images
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
+	"github.com/stretchr/testify/require"
 )
 
 func TestDetectContentTypeOK(t *testing.T) {

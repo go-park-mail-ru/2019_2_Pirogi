@@ -1,9 +1,10 @@
 package error
 
 import (
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestNew(t *testing.T) {

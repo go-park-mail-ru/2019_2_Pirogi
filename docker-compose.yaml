@@ -4,8 +4,6 @@ services:
     build:
       context: ./
       dockerfile: ./Dockerfile
-    environment:
-      - mode=development
     ports:
       - "8000:8000"
     depends_on:

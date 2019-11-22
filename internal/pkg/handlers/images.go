@@ -1,6 +1,7 @@
 package handlers
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"io/ioutil"
 	"net/http"
 	"strings"
@@ -31,6 +32,8 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 			base = configs.Default.UsersImageUploadPath
 		case strings.Contains(ctx.Request().URL.Path, "films"):
 			base = configs.Default.FilmsImageUploadPath
+		case strings.Contains(ctx.Request().URL.Path, "persons"):
+			base = configs.Default.PersonsImageUploadPath
 		default:
 			return echo.NewHTTPError(http.StatusBadRequest, "wrong path")
 		}
@@ -39,8 +42,9 @@ func GetImagesHandler(conn database.Database) echo.HandlerFunc {
 			return err
 		}
 
-		user.Image = filename
-		e := conn.InsertOrUpdate(user)
+		// TODO: разобраться с изображениями
+		user.Image = models.Image(filename)
+		e := conn.Upsert(user)
 		if e != nil {
 			return echo.NewHTTPError(e.Status, e.Error)
 		}

@@ -5,12 +5,15 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/handlers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/middleware"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
 	"github.com/labstack/gommon/log"
 )
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
+	validators.InitValidator()
+
 	e := echo.New()
 	e.Server.Addr = configs.Default.APIPort
 	e.Logger.SetLevel(log.WARN)
@@ -40,6 +43,30 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	sessions.POST("/", handlers.GetHandlerLogin(conn))
 	sessions.DELETE("/", handlers.GetHandlerLogout(conn))
 
+	persons := api.Group("/persons")
+	persons.GET("/:person_id/", handlers.GetHandlerPerson(conn))
+	persons.POST("/", handlers.GetHandlerPersonsCreate(conn))
+	persons.POST("/images/", handlers.GetImagesHandler(conn))
+
+	reviews := api.Group("/reviews")
+	reviews.GET("/:film_id/", handlers.GetHandlerReviews(conn))
+	reviews.GET("/", handlers.GetHandlerProfileReviews(conn))
+	reviews.POST("/", handlers.GetHandlerReviewsCreate(conn))
+
+	likes := api.Group("/likes")
+	likes.POST("/", handlers.GetHandlerLikesCreate(conn))
+
+	marks := api.Group("/marks")
+	marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
+
+	lists := api.Group("/lists")
+	lists.GET("/", handlers.GetHandlerList(conn))
+
+	//common := api.Group("/common")
+	//common.GET("/:variable/", handlers.GetHandlerCommon())
+
+	e.Use(echoMid.Secure())
+	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)
 	e.Use(echoMid.Recover())
 

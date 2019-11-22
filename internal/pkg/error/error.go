@@ -1,8 +1,9 @@
 package error
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"strings"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 )
 
 func New(status int, details ...string) *models.Error {

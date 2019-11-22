@@ -3,42 +3,44 @@ package database
 import (
 	"context"
 	"net/http"
-	"strconv"
+
+	"github.com/pkg/errors"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	Error "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/error"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/film"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
-	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type MongoConnection struct {
-	client   *mongo.Client
-	context  context.Context
+	client  *mongo.Client
+	context context.Context
+
 	users    *mongo.Collection
-	films    *mongo.Collection
 	cookies  *mongo.Collection
+	films    *mongo.Collection
+	persons  *mongo.Collection
+	likes    *mongo.Collection
+	reviews  *mongo.Collection
 	counters *mongo.Collection
 }
 
-func getMongoClient() (*mongo.Client, error) {
+func getMongoClient(mongoHost string) (*mongo.Client, error) {
 	credentials := &options.Credential{
-		Username: configs.Default.MongoUser,
-		Password: configs.Default.MongoPwd,
+		Username:   configs.Default.MongoUser,
+		Password:   configs.Default.MongoPwd,
 		AuthSource: configs.Default.MongoDbName,
 	}
 	clientOpt := &options.ClientOptions{Auth: credentials}
-	clientOpt.ApplyURI(configs.Default.MongoHost)
+	clientOpt.ApplyURI(mongoHost)
 	client, err := mongo.NewClient(clientOpt)
 	return client, err
 }
 
-func InitMongo() (*MongoConnection, error) {
-	client, err := getMongoClient()
+func InitMongo(mongoHost string) (*MongoConnection, error) {
+	client, err := getMongoClient(mongoHost)
 	if err != nil {
 		return nil, err
 	}
@@ -58,8 +60,11 @@ func InitMongo() (*MongoConnection, error) {
 		client:   client,
 		context:  context.Background(),
 		users:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.UsersCollectionName),
-		films:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
 		cookies:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
+		films:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
+		persons:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
+		likes:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
+		reviews:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
 		counters: client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
 	}
 
@@ -70,103 +75,63 @@ func (conn *MongoConnection) InitCounters() error {
 	_, err := conn.counters.InsertMany(conn.context, []interface{}{
 		bson.M{"_id": configs.Default.UserTargetName, "seq": 0},
 		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.PersonTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.ReviewTargetName, "seq": 0},
 	})
 	return errors.Wrap(err, "init counters collection failed")
 }
 
-func (conn *MongoConnection) GetNextSequence(target string) (int, error) {
-	result := struct {
-		Seq int `bson:"seq"`
-	}{}
-	err := conn.counters.FindOneAndUpdate(conn.context, bson.M{"_id": target},
-		bson.M{"$inc": bson.M{"seq": 1}}).Decode(&result)
-	return result.Seq, errors.Wrap(err, "get next sequence failed")
-}
-
-func (conn *MongoConnection) InsertOrUpdate(in interface{}) *models.Error {
+func (conn *MongoConnection) Upsert(in interface{}) *models.Error {
+	var e *models.Error
 	switch in := in.(type) {
 	case models.NewUser:
-		_, ok := conn.FindUserByEmail(in.Email)
-		if ok {
-			return Error.New(http.StatusBadRequest, "user with the email already exists")
-		}
-		id, err := conn.GetNextSequence(configs.Default.UserTargetName)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
-		}
-		u, e := user.CreateNewUser(id, &in)
-		if e != nil {
-			return e
-		}
-		_, err = conn.users.InsertOne(conn.context, u)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
-		}
+		e = InsertUser(conn, in)
 	case models.User:
-		filter := bson.M{"_id": in.ID}
-		update := bson.M{"$set": in}
-		_, err := conn.users.UpdateOne(conn.context, filter, update)
-		if err != nil {
-			return Error.New(http.StatusNotFound, "user not found")
-		}
+		e = UpdateUser(conn, in)
 	case models.NewFilm:
-		// It is supposed that there cannot be films with the same title
-		_, ok := conn.FindFilmByTitle(in.Title)
-		if ok {
-			return Error.New(http.StatusBadRequest, "film with the title already exists")
-		}
-		id, err := conn.GetNextSequence(configs.Default.FilmTargetName)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert user in database")
-		}
-		f, e := film.CreateNewFilm(id, &in)
-		if e != nil {
-			return e
-		}
-		_, err = conn.films.InsertOne(conn.context, f)
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert film in database")
-		}
+		e = InsertFilm(conn, in)
 	case models.Film:
-		filter := bson.M{"_id": in.ID}
-		update := bson.M{"$set": in}
-		_, err := conn.films.UpdateOne(conn.context, filter, update)
-		if err != nil {
-			return Error.New(http.StatusNotFound, "film not found")
-		}
+		e = UpdateFilm(conn, in)
 	case models.UserCookie:
-		filter := bson.M{"_id": in.UserID}
-		foundCookie := models.UserCookie{}
-		err := conn.cookies.FindOne(conn.context, filter).Decode(&foundCookie)
-		if err != nil {
-			_, err = conn.cookies.InsertOne(conn.context, in)
-		} else {
-			update := bson.M{"$set": in}
-			_, err = conn.cookies.UpdateOne(conn.context, filter, update)
-		}
-		if err != nil {
-			return Error.New(http.StatusInternalServerError, "cannot insert cookie in database: "+err.Error())
-		}
+		e = UpsertUserCookie(conn, in)
+	case models.NewPerson:
+		e = InsertPerson(conn, in)
+	case models.Person:
+		e = UpdatePerson(conn, in)
+	case models.NewReview:
+		e = InsertReview(conn, in)
+	case models.Review:
+		e = UpdateReview(conn, in)
+	case models.Stars:
+		e = InsertStars(conn, in)
+	case models.Like:
+		e = InsertLike(conn, in)
 	default:
-		return Error.New(http.StatusBadRequest, "not supported type")
+		e = Error.New(http.StatusBadRequest, "not supported type")
 	}
-	return nil
+	return e
 }
 
-func (conn *MongoConnection) Get(id int, target string) (interface{}, *models.Error) {
+func (conn *MongoConnection) Get(id models.ID, target string) (interface{}, *models.Error) {
 	switch target {
 	case configs.Default.UserTargetName:
 		u, ok := conn.FindUserByID(id)
 		if ok {
 			return u, nil
 		}
-		return nil, Error.New(http.StatusNotFound, "no user with id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no user with id: "+id.String())
 	case configs.Default.FilmTargetName:
 		f, ok := conn.FindFilmByID(id)
 		if ok {
 			return f, nil
 		}
-		return nil, Error.New(http.StatusNotFound, "no film with the id: "+strconv.Itoa(id))
+		return nil, Error.New(http.StatusNotFound, "no film with the id: "+id.String())
+	case configs.Default.PersonTargetName:
+		f, ok := conn.FindPersonByID(id)
+		if ok {
+			return f, nil
+		}
+		return nil, Error.New(http.StatusNotFound, "no person with the id: "+id.String())
 	}
 	return nil, Error.New(http.StatusNotFound, "not supported type: "+target)
 }
@@ -182,8 +147,19 @@ func (conn *MongoConnection) Delete(in interface{}) *models.Error {
 		if err != nil {
 			return Error.New(http.StatusInternalServerError, "cannot delete cookie from database: "+err.Error())
 		}
+		return nil
 	}
-	return nil
+	return Error.New(http.StatusBadRequest, "not supported type")
+}
+
+func (conn *MongoConnection) ClearDB() {
+	_, _ = conn.users.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.cookies.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.films.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.reviews.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.persons.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.likes.DeleteMany(conn.context, bson.M{})
 }
 
 func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
@@ -198,9 +174,9 @@ func (conn *MongoConnection) FindUserByEmail(email string) (models.User, bool) {
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindUserByID(id int) (models.User, bool) {
+func (conn *MongoConnection) FindUserByID(id models.ID) (models.User, bool) {
 	result := models.User{}
-	err := conn.users.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	err := conn.users.FindOne(conn.context, bson.M{"usertrunc.id": id}).Decode(&result)
 	return result, err == nil
 }
 
@@ -213,74 +189,133 @@ func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (models.User,
 	return conn.FindUserByID(foundCookie.UserID)
 }
 
+func (conn *MongoConnection) FindUsersByIDs(ids []models.ID) ([]models.User, bool) {
+	var result []models.User
+	ok := true
+	for _, id := range ids {
+		u, found := conn.FindUserByID(id)
+		if !found {
+			ok = found
+			continue
+		}
+		result = append(result, u)
+	}
+	return result, ok
+}
+
+//TODO: надо будет переделать на один запрос к базе)))
+func (conn *MongoConnection) FindPersonsByIDs(ids []models.ID) ([]models.Person, bool) {
+	var result []models.Person
+	ok := true
+	for _, id := range ids {
+		u, found := conn.FindPersonByID(id)
+		if !found {
+			ok = found
+			continue
+		}
+		result = append(result, u)
+	}
+	return result, ok
+}
+
+func (conn *MongoConnection) FindFilmsByIDs(ids []models.ID) ([]models.Film, bool) {
+	var result []models.Film
+	ok := true
+	for _, id := range ids {
+		u, found := conn.FindFilmByID(id)
+		if !found {
+			ok = found
+			continue
+		}
+		result = append(result, u)
+	}
+	return result, ok
+}
+
 func (conn *MongoConnection) FindFilmByTitle(title string) (models.Film, bool) {
 	result := models.Film{}
-	err := conn.films.FindOne(conn.context, bson.M{"filminfo.title": title}).Decode(&result)
+	err := conn.films.FindOne(conn.context, bson.M{"title": title}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindFilmByID(id int) (models.Film, bool) {
+func (conn *MongoConnection) FindFilmByID(id models.ID) (models.Film, bool) {
 	result := models.Film{}
 	err := conn.films.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FakeFillDB() {
-	cookie := http.Cookie{
-		Name:  configs.Default.CookieAuthName,
-		Value: "value",
-		Path:  "/",
-	}
-
-	conn.InsertOrUpdate(models.NewUser{
-		Credentials: models.Credentials{Email: "oleg@mail.ru", Password: user.GetMD5Hash("qwerty123")},
-		Username:    "Oleg",
-	})
-	conn.InsertOrUpdate(models.UserCookie{UserID: 0, Cookie: &cookie})
-
-	conn.InsertOrUpdate(models.NewUser{
-		Credentials: models.Credentials{Email: "anton@mail.ru", Password: user.GetMD5Hash("qwe523")},
-		Username:    "Anton",
-	})
-	conn.InsertOrUpdate(models.UserCookie{UserID: 1, Cookie: &cookie})
-
-	conn.InsertOrUpdate(models.NewUser{
-		Credentials: models.Credentials{Email: "yura@gmail.com", Password: user.GetMD5Hash("12312312")},
-		Username:    "Yura",
-	})
-	conn.InsertOrUpdate(models.UserCookie{UserID: 2, Cookie: &cookie})
-
-	conn.InsertOrUpdate(models.NewFilm{FilmInfo: models.FilmInfo{
-		Title: "Бойцовский клуб",
-		Description: "Терзаемый хронической бессонницей и отчаянно пытающийся вырваться из мучительно скучной жизни " +
-			"клерк встречает некоего Тайлера Дардена, харизматического торговца мылом с извращенной философией. Тайлер " +
-			"уверен, что самосовершенствование — удел слабых, а саморазрушение — единственное, ради чего стоит жить.",
-		Date:       "1999",
-		Actors:     []string{"Брэд Питт", "Эдвард Нортон"},
-		Genres:     []string{"Драма", "Боевик"},
-		Directors:  []string{"Дэвид Финчер"},
-		Rating:     9.1,
-		Image:      "club.jpg",
-		ReviewsNum: models.ReviewsNum{Total: 100, Positive: 90, Negative: 10},
-	}})
-
-	conn.InsertOrUpdate(models.NewFilm{FilmInfo: models.FilmInfo{
-		Title: "Матрица",
-		Description: "Мир Матрицы — это иллюзия, существующая только в бесконечном сне обреченного человечества. " +
-			"Холодный мир будущего, в котором люди — всего лишь батарейки в компьютерных системах.",
-		Date:       "1999",
-		Actors:     []string{"Киану Ривз", "Кэрри-Энн Мосс"},
-		Genres:     []string{"Фэнтези"},
-		Directors:  []string{"Лана Вачовски", "Лилли Вачовски"},
-		Rating:     8.9,
-		Image:      "matrix.jpg",
-		ReviewsNum: models.ReviewsNum{Total: 110, Positive: 90, Negative: 20},
-	}})
+func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool) {
+	result := models.Person{}
+	err := conn.persons.FindOne(conn.context, bson.M{"name": name, "birthday": birthday}).Decode(&result)
+	return result, err == nil
 }
 
-func (conn *MongoConnection) ClearDB() {
-	_, _ = conn.users.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.cookies.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.films.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
+func (conn *MongoConnection) FindPersonByID(id models.ID) (models.Person, bool) {
+	result := models.Person{}
+	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindReviewByID(id models.ID) (models.Review, bool) {
+	result := models.Review{}
+	err := conn.reviews.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error) {
+	pipeline := []bson.M{
+		{"$sort": bson.M{"mark": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateFilms(conn, pipeline)
+}
+
+func (conn *MongoConnection) GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"genres": genre}},
+		{"$sort": bson.M{"mark": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateFilms(conn, pipeline)
+}
+
+func (conn *MongoConnection) GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"year": year}},
+		{"$sort": bson.M{"mark": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateFilms(conn, pipeline)
+}
+
+func (conn *MongoConnection) GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error) {
+	pipeline := []bson.M{
+		{"$sort": bson.M{"date": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateReviews(conn, pipeline)
+}
+
+func (conn *MongoConnection) GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"filmid": filmID}},
+		{"$sort": bson.M{"date": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateReviews(conn, pipeline)
+}
+
+func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID models.ID, limit int, offset int) ([]models.Review, *models.Error) {
+	pipeline := []bson.M{
+		{"$match": bson.M{"authorid": authorID}},
+		{"$sort": bson.M{"date": -1}},
+		{"$limit": limit},
+		{"$skip": offset},
+	}
+	return AggregateReviews(conn, pipeline)
 }

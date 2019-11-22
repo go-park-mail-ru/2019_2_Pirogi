@@ -7,14 +7,33 @@ import (
 )
 
 type Database interface {
-	InsertOrUpdate(in interface{}) *models.Error
-	Get(id int, target string) (interface{}, *models.Error)
+	Upsert(in interface{}) *models.Error
+	Get(id models.ID, target string) (interface{}, *models.Error)
 	Delete(in interface{}) *models.Error
+	ClearDB()
+
 	CheckCookie(cookie *http.Cookie) bool
+
 	FindUserByEmail(email string) (models.User, bool)
-	FindUserByID(id int) (models.User, bool)
+	FindUserByID(id models.ID) (models.User, bool)
 	FindUserByCookie(cookie *http.Cookie) (models.User, bool)
+	FindUsersByIDs(ids []models.ID) ([]models.User, bool)
+
 	FindFilmByTitle(title string) (models.Film, bool)
-	FindFilmByID(id int) (models.Film, bool)
-	FakeFillDB()
+	FindFilmByID(id models.ID) (models.Film, bool)
+	FindFilmsByIDs(ids []models.ID) ([]models.Film, bool)
+
+	FindPersonByNameAndBirthday(name string, birthday string) (models.Person, bool)
+	FindPersonByID(id models.ID) (models.Person, bool)
+	FindPersonsByIDs(ids []models.ID) ([]models.Person, bool)
+
+	FindReviewByID(id models.ID) (models.Review, bool)
+
+	GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error)
+	GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error)
+	GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error)
+
+	GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error)
+	GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error)
+	GetReviewsOfAuthorSortedByDate(authorID models.ID, limit int, offset int) ([]models.Review, *models.Error)
 }

@@ -2,6 +2,9 @@ package main
 
 import (
 	"flag"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -18,7 +21,7 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-	conn, err := database.InitMongo()
+	conn, err := database.InitMongo(configs.Default.MongoHost)
 	if err != nil {
 		log.Fatal(err)
 	}
