@@ -60,7 +60,7 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 		return model.NewError(400, e.Error())
 	}
 	_, err = u.userRepo.GetByEmail(userNew.Email)
-	zap.S().Debug(err)
+	model.NewError(err)
 	if err == nil {
 		return model.NewError(400, "user with the email is already existed")
 	}
@@ -68,7 +68,6 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	if err != nil {
 		return err
 	}
-	zap.S().Debug(userNew)
 	err = u.userRepo.Insert(userNew)
 	if err != nil {
 		return err
@@ -77,7 +76,6 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	var cookie model.Cookie
 	cookie.GenerateAuthCookie(user.ID, configs.Default.CookieAuthName, hash.SHA1(userNew.Password+userNew.Email+time.Now().String()))
 	err = u.cookieRepo.Insert(cookie)
-	zap.S().Debug(cookie)
 	if err != nil {
 		return err
 	}
