@@ -12,3 +12,6 @@ jobs:
       name: "build docker"
       script: ./scripts/run.sh
 
+    - stage: "tests"
+      name: "unit tests"
+      script: cd internal/pkg/security && go test
