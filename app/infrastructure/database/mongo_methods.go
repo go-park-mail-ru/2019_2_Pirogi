@@ -20,10 +20,6 @@ func (conn *MongoConnection) GetNextSequence(target string) (model.ID, error) {
 }
 
 func InsertUser(conn *MongoConnection, in model.UserNew) *model.Error {
-	_, err := conn.FindUserByEmail(in.Email)
-	if err != nil {
-		return model.NewError(http.StatusBadRequest, "user with the email already exists")
-	}
 	id, e := conn.GetNextSequence(configs.Default.UserTargetName)
 	if e != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert user in database")
@@ -37,7 +33,7 @@ func InsertUser(conn *MongoConnection, in model.UserNew) *model.Error {
 }
 
 func UpdateUser(conn *MongoConnection, in model.User) *model.Error {
-	filter := bson.M{"usertrunc.id": in.ID}
+	filter := bson.M{"id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.users.UpdateOne(conn.context, filter, update)
 	if err != nil {
