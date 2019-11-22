@@ -46,6 +46,7 @@ func TestTruncUser(t *testing.T) {
 		Mark:        3.5,
 		Description: "lalalalal",
 		Image:       "cffa50a32cb13a240d705317bcec65dd1f31b6ad.jpg",
+		Reviews:     0,
 	}
 	_, err := valid.ValidateStruct(userTrunc)
 	require.NoError(t, err)
