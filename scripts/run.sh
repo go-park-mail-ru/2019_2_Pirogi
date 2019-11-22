@@ -7,6 +7,9 @@ docker rm cinsear
 docker stop cinsear-db
 docker rm cinsear-db
 
+echo "---Running easyjson..."
+easyjson --all ./internal/pkg/models
+
 echo "---Checking or creating volumes..."
 docker volume create media
 docker volume create log
