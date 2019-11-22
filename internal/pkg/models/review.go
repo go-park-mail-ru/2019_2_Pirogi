@@ -5,7 +5,7 @@ import "time"
 type NewReview struct {
 	Title  string `json:"title" valid:"title, stringlength(2|50)"`
 	Body   string `json:"body" valid:"description, stringlength(8|50)"`
-	FilmID ID     `json:"film_id" valid:"numeric"`
+	FilmID ID     `json:"film_id, omitempty" valid:"numeric, optional"`
 	//TODO: убрать отсюда автор ID
 	AuthorID ID `json:"author_id, omitempty" valid:"numeric, optional"`
 }

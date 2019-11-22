@@ -23,7 +23,13 @@ func GetHandlerPerson(conn database.Database) echo.HandlerFunc {
 		}
 		person := obj.(models.Person)
 		films, _ := conn.FindFilmsByIDs(person.FilmsID)
-		personFull := makers.MakeFullPerson(person, films)
+		var filmPersonsTrunc [][]models.PersonTrunc
+		for _, f := range films {
+			persons, _ := conn.FindPersonsByIDs(f.PersonsID)
+			personsTrunc := makers.MakePersonsTrunc(persons)
+			filmPersonsTrunc = append(filmPersonsTrunc, personsTrunc)
+		}
+		personFull := makers.MakeFullPerson(person, films, filmPersonsTrunc)
 		jsonBody, err := personFull.MarshalJSON()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

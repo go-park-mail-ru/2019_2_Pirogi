@@ -9,5 +9,6 @@ func MakeUserTrunc(in models.User) models.UserTrunc {
 		Mark:        in.Mark,
 		Description: in.Description,
 		Image:       in.Image,
+		Reviews:     in.Reviews,
 	}
 }

@@ -9,15 +9,16 @@ type Credentials struct {
 
 type NewUser struct {
 	Credentials `valid:"required"`
-	Username    string `json:"username" valid:"alphanum, stringlength(4|50)"`
+	Username    string `json:"username" valid:"stringlength(2|50)"`
 }
 
 type UserTrunc struct {
-	ID          ID     `json:"id" valid:"numeric"`
-	Username    string `json:"username" valid:"title"`
-	Mark        Mark   `json:"mark" valid:"mark, optional"`
-	Description string `json:"description" valid:"description"`
-	Image       Image  `json:"image" valid:"image, optional"`
+	ID          ID         `json:"id" valid:"numeric"`
+	Username    string     `json:"username" valid:"title"`
+	Mark        Mark       `json:"mark" valid:"mark, optional"`
+	Description string     `json:"description" valid:"description"`
+	Image       Image      `json:"image" valid:"image, optional"`
+	Reviews     ReviewsNum `json:"reviews_num" valid:"numeric, optional"`
 }
 
 type User struct {

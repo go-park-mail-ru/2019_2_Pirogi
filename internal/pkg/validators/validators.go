@@ -8,13 +8,21 @@ import (
 	"time"
 )
 
-var yearPattern = regexp.MustCompile("[1|2][0-9]{3}")
 var datePattern = regexp.MustCompile("([0-9]{2}.){2}[1-2][0-9]{3}")
 var imagePattern = regexp.MustCompile("(([0-9]|[a-z]){40}.(jpeg|jpg|png|gif))|default.png")
 var textPattern = regexp.MustCompile(".+")
+var linkPattern = regexp.MustCompile("http?://.+\\..*")
 
 func InitValidator() {
 	valid.SetFieldsRequiredByDefault(true)
+
+	valid.CustomTypeTagMap.Set("link", func(i interface{}, o interface{}) bool {
+		subject, ok := i.(string)
+		if !ok {
+			return false
+		}
+		return linkPattern.MatchString(subject)
+	})
 	valid.CustomTypeTagMap.Set("ids", func(i interface{}, o interface{}) bool {
 		subject, ok := i.([]models.ID)
 		if !ok {
@@ -36,11 +44,11 @@ func InitValidator() {
 		return textPattern.MatchString(subject)
 	})
 	valid.CustomTypeTagMap.Set("year", func(i interface{}, o interface{}) bool {
-		subject, ok := i.(string)
+		subject, ok := i.(int)
 		if !ok {
 			return false
 		}
-		return yearPattern.MatchString(subject)
+		return subject > 0
 	})
 
 	valid.CustomTypeTagMap.Set("date", func(i interface{}, o interface{}) bool {
@@ -83,6 +91,14 @@ func InitValidator() {
 			}
 		}
 		return true
+	})
+
+	valid.CustomTypeTagMap.Set("genre", func(i interface{}, o interface{}) bool {
+		subject, ok := i.(string)
+		if !ok {
+			return false
+		}
+		return validateGenre(subject)
 	})
 
 	valid.CustomTypeTagMap.Set("target", func(i interface{}, o interface{}) bool {
@@ -206,7 +222,7 @@ func validateRole(role string) bool {
 
 //TODO: в продакшене расскоментировать
 func validatePassword(password string) bool {
-	return len(password) > 7
+	return len(password) > 3
 	//letters := 0
 	//var flags = []bool{false, false, false, false}
 	//for _, c := range password {

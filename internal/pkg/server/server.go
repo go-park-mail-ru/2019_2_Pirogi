@@ -8,22 +8,44 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
-	"github.com/labstack/gommon/log"
+	"go.uber.org/zap"
+	"log"
 )
+
+func CreateLogger() (*zap.Logger, error) {
+	cfg := zap.NewDevelopmentConfig()
+	cfg.OutputPaths = []string{
+		"stdout",
+		configs.Default.AccessLog,
+	}
+	cfg.ErrorOutputPaths = []string{
+		"stderr",
+		configs.Default.ErrorLog,
+	}
+	return cfg.Build()
+}
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	validators.InitValidator()
 
 	e := echo.New()
-	e.Server.Addr = configs.Default.APIPort
-	e.Logger.SetLevel(log.WARN)
-	e.HTTPErrorHandler = handlers.HTTPErrorHandler
+	logger, err := CreateLogger()
+	zap.ReplaceGlobals(logger)
+	if err != nil {
+		log.Fatalf("can't initialize zap logger: %v", err)
+	}
+	defer logger.Sync()
 
-	e.Pre(middleware.AccessLogMiddleware)
+	e.Server.Addr = configs.Default.APIPort
+	e.HTTPErrorHandler = handlers.GetHTTPErrorHandler(logger)
+
+	e.Pre(middleware.GetAccessLogMiddleware(logger))
 	e.Pre(echoMid.AddTrailingSlash())
 	e.Pre(middleware.ExpireInvalidCookiesMiddleware(conn))
 
 	api := e.Group("/api")
+
+	api.GET("/search/", handlers.GetHandlerSearch(conn))
 
 	users := api.Group("/users")
 	users.GET("/", handlers.GetHandlerUsers(conn))
@@ -62,9 +84,17 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	lists := api.Group("/lists")
 	lists.GET("/", handlers.GetHandlerList(conn))
 
-	//common := api.Group("/common")
-	//common.GET("/:variable/", handlers.GetHandlerCommon())
+	common := api.Group("/common")
+	common.GET("/:variable/", handlers.HandlerCommon())
 
+	pages := api.Group("/pages")
+	pages.GET("/", handlers.GetHandlerPages(conn))
+
+	e.Use(echoMid.CORSWithConfig(echoMid.CORSConfig{
+		AllowOrigins:     []string{"https://cinsear.ru", "http://localhost:8080"},
+		AllowHeaders:     []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+		AllowCredentials: true,
+	}))
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)

@@ -22,15 +22,16 @@ func MakePerson(id models.ID, in models.NewPerson) models.Person {
 
 func MakeTruncPerson(in models.Person) models.PersonTrunc {
 	return models.PersonTrunc{
-		ID:   in.ID,
-		Name: in.Name,
+		ID:    in.ID,
+		Name:  in.Name,
+		Image: in.Images[0],
 	}
 }
 
-func MakeFullPerson(in models.Person, films []models.Film) models.PersonFull {
+func MakeFullPerson(in models.Person, films []models.Film, filmsPersons [][]models.PersonTrunc) models.PersonFull {
 	var filmsTrunc []models.FilmTrunc
-	for _, film := range films {
-		filmsTrunc = append(filmsTrunc, MakeTruncFilm(film))
+	for i, film := range films {
+		filmsTrunc = append(filmsTrunc, MakeFilmTrunc(film, filmsPersons[i]))
 	}
 	return models.PersonFull{
 		ID:         in.ID,

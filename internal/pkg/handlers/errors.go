@@ -1,54 +1,38 @@
 package handlers
 
 import (
-	"fmt"
-	"net/http"
-	"os"
-	"strconv"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
+	"go.uber.org/zap/zapcore"
+	"net/http"
+	"strconv"
+	"time"
 )
 
-func HTTPErrorHandler(err error, ctx echo.Context) {
-	code := http.StatusInternalServerError
-	message := "internal server error"
-	if he, ok := err.(*echo.HTTPError); ok {
-		code = he.Code
-		switch he.Message.(type) {
-		case string:
-			message = he.Message.(string)
-		case int:
-			message = strconv.Itoa(he.Message.(int))
+func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
+	return func(err error, ctx echo.Context) {
+		e := models.Error{
+			Status: http.StatusInternalServerError,
+			Error:  "internal server error",
 		}
-	}
-	ctx.Logger().Error(ctx.Request().URL, code, err)
-	file, err := getErrorLogFile()
-	if err != nil {
-		ctx.Logger().Warn(err.Error())
-	} else {
-		defer func() {
-			err := file.Close()
-			if err != nil {
-				ctx.Logger().Warn("can not close log file")
+		if he, ok := err.(*echo.HTTPError); ok {
+			e.Status = he.Code
+			switch he.Message.(type) {
+			case string:
+				e.Error = err.Error()
+			case int:
+				e.Error = strconv.Itoa(he.Message.(int))
+			case *models.Error:
+				e.Error = he.Message.(*models.Error).Error
 			}
-		}()
-	}
-
-	e := models.Error{
-		Status: code,
-		Error:  message,
-	}
-	jsonError, _ := e.MarshalJSON()
-	ctx.Response().WriteHeader(code)
-	_, _ = fmt.Fprint(ctx.Response(), string(jsonError))
-}
-
-func getErrorLogFile() (*os.File, error) {
-	if f, e := os.OpenFile(configs.Default.ErrorLog, os.O_APPEND|os.O_WRONLY|os.O_CREATE, 0644); e != nil {
-		return nil, e
-	} else {
-		return f, nil
+		}
+		fields := []zapcore.Field{
+			zap.Int("status", e.Status),
+			zap.String("time", time.Now().String()),
+			zap.String("message", e.Error),
+		}
+		logger.Error("Error: ", fields...)
+		err = ctx.JSON(e.Status, e)
 	}
 }

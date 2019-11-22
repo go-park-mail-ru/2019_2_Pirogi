@@ -19,6 +19,7 @@ func CreateUser(id models.ID, newUser *models.NewUser) (models.User, *models.Err
 			Mark:        0,
 			Description: "",
 			Image:       "default.png",
+			Reviews:     0,
 		},
 	}
 	return user, nil

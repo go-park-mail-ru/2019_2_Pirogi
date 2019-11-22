@@ -24,7 +24,7 @@ func GetHandlerFilm(conn database.Database) echo.HandlerFunc {
 		}
 		film := obj.(models.Film)
 		persons, _ := conn.FindPersonsByIDs(film.PersonsID)
-		filmFull := makers.MakeFullFilm(film, persons)
+		filmFull := makers.MakeFilmFull(film, persons)
 		jsonBody, err := filmFull.MarshalJSON()
 		if err != nil {
 			return echo.NewHTTPError(http.StatusInternalServerError, err.Error())

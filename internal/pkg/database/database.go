@@ -29,11 +29,13 @@ type Database interface {
 
 	FindReviewByID(id models.ID) (models.Review, bool)
 
-	GetFilmsSortedByMark(limit int, offset int) ([]models.Film, *models.Error)
-	GetFilmsOfGenreSortedByMark(genre models.Genre, limit int, offset int) ([]models.Film, *models.Error)
-	GetFilmsOfYearSortedByMark(year string, limit int, offset int) ([]models.Film, *models.Error)
+	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *models.Error)
 
-	GetReviewsSortedByDate(limit int, offset int) ([]models.Review, *models.Error)
-	GetReviewsOfFilmSortedByDate(filmID models.ID, limit int, offset int) ([]models.Review, *models.Error)
-	GetReviewsOfAuthorSortedByDate(authorID models.ID, limit int, offset int) ([]models.Review, *models.Error)
+	GetFilmsSortedByMark(limit, offset int) ([]models.Film, *models.Error)
+	GetFilmsOfGenreSortedByMark(genre models.Genre, limit, offset int) ([]models.Film, *models.Error)
+	GetFilmsOfYearSortedByMark(year, limit, offset int) ([]models.Film, *models.Error)
+
+	GetReviewsSortedByDate(limit, offset int) ([]models.Review, *models.Error)
+	GetReviewsOfFilmSortedByDate(filmID models.ID, limit, offset int) ([]models.Review, *models.Error)
+	GetReviewsOfAuthorSortedByDate(authorID models.ID, limit, offset int) ([]models.Review, *models.Error)
 }

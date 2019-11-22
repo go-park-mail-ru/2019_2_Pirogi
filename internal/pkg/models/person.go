@@ -34,6 +34,7 @@ type PersonFull struct {
 }
 
 type PersonTrunc struct {
-	ID   ID     `json:"id, omitempty" valid:"numeric"`
-	Name string `json:"name" valid:"text, stringlength(1|50)"`
+	ID    ID     `json:"id, omitempty" valid:"numeric"`
+	Name  string `json:"name" valid:"text, stringlength(1|50)"`
+	Image Image  `json:"image" valid:"image"`
 }

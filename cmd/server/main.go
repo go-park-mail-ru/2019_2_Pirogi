@@ -13,7 +13,7 @@ import (
 )
 
 func main() {
-	configsPath := flag.String("config", "../../configs/", "directory with configs")
+	configsPath := flag.String("config", "configs/", "directory with configs")
 	flag.Parse()
 
 	err := common.UnmarshalConfigs(configsPath)

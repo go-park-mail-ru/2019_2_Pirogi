@@ -23,8 +23,7 @@ func WriteFileWithGeneratedName(fileBytes []byte, base string) (generatedFilenam
 		return "", echo.NewHTTPError(e.Status, e.Error)
 	}
 	generatedFilename = images.GenerateFilename(time.Now().String(), strconv.Itoa(rand.Int()), ending)
-	newPath := filepath.Join(base, generatedFilename)
-	newFile, err := os.Create(newPath)
+	newFile, err := os.Create(filepath.Join(base, generatedFilename))
 	if err != nil {
 		return "", echo.NewHTTPError(http.StatusInternalServerError, "can not create file")
 	}
