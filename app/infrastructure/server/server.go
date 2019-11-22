@@ -42,7 +42,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	e.Pre(middleware.GetAccessLogMiddleware(logger))
 	e.Pre(echoMid.AddTrailingSlash())
-	e.Pre(middleware.PostCheckMiddleware)
+	//e.Pre(middleware.PostCheckMiddleware)
 
 	filmRepo := interfaces.NewFilmRepository(conn)
 	personRepo := interfaces.NewPersonRepository(conn)
