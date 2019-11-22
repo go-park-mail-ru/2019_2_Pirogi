@@ -8,7 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/labstack/echo"
-	"go.uber.org/zap"
 	"strconv"
 )
 
@@ -51,7 +50,6 @@ func (u *reviewUsecase) GetUserReviewsJSONBlob(user model.User, limit, offset in
 
 func (u *reviewUsecase) GetFilmReviewsFullJSONBlob(filmID model.ID, limit, offset int) ([]byte, *model.Error) {
 	reviews, err := u.reviewRepo.GetMany(configs.Default.FilmTargetName, filmID, limit, offset)
-	zap.S().Debug(reviews)
 	if err != nil {
 		return nil, err
 	}
@@ -63,7 +61,6 @@ func (u *reviewUsecase) GetFilmReviewsFullJSONBlob(filmID model.ID, limit, offse
 		}
 		reviewsFull = append(reviewsFull, review.Full(user.Trunc()))
 	}
-	zap.S().Debug(reviewsFull)
 	body := modelWorker.MarshalReviewsFull(reviewsFull)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil

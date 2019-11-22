@@ -12,7 +12,6 @@ import (
 
 func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 	return func(err error, ctx echo.Context) {
-		zap.S().Debug(err)
 		e := model.Error{
 			Status: http.StatusInternalServerError,
 			Error:  err.Error(),

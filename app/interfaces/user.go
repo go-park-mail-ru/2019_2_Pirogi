@@ -6,7 +6,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
-	"go.uber.org/zap"
 	"html"
 )
 
@@ -29,7 +28,6 @@ func (u userRepository) Delete(id model.ID) *model.Error {
 
 func (u userRepository) Get(id model.ID) (model.User, *model.Error) {
 	userInterface, e := u.conn.Get(id, configs.Default.UserTargetName)
-	zap.S().Debug(userInterface)
 	if e != nil {
 		return model.User{}, e
 	}

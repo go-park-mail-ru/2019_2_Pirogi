@@ -7,7 +7,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/queryWorker"
-	"go.uber.org/zap"
 )
 
 type PagesUsecase interface {
@@ -37,7 +36,6 @@ func (u *pagesUsecase) GetIndexPageJSONBlob() ([]byte, *model.Error) {
 	pipeline = queryWorker.GetCustomPipelineForMongo(configs.Default.DefaultEntriesLimit+20,
 		0, configs.Default.FilmTargetName)
 	filmsForUser, err := u.filmRepo.GetByPipeline(pipeline)
-	zap.S().Debug(filmsForUser)
 	if err != nil {
 		return nil, err
 	}

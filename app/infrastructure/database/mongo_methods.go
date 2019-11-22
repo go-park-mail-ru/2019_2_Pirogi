@@ -5,7 +5,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -97,7 +96,6 @@ func InsertPerson(conn *MongoConnection, in model.PersonNew) *model.Error {
 	}
 
 	id, err := conn.GetNextSequence(configs.Default.PersonTargetName)
-	zap.S().Debug(id)
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert person in database: "+err.Error())
 	}

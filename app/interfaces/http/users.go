@@ -4,7 +4,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
-	"go.uber.org/zap"
 	"net/http"
 
 	"github.com/labstack/echo"
@@ -44,7 +43,6 @@ func GetHandlerUser(userUsecase usecase.UserUsecase) echo.HandlerFunc {
 func GetHandlerUsersCreate(userUsecase usecase.UserUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		user, _ := userUsecase.GetUserByContext(ctx)
-		zap.S().Debug(user)
 		if user.Email != "" {
 			return echo.NewHTTPError(http.StatusBadRequest, "already logged in")
 		}
