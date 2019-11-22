@@ -1,10 +1,11 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"net/http"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"

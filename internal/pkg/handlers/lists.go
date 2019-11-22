@@ -1,12 +1,13 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 func GetHandlerList(conn database.Database) echo.HandlerFunc {

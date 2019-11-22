@@ -1,9 +1,10 @@
 package makers
 
 import (
+	"html"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
-	"html"
 )
 
 func MakeFilm(id models.ID, in *models.NewFilm) models.Film {

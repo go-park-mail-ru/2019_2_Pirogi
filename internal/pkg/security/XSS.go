@@ -1,8 +1,9 @@
 package security
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"html"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 )
 
 func XSSFilterRoles(roles []models.Role) []models.Role {

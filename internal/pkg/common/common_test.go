@@ -3,16 +3,17 @@ package common
 import (
 	"bufio"
 	"bytes"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
-	"github.com/labstack/echo"
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/validators"
+	"github.com/labstack/echo"
+	"github.com/stretchr/testify/require"
 )
 
 func TestReadLinesInvalidFile(t *testing.T) {

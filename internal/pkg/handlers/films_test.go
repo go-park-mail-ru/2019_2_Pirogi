@@ -1,6 +1,11 @@
 package handlers
 
 import (
+	"net/http"
+	"net/http/httptest"
+	"strings"
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	mockdatabase "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database/mock"
@@ -10,10 +15,6 @@ import (
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
-	"net/http"
-	"net/http/httptest"
-	"strings"
-	"testing"
 )
 
 type TestCaseGetHandlerFilm struct {

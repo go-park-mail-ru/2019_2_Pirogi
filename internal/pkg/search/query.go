@@ -37,7 +37,7 @@ func (qp *QuerySearchParams) GetPipelineForMongo(target string) interface{} {
 		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
 	var matchBSON []bson.M
-	if qp.YearMin != 0 || qp.YearMax != 0  {
+	if qp.YearMin != 0 || qp.YearMax != 0 {
 		if qp.YearMin == 0 {
 			qp.YearMin = configs.Default.DefaultYearMin
 		} else if qp.YearMax == 0 {

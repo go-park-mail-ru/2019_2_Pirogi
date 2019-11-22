@@ -1,12 +1,13 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/makers"
 
 	"github.com/asaskevich/govalidator"
 

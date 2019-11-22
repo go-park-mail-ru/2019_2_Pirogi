@@ -1,14 +1,15 @@
 package security
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/labstack/echo"
-	"github.com/stretchr/testify/require"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/labstack/echo"
+	"github.com/stretchr/testify/require"
 )
 
 func TestXSSFilterStrings(t *testing.T) {

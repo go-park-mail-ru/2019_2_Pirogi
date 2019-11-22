@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/user"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net/http"
-	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/auth"

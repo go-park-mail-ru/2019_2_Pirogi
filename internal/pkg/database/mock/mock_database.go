@@ -5,10 +5,11 @@
 package mock_database
 
 import (
-	models "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	gomock "github.com/golang/mock/gomock"
 	http "net/http"
 	reflect "reflect"
+
+	models "github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	gomock "github.com/golang/mock/gomock"
 )
 
 // MockDatabase is a mock of Database interface

@@ -1,9 +1,10 @@
 package search
 
 import (
+	"testing"
+
 	"github.com/stretchr/testify/require"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"testing"
 )
 
 func TestStringFromStringArray(t *testing.T) {

@@ -1,13 +1,14 @@
 package handlers
 
 import (
+	"net/http"
+	"strconv"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net/http"
-	"strconv"
-	"time"
 )
 
 func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {

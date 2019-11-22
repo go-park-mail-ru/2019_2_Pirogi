@@ -1,6 +1,8 @@
 package handlers
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -8,7 +10,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 func GetHandlerPages(conn database.Database) echo.HandlerFunc {

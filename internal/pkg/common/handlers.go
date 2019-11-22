@@ -2,6 +2,12 @@ package common
 
 import (
 	"errors"
+	"io/ioutil"
+	"net/http"
+	"reflect"
+	"strconv"
+	"strings"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
@@ -9,11 +15,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/search"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/security"
 	"github.com/labstack/echo"
-	"io/ioutil"
-	"net/http"
-	"reflect"
-	"strconv"
-	"strings"
 )
 
 func ReadBody(ctx echo.Context) ([]byte, error) {

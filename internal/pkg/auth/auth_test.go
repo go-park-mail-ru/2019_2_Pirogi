@@ -2,13 +2,14 @@ package auth
 
 import (
 	"bufio"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
-	"github.com/labstack/echo"
 	"log"
 	"net/http"
 	"net/http/httptest"
 	"testing"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/labstack/echo"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 

@@ -2,15 +2,16 @@ package middleware
 
 import (
 	"bytes"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"net/http"
-	"net/http/httptest"
-	"testing"
-	"time"
 )
 
 type DatabaseMock struct{}

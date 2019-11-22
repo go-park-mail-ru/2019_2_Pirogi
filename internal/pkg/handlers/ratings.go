@@ -1,9 +1,10 @@
 package handlers
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 	"io/ioutil"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
 
 	"github.com/asaskevich/govalidator"
 
