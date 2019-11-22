@@ -1,0 +1,14 @@
+language: go
+
+services:
+  - docker
+
+go:
+  - 1.13.x
+
+jobs:
+  include:
+    - stage: "build"
+      name: "build docker"
+      script: ./scripts/run.sh
+
