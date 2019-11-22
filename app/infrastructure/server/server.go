@@ -57,15 +57,12 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo)
 	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
+	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 
 	api := e.Group("/api")
 
 	films := api.Group("/films")
 	films.GET("/:film_id/", handlers.GetHandlerFilm(filmUsecase))
-	//films.POST("/", handlers.GetHandlerFilmCreate(filmUsecase))
-
-	//films.POST("/images/", handlers.GetImagesHandler(f))
-	//films.DELETE("/:film_id", handlers.GetHandlerFilmDelete(filmUsecase))
 
 	api.GET("/search/", handlers.GetHandlerSearch(searchUsecase))
 
@@ -79,18 +76,15 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	users.GET("/:user_id/", handlers.GetHandlerUser(userUsecase))
 	users.POST("/", handlers.GetHandlerUsersCreate(userUsecase))
 	users.PUT("/", handlers.GetHandlerUsersUpdate(userUsecase))
-	//users.POST("/images/", handlers.GetImagesHandler(conn))
+
+	users.POST("/images/", handlers.GetImagesHandler(imageUsecase))
 
 	persons := api.Group("/persons")
 	persons.GET("/:person_id/", handlers.GetHandlerPerson(personUsecase))
-	//persons.POST("/", handlers.GetHandlerPersonsCreate(personUsecase))
-	//persons.POST("/images/", handlers.GetImagesHandler(personUsecase))
-	//
 	reviews := api.Group("/reviews")
 	reviews.GET("/:film_id/", handlers.GetHandlerReviews(reviewUsecase))
 	reviews.GET("/", handlers.GetHandlerProfileReviews(reviewUsecase))
 	reviews.POST("/", handlers.GetHandlerReviewsCreate(reviewUsecase))
-	//
 	//likes := api.Group("/likes")
 	//likes.POST("/", handlers.GetHandlerLikesCreate(conn))
 	//
@@ -99,10 +93,8 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	//
 	//lists := api.Group("/lists")
 	//lists.GET("/", handlers.GetHandlerList(conn))
-	//
-	common := api.Group("/common")
-	common.GET("/:variable/", handlers.HandlerCommon())
-	//
+	api.GET("/common/:variable/", handlers.HandlerCommon())
+
 	pages := api.Group("/pages")
 	pages.GET("/", handlers.GetHandlerPages(pagesUsecase))
 

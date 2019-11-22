@@ -44,3 +44,4 @@ default_order_by: "mark"
 default_year_min: 1700
 default_year_max: 2020
 
+max_file_upload_size: 5242880 # 5 MB

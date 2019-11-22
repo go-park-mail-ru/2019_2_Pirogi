@@ -24,3 +24,4 @@ func DetectContentType(data []byte) (ending string, err *model.Error) {
 	}
 	return endings[0], nil
 }
+

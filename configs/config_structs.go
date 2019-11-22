@@ -50,6 +50,8 @@ type DefaultConfig struct {
 
 	DefaultYearMin int `yaml:"default_year_min"`
 	DefaultYearMax int `yaml:"default_year_max"`
+
+	MaxFileUploadSize int64 `yaml:"max_file_upload_size"`
 }
 
 var Default DefaultConfig
