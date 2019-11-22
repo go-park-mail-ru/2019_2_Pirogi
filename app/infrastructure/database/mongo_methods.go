@@ -2,10 +2,12 @@ package database
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/pkg/errors"
-	"go.mongodb.org/mongo-driver/bson"
 	"net/http"
+
+	"github.com/pkg/errors"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 func (conn *MongoConnection) GetNextSequence(target string) (model.ID, error) {
@@ -19,23 +21,23 @@ func (conn *MongoConnection) GetNextSequence(target string) (model.ID, error) {
 
 func InsertUser(conn *MongoConnection, in model.UserNew) *model.Error {
 	_, err := conn.FindUserByEmail(in.Email)
-	if err == nil {
-		return model.NewError(http.StatusBadRequest, "user with the email is already existed")
+	if err != nil {
+		return model.NewError(http.StatusBadRequest, "user with the email already exists")
 	}
 	id, e := conn.GetNextSequence(configs.Default.UserTargetName)
 	if e != nil {
-		return model.NewError(http.StatusInternalServerError, e.Error())
+		return model.NewError(http.StatusInternalServerError, "cannot insert user in database")
 	}
-	user := in.ToUser(id)
-	_, e = conn.users.InsertOne(conn.context, user)
+	u := in.ToUser(id)
+	_, e = conn.users.InsertOne(conn.context, u)
 	if e != nil {
-		return model.NewError(http.StatusInternalServerError, e.Error())
+		return model.NewError(http.StatusInternalServerError, "cannot insert user in database")
 	}
 	return nil
 }
 
 func UpdateUser(conn *MongoConnection, in model.User) *model.Error {
-	filter := bson.M{"id": in.ID}
+	filter := bson.M{"usertrunc.id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.users.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -54,8 +56,8 @@ func InsertFilm(conn *MongoConnection, in model.FilmNew) *model.Error {
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert film in database")
 	}
-	film := in.ToFilm(id)
-	_, err = conn.films.InsertOne(conn.context, film)
+	f := in.ToFilm(id)
+	_, err = conn.films.InsertOne(conn.context, f)
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert film in database")
 	}
@@ -99,8 +101,8 @@ func InsertPerson(conn *MongoConnection, in model.PersonNew) *model.Error {
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert person in database: "+err.Error())
 	}
-	person := in.ToPerson(id)
-	_, err = conn.persons.InsertOne(conn.context, person)
+	newPerson := in.ToPerson(id)
+	_, err = conn.persons.InsertOne(conn.context, newPerson)
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert person in database: "+err.Error())
 	}
@@ -119,6 +121,10 @@ func UpdatePerson(conn *MongoConnection, in model.Person) *model.Error {
 
 // TODO: check that user and film of review exist
 func InsertReview(conn *MongoConnection, in model.ReviewNew) *model.Error {
+	//foundUser, e := conn.Get(in.AuthorID, configs.Default.UserTargetName)
+	//if e != nil {
+	//	return model.NewError(http.StatusNotFound, "user not found")
+	//}
 	id, err := conn.GetNextSequence(configs.Default.ReviewTargetName)
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert review in database")
@@ -128,6 +134,10 @@ func InsertReview(conn *MongoConnection, in model.ReviewNew) *model.Error {
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert review in database")
 	}
+	//TODO: добавить поле, код внизу должен работать
+	//u := foundUser.(model.User)
+	//u.Reviews++
+	//conn.Upsert(u)
 	return nil
 }
 
