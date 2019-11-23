@@ -3,6 +3,7 @@ package chat
 import (
 	"fmt"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"go.uber.org/zap"
 	"io"
 	"log"
 
@@ -75,24 +76,20 @@ func (c *Client) listenRead() {
 	for {
 		select {
 
-		// receive done request
 		case <-c.doneCh:
 			c.server.Del(c)
-			c.doneCh <- true // for listenWrite method
+			c.doneCh <- true
 			return
 
-		// read data from websocket connection
 		default:
 			var msg Message
 			err := websocket.JSON.Receive(c.ws, &msg)
+			zap.S().Debug(msg)
 			if err == io.EOF {
 				c.doneCh <- true
 			} else if err != nil {
 				c.server.Err(NewErrorChat(err.Error()))
-			} else {
-				c.server.SendAll(&msg)
 			}
-			c.Write(&Message{Body: "hello"})
 			e := c.server.conn.Upsert(model.MessageNew{
 				UserID: c.id,
 				Body:   msg.Body,
