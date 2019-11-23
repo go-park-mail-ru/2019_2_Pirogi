@@ -10,7 +10,9 @@ jobs:
   include:
     - stage: "build"
       name: "build docker"
-      script: ./scripts/run.sh
+      script:
+        - go get -u github.com/mailru/easyjson/...
+        - ./scripts/run.sh
 
     - stage: "tests"
       name: "unit tests"
