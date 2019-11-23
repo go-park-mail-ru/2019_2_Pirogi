@@ -22,6 +22,7 @@ type MongoConnection struct {
 	likes    *mongo.Collection
 	reviews  *mongo.Collection
 	counters *mongo.Collection
+	chats    *mongo.Collection
 }
 
 func getMongoClient(mongoHost string) (*mongo.Client, error) {
@@ -63,6 +64,7 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 		likes:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
 		reviews:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
 		counters: client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
+		chats:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.ChatsCollectionName),
 	}
 
 	return &conn, err
@@ -103,6 +105,8 @@ func (conn *MongoConnection) Upsert(in interface{}) *model.Error {
 		e = InsertStars(conn, in)
 	case model.Like:
 		e = InsertLike(conn, in)
+	case model.MessageNew:
+		e = InsertMessage(conn, in)
 	default:
 		e = model.NewError(http.StatusBadRequest, "not supported type")
 	}
@@ -125,6 +129,12 @@ func (conn *MongoConnection) Get(id model.ID, target string) (interface{}, *mode
 		return nil, model.NewError(http.StatusNotFound, "no film with the id: "+id.String())
 	case configs.Default.PersonTargetName:
 		f, ok := conn.FindPersonByID(id)
+		if ok {
+			return f, nil
+		}
+		return nil, model.NewError(http.StatusNotFound, "no person with the id: "+id.String())
+	case configs.Default.ChatTargetName:
+		f, ok := conn.FindChatByUserID(id)
 		if ok {
 			return f, nil
 		}
@@ -252,6 +262,12 @@ func (conn *MongoConnection) FindPersonByNameAndBirthday(name string, birthday s
 func (conn *MongoConnection) FindPersonByID(id model.ID) (model.Person, bool) {
 	result := model.Person{}
 	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindChatByUserID(id model.ID) (model.Chat, bool) {
+	result := model.Chat{}
+	err := conn.chats.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
 }
 

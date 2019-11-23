@@ -29,6 +29,7 @@ type DefaultConfig struct {
 	LikesCollectionName    string `yaml:"likes_collection_name"`
 	ReviewsCollectionName  string `yaml:"reviews_collection_name"`
 	CountersCollectionName string `yaml:"counters_collection_name"`
+	ChatsCollectionName    string `yaml:"chats_collection_name"`
 
 	UserTargetName        string `yaml:"user_target_name"`
 	FilmTargetName        string `yaml:"film_target_name"`
@@ -37,6 +38,7 @@ type DefaultConfig struct {
 	ReviewTargetName      string `yaml:"review_target_name"`
 	LikeTargetName        string `yaml:"like_target_name"`
 	StarTargetName        string `yaml:"star_target_name"`
+	ChatTargetName        string `yaml:"chat_target_name"`
 	FilmImageTargetName   string `yaml:"film_image_target_name"`
 	PersonImageTargetName string `yaml:"person_image_target_name"`
 	DefaultImageName      string `yaml:"default_image_name"`
