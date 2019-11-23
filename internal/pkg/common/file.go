@@ -1,6 +1,7 @@
 package common
 
 import (
+	"gopkg.in/yaml.v2"
 	"io/ioutil"
 	"math/rand"
 	"net/http"
