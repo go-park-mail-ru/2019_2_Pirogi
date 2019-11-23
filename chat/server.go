@@ -1,6 +1,8 @@
 package chat
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"go.uber.org/zap"
 	"golang.org/x/net/websocket"
 	"net/http"
@@ -40,8 +42,17 @@ func (s *Server) Listen() {
 				s.errCh <- NewErrorChat(err.Error())
 			}
 		}()
-
-		client := NewClient(ws, s)
+		var cookie model.Cookie
+		cookieHTTP, err := ws.Request().Cookie(configs.Default.CookieAuthName)
+		if err != nil {
+			s.errCh <- NewErrorChat(err.Error())
+		}
+		cookie.CopyFromCommon(cookieHTTP)
+		u, e := s.conn.FindUserByCookie(cookieHTTP)
+		if e != nil {
+			s.errCh <- NewErrorChat(e.Error)
+		}
+		client := NewClient(ws, s, u.ID)
 		s.Add(client)
 		client.Listen()
 	}
@@ -49,7 +60,6 @@ func (s *Server) Listen() {
 
 	for {
 		select {
-
 		// Add new a client
 		case c := <-s.addCh:
 			zap.S().Error(NewErrorChat("Added client ", string(c.id)))
@@ -68,9 +78,4 @@ func (s *Server) Listen() {
 			return
 		}
 	}
-}
-
-func handler(r *http.Request, w http.Response) {
-	zap.S().Debug(r.Method)
-	zap.S().Debug(r.Body)
 }

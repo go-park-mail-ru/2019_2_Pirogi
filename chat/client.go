@@ -2,6 +2,7 @@ package chat
 
 import (
 	"fmt"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"go.uber.org/zap"
 	"io"
 	"log"
@@ -11,11 +12,8 @@ import (
 
 const channelBufSize = 100
 
-var maxId int = 0
-
 // Create new chat client.
-func NewClient(ws *websocket.Conn, server *Server) *Client {
-
+func NewClient(ws *websocket.Conn, server *Server, userID model.ID) *Client {
 	if ws == nil {
 		panic("ws cannot be nil")
 	}
@@ -24,11 +22,10 @@ func NewClient(ws *websocket.Conn, server *Server) *Client {
 		panic("server cannot be nil")
 	}
 
-	maxId++
 	ch := make(chan *Message, channelBufSize)
 	doneCh := make(chan bool)
 
-	return &Client{maxId, ws, server, ch, doneCh}
+	return &Client{userID, ws, server, ch, doneCh}
 }
 
 func (c *Client) Conn() *websocket.Conn {
@@ -97,6 +94,13 @@ func (c *Client) listenRead() {
 			} else {
 				zap.S().Debug(msg)
 				c.server.SendAll(&msg)
+			}
+			e := c.server.conn.Upsert(model.MessageNew{
+				UserID: c.id,
+				Body:   msg.Body,
+			})
+			if e != nil {
+				c.server.Err(NewErrorChat(e.Error))
 			}
 		}
 	}

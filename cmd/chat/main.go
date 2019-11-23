@@ -30,10 +30,6 @@ func main() {
 		log.Fatal(err.Error())
 	}
 
-
-
-
-
 	logger, err := CreateLogger()
 	if err != nil {
 		log.Fatal(err.Error())
@@ -44,7 +40,6 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
 
 	server := chat.NewServer("/", conn)
 	go server.Listen()

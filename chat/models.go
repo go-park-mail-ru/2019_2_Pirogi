@@ -2,6 +2,7 @@ package chat
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"golang.org/x/net/websocket"
 	"strings"
 )
@@ -37,6 +38,7 @@ type Server struct {
 	sendAllCh chan *Message
 	doneCh    chan bool
 	errCh     chan *ErrorChat
+	conn      database.Database
 }
 
 type ServerChat interface {
@@ -58,9 +60,9 @@ type ClientChat interface {
 	listenRead()
 }
 
-func NewServer(pattern string) *Server {
+func NewServer(pattern string, conn database.Database) *Server {
 	var messages []*Message
-	clients := make(map[int]*Client)
+	clients := make(map[model.ID]*Client)
 	addCh := make(chan *Client)
 	delCh := make(chan *Client)
 	sendAllCh := make(chan *Message)
@@ -76,6 +78,7 @@ func NewServer(pattern string) *Server {
 		sendAllCh,
 		doneCh,
 		errCh,
+		conn,
 	}
 }
 
