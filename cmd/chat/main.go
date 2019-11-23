@@ -1,14 +1,11 @@
 package main
 
 import (
-	"encoding/json"
 	"flag"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/chat"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
-	myjson "github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
 	"go.uber.org/zap"
 	"log"
 	"net/http"
@@ -52,6 +49,7 @@ func main() {
 	log.Fatal(http.ListenAndServe(":8080", nil))
 
 }
+
 //
 //func getHandlerAdmin(conn database.Database) func(res http.ResponseWriter, req *http.Request) {
 //	return func(res http.ResponseWriter, req *http.Request) {
