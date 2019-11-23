@@ -286,6 +286,8 @@ func (conn *MongoConnection) GetByQuery(collectionName string, pipeline interfac
 		return AggregateFilms(conn, pipeline)
 	case configs.Default.PersonsCollectionName:
 		return AggregatePersons(conn, pipeline)
+	case configs.Default.ChatsCollectionName:
+		return AggregateChats(conn, pipeline)
 	default:
 		return nil, model.NewError(http.StatusBadRequest, "not supported type")
 	}
@@ -359,4 +361,24 @@ func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID model.ID, l
 		{"$skip": offset},
 	}
 	return AggregateReviews(conn, pipeline)
+}
+
+func (conn *MongoConnection) GetAll(collectionName string) ([]interface{}, *model.Error) {
+	if collectionName == configs.Default.ChatsCollectionName {
+		curs, err := conn.chats.Find(conn.context, bson.M{})
+		if err != nil {
+			return nil, model.NewError(http.StatusInternalServerError, "error while finding chats")
+		}
+		var result []interface{}
+		for curs.Next(conn.context) {
+			ch := model.Chat{}
+			err = curs.Decode(&ch)
+			if err != nil {
+				return nil, model.NewError(http.StatusInternalServerError, "error while decoding result in chats")
+			}
+			result = append(result, ch)
+		}
+		return result, nil
+	}
+	return nil,  model.NewError(http.StatusBadRequest, "not supported type")
 }

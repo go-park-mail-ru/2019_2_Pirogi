@@ -240,6 +240,23 @@ func AggregateReviews(conn *MongoConnection, pipeline interface{}) ([]model.Revi
 	return result, nil
 }
 
+func AggregateChats(conn *MongoConnection, pipeline interface{}) ([]interface{}, *model.Error) {
+	curs, err := conn.chats.Aggregate(conn.context, pipeline)
+	if err != nil {
+		return nil, model.NewError(http.StatusInternalServerError, "error while aggregating chats", err.Error())
+	}
+	var result []interface{}
+	for curs.Next(conn.context) {
+		ch := model.Chat{}
+		err = curs.Decode(&ch)
+		if err != nil {
+			return nil, model.NewError(http.StatusInternalServerError, "error while decoding aggregated result in chats", err.Error())
+		}
+		result = append(result, ch)
+	}
+	return result, nil
+}
+
 func FromInterfaceToFilm(films []interface{}) []model.Film {
 	result := make([]model.Film, len(films))
 	for i, f := range films {

@@ -39,4 +39,6 @@ type Database interface {
 	GetReviewsSortedByDate(limit, offset int) ([]model.Review, *model.Error)
 	GetReviewsOfFilmSortedByDate(filmID model.ID, limit, offset int) ([]model.Review, *model.Error)
 	GetReviewsOfAuthorSortedByDate(authorID model.ID, limit, offset int) ([]model.Review, *model.Error)
+
+	GetAll(collectionName string) ([]interface{}, *model.Error)
 }
