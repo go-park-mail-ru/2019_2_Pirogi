@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"go.uber.org/zap"
 	"net/http"
 	"time"
 
@@ -173,11 +174,13 @@ func InsertMessage(conn *MongoConnection, in model.MessageNew) *model.Error {
 	foundChat := model.Chat{}
 	err := conn.chats.FindOne(conn.context, bson.M{"_id": in.UserID}).Decode(&foundChat)
 	if err != nil {
+		zap.S().Debug(in.Body)
 		_, err = conn.chats.InsertOne(conn.context, model.Chat{
 			UserID:   in.UserID,
 			Messages: []model.Message{{Datetime: time.Now(), Body: in.Body, Author: false}},
 		})
 	} else {
+		zap.S().Debug(in.Body)
 		update := bson.M{"$push": bson.M{"messages": model.Message{Datetime: time.Now(), Body: in.Body, Author: false}}}
 		_, err = conn.chats.UpdateOne(conn.context, filter, update)
 	}
