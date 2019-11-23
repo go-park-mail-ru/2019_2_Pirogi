@@ -54,7 +54,6 @@ func (s *Server) Listen() {
 			s.errCh <- NewErrorChat(e.Error)
 			return
 		}
-		zap.S().Debug(u)
 		client := NewClient(ws, s, u.ID)
 		s.Add(client)
 		client.Listen()

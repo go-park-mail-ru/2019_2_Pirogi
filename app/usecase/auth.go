@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -68,6 +69,7 @@ func (u *authUsecase) LoginCheck(ctx echo.Context) bool {
 
 func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
 	session, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	zap.S().Debug(configs.Default.CookieAuthName)
 	if err != nil {
 		return model.NewError(http.StatusUnauthorized, "user is not authorized")
 	}

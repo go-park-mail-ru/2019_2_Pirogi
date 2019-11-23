@@ -3,7 +3,6 @@ package chat
 import (
 	"fmt"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
-	"go.uber.org/zap"
 	"io"
 	"log"
 
@@ -91,7 +90,6 @@ func (c *Client) listenRead() {
 			} else if err != nil {
 				c.server.Err(NewErrorChat(err.Error()))
 			} else {
-				zap.S().Debug(msg)
 				c.server.SendAll(&msg)
 			}
 			c.Write(&Message{Body: "hello"})
