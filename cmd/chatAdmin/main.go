@@ -24,8 +24,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	http.HandleFunc("/admin", getHandlerAdmin(conn))
-	log.Fatal(http.ListenAndServe(":9000", nil))
+	http.HandleFunc("/", getHandlerAdmin(conn))
+	log.Fatal(http.ListenAndServe(":9090", nil))
 }
 
 func getHandlerAdmin(conn database.Database) func(res http.ResponseWriter, req *http.Request) {
