@@ -57,9 +57,11 @@ func (s *Server) Listen() {
 		if e == nil {
 			messages = chat.(model.Chat).Messages
 		}
-		zap.S().Debug(messages)
 		client := NewClient(ws, s, u.ID, messages)
 		s.Add(client)
+		for _, message := range messages {
+			client.Write(message)
+		}
 		client.Listen()
 	}
 	http.Handle(s.pattern, websocket.Handler(onConnected))
