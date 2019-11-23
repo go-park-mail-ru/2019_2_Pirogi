@@ -3,7 +3,6 @@ docker stop cinsear-chat
 docker rm cinsear-chat
 
 echo "---Checking or creating volumes..."
-docker volume create media
 docker volume create log
 docker volume create db
 
