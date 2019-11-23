@@ -40,8 +40,13 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-
+	http.HandleFunc("/admin", handleAdmin)
 	server := chat.NewServer("/", conn)
+
 	go server.Listen()
 	log.Fatal(http.ListenAndServe(":8080", nil))
+}
+
+func handleAdmin(res http.ResponseWriter, req *http.Request) {
+
 }
