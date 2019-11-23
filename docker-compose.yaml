@@ -26,6 +26,21 @@ services:
       - MONGO_INITDB_DATABASE=cinsear
       - MONGO_INITDB_USERNAME=cinsear-user
       - MONGO_INITDB_PASSWORD=cinsear-pwd
+
+  chat:
+    build:
+      context: ./
+      dockerfile: ./ChatDockerfile
+    ports:
+      - "88:88"
+    depends_on:
+      - mongo
+    restart: always
+    volumes:
+      - "media:/media"
+      - "log:/log"
+    container_name: cinsear-chat
+
 volumes:
   media:
   log:
