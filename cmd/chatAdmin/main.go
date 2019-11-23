@@ -2,15 +2,24 @@ package main
 
 import (
 	"encoding/json"
+	"flag"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	json2 "github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
 	"log"
 	"net/http"
 )
 
 func main() {
+	configsPath := flag.String("config", "configs/", "directory with configs")
+	flag.Parse()
+
+	err := configuration.UnmarshalConfigs(*configsPath)
+	if err != nil {
+		log.Fatal(err.Error())
+	}
 	conn, err := database.InitMongo(configs.Default.MongoHost)
 	if err != nil {
 		log.Fatal(err)
