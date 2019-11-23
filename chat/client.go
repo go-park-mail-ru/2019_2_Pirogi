@@ -13,7 +13,7 @@ import (
 const channelBufSize = 100
 
 // Create new chat client.
-func NewClient(ws *websocket.Conn, server *Server, userID model.ID) *Client {
+func NewClient(ws *websocket.Conn, server *Server, userID model.ID, messages []model.Message) *Client {
 	if ws == nil {
 		log.Fatal("ws can not be nil")
 	}
@@ -22,17 +22,17 @@ func NewClient(ws *websocket.Conn, server *Server, userID model.ID) *Client {
 		log.Fatal("server cannot be nil")
 	}
 
-	ch := make(chan *Message, channelBufSize)
+	ch := make(chan model.Message, channelBufSize)
 	doneCh := make(chan bool)
 
-	return &Client{userID, ws, server, ch, doneCh}
+	return &Client{userID, ws, server, ch, doneCh, messages}
 }
 
 func (c *Client) Conn() *websocket.Conn {
 	return c.ws
 }
 
-func (c *Client) Write(msg *Message) {
+func (c *Client) Write(msg model.Message) {
 	select {
 	case c.ch <- msg:
 	default:
@@ -81,7 +81,7 @@ func (c *Client) listenRead() {
 			return
 
 		default:
-			var msg Message
+			var msg model.Message
 			err := websocket.JSON.Receive(c.ws, &msg)
 			if err == io.EOF {
 				c.doneCh <- true

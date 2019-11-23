@@ -26,7 +26,7 @@ func (s *Server) Err(err *ErrorChat) {
 }
 
 func (s *Server) sendPastMessages(c *Client) {
-	for _, msg := range s.messages {
+	for _, msg := range c.messages {
 		c.Write(msg)
 	}
 }
@@ -52,7 +52,13 @@ func (s *Server) Listen() {
 			s.errCh <- NewErrorChat(e.Error)
 			return
 		}
-		client := NewClient(ws, s, u.ID)
+		chat, e := s.conn.Get(u.ID, configs.Default.ChatTargetName)
+		var messages []model.Message
+		if e == nil {
+			messages = chat.(model.Chat).Messages
+		}
+		zap.S().Debug(messages)
+		client := NewClient(ws, s, u.ID, messages)
 		s.Add(client)
 		client.Listen()
 	}
