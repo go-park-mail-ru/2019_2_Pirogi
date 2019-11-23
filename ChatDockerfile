@@ -9,6 +9,6 @@ WORKDIR /cinsear/cmd/chatAdmin
 RUN go build -mod=vendor -o chatAdmin .
 WORKDIR /cinsear
 CMD ["/cinsear/cmd/chat/chat"]
-CMD ["/cinsear/cmd/chatAdmin/chatAdmin"
+CMD ["/cinsear/cmd/chatAdmin/chatAdmin"]
 EXPOSE 8080
 EXPOSE 9000
