@@ -84,12 +84,12 @@ func (c *Client) listenRead() {
 		default:
 			var msg Message
 			err := websocket.JSON.Receive(c.ws, &msg)
-			zap.S().Debug(msg)
 			if err == io.EOF {
 				c.doneCh <- true
 			} else if err != nil {
 				c.server.Err(NewErrorChat(err.Error()))
 			}
+			zap.S().Debug(msg.Body)
 			e := c.server.conn.Upsert(model.MessageNew{
 				UserID: c.id,
 				Body:   msg.Body,
