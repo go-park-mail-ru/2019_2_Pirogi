@@ -180,7 +180,6 @@ func InsertMessage(conn *MongoConnection, in model.MessageNew) *model.Error {
 			Messages: []model.Message{{Datetime: time.Now(), Body: in.Body, Author: false}},
 		})
 	} else {
-		zap.S().Debug(in.Body)
 		update := bson.M{"$push": bson.M{"messages": model.Message{Datetime: time.Now(), Body: in.Body, Author: false}}}
 		_, err = conn.chats.UpdateOne(conn.context, filter, update)
 	}

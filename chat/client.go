@@ -74,7 +74,6 @@ func (c *Client) listenWrite() {
 func (c *Client) listenRead() {
 	for {
 		select {
-
 		case <-c.doneCh:
 			c.server.Del(c)
 			c.doneCh <- true
@@ -88,12 +87,14 @@ func (c *Client) listenRead() {
 			} else if err != nil {
 				c.server.Err(NewErrorChat(err.Error()))
 			}
-			e := c.server.conn.Upsert(model.MessageNew{
-				UserID: c.id,
-				Body:   msg.Body,
-			})
-			if e != nil {
-				c.server.Err(NewErrorChat(e.Error))
+			if msg.Body != "" {
+				e := c.server.conn.Upsert(model.MessageNew{
+					UserID: c.id,
+					Body:   msg.Body,
+				})
+				if e != nil {
+					c.server.Err(NewErrorChat(e.Error))
+				}
 			}
 		}
 	}
