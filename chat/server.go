@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"go.uber.org/zap"
 	"golang.org/x/net/websocket"
+	"log"
 	"net/http"
 )
 
@@ -14,10 +15,6 @@ func (s *Server) Add(c *Client) {
 
 func (s *Server) Del(c *Client) {
 	s.delCh <- c
-}
-
-func (s *Server) SendAll(msg *Message) {
-	s.sendAllCh <- msg
 }
 
 func (s *Server) Done() {
@@ -72,11 +69,13 @@ func (s *Server) Listen() {
 		// del a client
 		case c := <-s.delCh:
 			zap.S().Error(NewErrorChat("Delete client ", string(c.id)))
+			err := c.ws.Close()
+			if err != nil {
+				log.Fatal(err)
+			}
 			delete(s.clients, c.id)
-
 		case err := <-s.errCh:
 			zap.S().Error(NewErrorChat(err.Message))
-
 		case <-s.doneCh:
 			return
 		}
