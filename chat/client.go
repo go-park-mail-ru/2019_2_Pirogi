@@ -95,6 +95,7 @@ func (c *Client) listenRead() {
 				zap.S().Debug(msg)
 				c.server.SendAll(&msg)
 			}
+			c.Write(&Message{Body: "hello"})
 			e := c.server.conn.Upsert(model.MessageNew{
 				UserID: c.id,
 				Body:   msg.Body,
