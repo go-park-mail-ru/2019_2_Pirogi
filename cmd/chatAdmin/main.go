@@ -24,9 +24,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	adminServer := http.NewServeMux()
-	adminServer.HandleFunc("/admin", getHandlerAdmin(conn))
-	log.Fatal(http.ListenAndServe(":9000", adminServer))
+	http.HandleFunc("/admin", getHandlerAdmin(conn))
+	log.Fatal(http.ListenAndServe(":9000", nil))
 }
 
 func getHandlerAdmin(conn database.Database) func(res http.ResponseWriter, req *http.Request) {
