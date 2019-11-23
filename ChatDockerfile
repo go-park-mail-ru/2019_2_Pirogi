@@ -8,3 +8,4 @@ RUN go build -mod=vendor -o chat .
 WORKDIR /cinsear
 CMD ["/cinsear/cmd/chat/chat"]
 EXPOSE 8080
+EXPOSE 9000
