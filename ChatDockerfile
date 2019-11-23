@@ -1,7 +1,5 @@
 FROM golang:alpine
 RUN mkdir /cinsear
-RUN mkdir -p /media/images/users
-RUN mkdir -p /media/images/films
 RUN mkdir -p /log
 WORKDIR /cinsear
 COPY . .
@@ -9,4 +7,4 @@ WORKDIR /cinsear/cmd/chat
 RUN go build -mod=vendor -o chat .
 WORKDIR /cinsear
 CMD ["/cinsear/cmd/chat/chat"]
-EXPOSE 88
+EXPOSE 8080

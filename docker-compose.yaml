@@ -32,12 +32,11 @@ services:
       context: ./
       dockerfile: ./ChatDockerfile
     ports:
-      - "88:88"
+      - "8080:8080"
     depends_on:
       - mongo
     restart: always
     volumes:
-      - "media:/media"
       - "log:/log"
     container_name: cinsear-chat
 
