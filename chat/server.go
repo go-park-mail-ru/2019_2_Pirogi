@@ -69,3 +69,8 @@ func (s *Server) Listen() {
 		}
 	}
 }
+
+func handler(r *http.Request, w http.Response) {
+	zap.S().Debug(r.Method)
+	zap.S().Debug(r.Body)
+}

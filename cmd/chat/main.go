@@ -2,7 +2,9 @@ package main
 
 import (
 	"flag"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/chat"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	"go.uber.org/zap"
 	"log"
@@ -30,14 +32,21 @@ func main() {
 
 
 
+
+
 	logger, err := CreateLogger()
 	if err != nil {
 		log.Fatal(err.Error())
 	}
 	zap.ReplaceGlobals(logger)
 
+	conn, err := database.InitMongo(configs.Default.MongoHost)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	server := chat.NewServer("/")
+
+	server := chat.NewServer("/", conn)
 	go server.Listen()
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }

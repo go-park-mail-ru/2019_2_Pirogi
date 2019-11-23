@@ -7,7 +7,7 @@ import (
 )
 
 type Message struct {
-	Body   string `json:"body"`
+	Body string `json:"body"`
 }
 
 type MessageNew struct {
@@ -21,7 +21,7 @@ type Chat struct {
 }
 
 type Client struct {
-	id     int
+	id     model.ID
 	ws     *websocket.Conn
 	server *Server
 	ch     chan *Message
@@ -31,7 +31,7 @@ type Client struct {
 type Server struct {
 	pattern   string
 	messages  []*Message
-	clients   map[int]*Client
+	clients   map[model.ID]*Client
 	addCh     chan *Client
 	delCh     chan *Client
 	sendAllCh chan *Message
