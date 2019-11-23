@@ -33,7 +33,6 @@ services:
       dockerfile: ./ChatDockerfile
     ports:
       - "8080:8080"
-      - "9000:9000"
     depends_on:
       - mongo
     restart: always
