@@ -39,10 +39,10 @@ func GetAccessLogMiddleware(logger *zap.Logger) func(next echo.HandlerFunc) echo
 	return func(next echo.HandlerFunc) echo.HandlerFunc {
 		return func(c echo.Context) error {
 			start := time.Now()
-			err := next(c)
-			if err != nil {
-				c.Error(err)
-			}
+			_ = next(c)
+			//if err != nil {
+			//	c.Error(err)
+			//}
 			req := c.Request()
 			res := c.Response()
 			id := req.Header.Get(echo.HeaderXRequestID)
