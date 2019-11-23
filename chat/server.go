@@ -44,13 +44,12 @@ func (s *Server) Listen() {
 		}()
 		var cookie model.Cookie
 		cookieHTTP, err := ws.Request().Cookie(configs.Default.CookieAuthName)
-		zap.S().Debug(cookieHTTP)
 		if err != nil {
 			s.errCh <- NewErrorChat(err.Error())
 			return
 		}
 		cookie.CopyFromCommon(cookieHTTP)
-		zap.S().Debug(cookie)
+		zap.S().Debug("Cookie http", cookieHTTP)
 		u, e := s.conn.FindUserByCookie(cookieHTTP)
 		if e != nil {
 			s.errCh <- NewErrorChat(e.Error)
