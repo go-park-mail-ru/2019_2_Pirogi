@@ -3,6 +3,7 @@ package database
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"net/http"
+	"time"
 
 	"github.com/pkg/errors"
 
@@ -163,6 +164,25 @@ func InsertLike(conn *MongoConnection, in model.Like) *model.Error {
 	_, err := conn.likes.InsertOne(conn.context, in)
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert like in database")
+	}
+	return nil
+}
+
+func InsertMessage(conn *MongoConnection, in model.MessageNew) *model.Error {
+	filter := bson.M{"_id": in.UserID}
+	foundChat := model.Chat{}
+	err := conn.chats.FindOne(conn.context, bson.M{"_id": in.UserID}).Decode(&foundChat)
+	if err != nil {
+		_, err = conn.chats.InsertOne(conn.context, model.Chat{
+			UserID:   in.UserID,
+			Messages: []model.Message{{Datetime: time.Now(), Body: in.Body, Author: false}},
+		})
+	} else {
+		update := bson.M{"$push": bson.M{"messages": model.Message{Datetime: time.Now(), Body: in.Body, Author: false}}}
+		_, err = conn.chats.UpdateOne(conn.context, filter, update)
+	}
+	if err != nil {
+		return model.NewError(http.StatusInternalServerError, "cannot insert message in database")
 	}
 	return nil
 }

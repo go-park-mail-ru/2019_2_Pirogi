@@ -15,6 +15,6 @@ type MessageNew struct {
 }
 
 type Chat struct {
-	UserID   ID        `json:"user_id"`
+	UserID   ID        `json:"user_id" bson:"_id"`
 	Messages []Message `json:"messages"`
 }

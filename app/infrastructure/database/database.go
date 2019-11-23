@@ -26,6 +26,8 @@ type Database interface {
 	FindPersonByID(id model.ID) (model.Person, bool)
 	FindPersonsByIDs(ids []model.ID) ([]model.Person, bool)
 
+	FindChatByUserID(id model.ID) (model.Chat, bool)
+
 	FindReviewByID(id model.ID) (model.Review, bool)
 
 	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *model.Error)
