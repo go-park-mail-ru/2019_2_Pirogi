@@ -62,13 +62,13 @@ func (s *Server) Listen() {
 		select {
 		// Add new a client
 		case c := <-s.addCh:
-			zap.S().Error(NewErrorChat("Added client ", string(c.id)))
+			zap.S().Error(NewErrorChat("Added client ", c.id.String()))
 			s.clients[c.id] = c
 			s.sendPastMessages(c)
 
 		// del a client
 		case c := <-s.delCh:
-			zap.S().Error(NewErrorChat("Delete client ", string(c.id)))
+			zap.S().Error(NewErrorChat("Delete client ", c.id.String()))
 			err := c.ws.Close()
 			if err != nil {
 				log.Fatal(err)
