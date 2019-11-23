@@ -46,11 +46,13 @@ func (s *Server) Listen() {
 		cookieHTTP, err := ws.Request().Cookie(configs.Default.CookieAuthName)
 		if err != nil {
 			s.errCh <- NewErrorChat(err.Error())
+			return
 		}
 		cookie.CopyFromCommon(cookieHTTP)
 		u, e := s.conn.FindUserByCookie(cookieHTTP)
 		if e != nil {
 			s.errCh <- NewErrorChat(e.Error)
+			return
 		}
 		zap.S().Debug(u)
 		client := NewClient(ws, s, u.ID)

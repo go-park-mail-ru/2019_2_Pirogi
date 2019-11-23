@@ -15,11 +15,11 @@ const channelBufSize = 100
 // Create new chat client.
 func NewClient(ws *websocket.Conn, server *Server, userID model.ID) *Client {
 	if ws == nil {
-		panic("ws cannot be nil")
+		log.Fatal("ws can not be nil")
 	}
 
 	if server == nil {
-		panic("server cannot be nil")
+		log.Fatal("server cannot be nil")
 	}
 
 	ch := make(chan *Message, channelBufSize)
@@ -54,7 +54,6 @@ func (c *Client) Listen() {
 
 // Listen write request via chanel
 func (c *Client) listenWrite() {
-	log.Println("Listening write to client")
 	for {
 		select {
 
