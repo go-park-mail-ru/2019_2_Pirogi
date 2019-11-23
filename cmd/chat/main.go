@@ -40,11 +40,14 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
-	http.HandleFunc("/admin", getHandlerAdmin(conn))
-	server := chat.NewServer("/", conn)
+	adminServer := http.NewServeMux()
+	adminServer.HandleFunc("/admin", getHandlerAdmin(conn))
+	go log.Fatal(http.ListenAndServe(":9000", adminServer))
 
+	server := chat.NewServer("/", conn)
 	go server.Listen()
 	log.Fatal(http.ListenAndServe(":8080", nil))
+
 }
 
 func getHandlerAdmin(conn database.Database) func(res http.ResponseWriter, req *http.Request) {
