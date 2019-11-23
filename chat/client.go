@@ -3,6 +3,7 @@ package chat
 import (
 	"fmt"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/chatResponser"
 	"io"
 	"log"
 	"time"
@@ -91,6 +92,15 @@ func (c *Client) listenRead() {
 			if msg.Body != "" {
 				msg.Datetime = time.Now()
 				c.Write(msg)
+				answer, ok := chatResponser.Answer(msg.Body)
+				if ok {
+					answerMes := model.Message{
+						Datetime: time.Now(),
+						Body:     answer,
+						Author:   true,
+					}
+					c.Write(answerMes)
+				}
 				e := c.server.conn.Upsert(model.MessageNew{
 					UserID: c.id,
 					Body:   msg.Body,

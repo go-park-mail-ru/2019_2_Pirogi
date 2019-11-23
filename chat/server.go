@@ -1,6 +1,7 @@
 package chat
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"go.uber.org/zap"
 	"golang.org/x/net/websocket"
