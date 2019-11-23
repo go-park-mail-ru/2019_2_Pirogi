@@ -5,6 +5,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"io"
 	"log"
+	"time"
 
 	"golang.org/x/net/websocket"
 )
@@ -88,6 +89,7 @@ func (c *Client) listenRead() {
 				c.server.Err(NewErrorChat(err.Error()))
 			}
 			if msg.Body != "" {
+				msg.Datetime = time.Now()
 				c.Write(msg)
 				e := c.server.conn.Upsert(model.MessageNew{
 					UserID: c.id,
