@@ -76,3 +76,17 @@ func GetHandlerSubscriptionList(usecase usecase.SubscriptionUsecase) echo.Handle
 		return nil
 	}
 }
+
+func GetHandlerReadNewEvents(usecase usecase.SubscriptionUsecase) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		u, err := usecase.GetUserByContext(ctx)
+		if err != nil {
+			return err.HTTP()
+		}
+		err = usecase.ReadAllNewEvents(u.ID)
+		if err != nil {
+			return err.HTTP()
+		}
+		return nil
+	}
+}

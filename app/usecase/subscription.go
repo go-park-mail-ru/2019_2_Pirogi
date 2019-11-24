@@ -14,6 +14,7 @@ type SubscriptionUsecase interface {
 	GetNewEventsListJSONBlob(userID model.ID) ([]byte, *model.Error)
 	Unsubscribe(userID, personID model.ID) *model.Error
 	Subscribe(userID, personID model.ID) *model.Error
+	ReadAllNewEvents(userID model.ID) *model.Error
 }
 
 func NewSubscriptionUsecase(subscriptionRepository repository.SubscriptionRepository,
@@ -122,4 +123,18 @@ func (u *subscriptionUsecase) Subscribe(userID, personID model.ID) *model.Error 
 		return err
 	}
 	return nil
+}
+
+func (u *subscriptionUsecase) ReadAllNewEvents(userID model.ID) *model.Error {
+	subscription, err := u.subscriptionRepo.Find(userID)
+	if err != nil {
+		return err
+	}
+	for idx, event := range subscription.SubscriptionEvents {
+		if !event.IsRead {
+			subscription.SubscriptionEvents[idx].IsRead = true
+		}
+	}
+	err = u.subscriptionRepo.Update(subscription)
+	return err
 }

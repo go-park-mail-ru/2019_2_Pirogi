@@ -10,21 +10,24 @@ import (
 
 type AuthUsecase interface {
 	Login(ctx echo.Context, email, password string) *model.Error
-	LoginCheck(ctx echo.Context) bool
+	LoginCheck(ctx echo.Context) (int, bool)
 	Logout(ctx echo.Context) *model.Error
 	CheckCookieExisting(ctx echo.Context, cookieName string) bool
 	GetCookie(ctx echo.Context, cookieName string) (model.Cookie, *model.Error)
 }
 
 type authUsecase struct {
-	userRepo   repository.UserRepository
-	cookieRepo repository.CookieRepository
+	userRepo         repository.UserRepository
+	cookieRepo       repository.CookieRepository
+	subscriptionRepo repository.SubscriptionRepository
 }
 
-func NewAuthUsecase(userRepo repository.UserRepository, cookieRepo repository.CookieRepository) *authUsecase {
+func NewAuthUsecase(userRepo repository.UserRepository, cookieRepo repository.CookieRepository,
+	subscriptionRepository repository.SubscriptionRepository) *authUsecase {
 	return &authUsecase{
-		userRepo:   userRepo,
-		cookieRepo: cookieRepo,
+		userRepo:         userRepo,
+		cookieRepo:       cookieRepo,
+		subscriptionRepo: subscriptionRepository,
 	}
 }
 func (u *authUsecase) CheckCookieExisting(ctx echo.Context, cookieName string) bool {
@@ -54,16 +57,19 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) *model.Err
 	return nil
 }
 
-func (u *authUsecase) LoginCheck(ctx echo.Context) bool {
-	session, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+func (u *authUsecase) LoginCheck(ctx echo.Context) (int, bool) {
+	user, err := u.cookieRepo.GetUserByContext(ctx)
 	if err != nil {
-		return false
+		return -1, false
 	}
-	err = u.cookieRepo.Insert(session)
-	if err != nil {
-		return false
+	subscription, err := u.subscriptionRepo.Find(user.ID)
+	var newEventsNumber int
+	for _, event := range subscription.SubscriptionEvents {
+		if !event.IsRead {
+			newEventsNumber++
+		}
 	}
-	return true
+	return newEventsNumber, true
 }
 
 func (u *authUsecase) Logout(ctx echo.Context) *model.Error {

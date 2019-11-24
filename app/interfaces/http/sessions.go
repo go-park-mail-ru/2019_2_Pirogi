@@ -1,6 +1,7 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
@@ -9,10 +10,16 @@ import (
 
 func GetHandlerLoginCheck(usecase usecase.AuthUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		ok := usecase.LoginCheck(ctx)
+		newEventsNumber, ok := usecase.LoginCheck(ctx)
 		if !ok {
 			return echo.NewHTTPError(401, "Пользователь не авторизован")
 		}
+		newEventsResponse := map[string]int{"new_events_number": newEventsNumber}
+		jsonBlob, err := json.Marshal(newEventsResponse)
+		if err != nil {
+			return model.NewError(500, err.Error()).HTTP()
+		}
+		network.WriteJSONToResponse(ctx, 200, jsonBlob)
 		return nil
 	}
 }

@@ -54,7 +54,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
-	authUsecase := usecase.NewAuthUsecase(userRepo, cookieRepo)
+	authUsecase := usecase.NewAuthUsecase(userRepo, cookieRepo, subscriptionRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo, cookieRepo)
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo)
 	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
@@ -94,6 +94,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	subscriptions := api.Group("/subscriptions")
 	subscriptions.GET("/", handlers.GetHandlerSubscriptionList(subscriptionUsecase))
 	subscriptions.GET("/events/", handlers.GetHandlerNewEvents(subscriptionUsecase))
+	subscriptions.DELETE("/events/", handlers.GetHandlerReadNewEvents(subscriptionUsecase))
 	subscriptions.POST("/", handlers.GetHandlerSubscribe(subscriptionUsecase))
 	subscriptions.DELETE("/", handlers.GetHandlerUnsubscribe(subscriptionUsecase))
 

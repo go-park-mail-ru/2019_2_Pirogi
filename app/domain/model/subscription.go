@@ -26,7 +26,7 @@ func NewSubscriptionEvent(personID ID, filmID ID, description string) Subscripti
 		FilmID:      filmID,
 		PersonID:    personID,
 		Description: description,
-		Datetime:    time.Now().String(),
+		Datetime:    time.Now().Format("2006-01-02"),
 		IsRead:      false,
 	}
 }
