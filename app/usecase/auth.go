@@ -38,11 +38,11 @@ func (u *authUsecase) CheckCookieExisting(ctx echo.Context, cookieName string) b
 func (u *authUsecase) Login(ctx echo.Context, email, password string) *model.Error {
 	_, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err == nil {
-		return model.NewError(400, "already logged in")
+		return model.NewError(400, "Пользователь уже авторизован")
 	}
 	user, err := u.userRepo.GetByEmail(email)
 	if err != nil || user.CheckPassword(password) {
-		return model.NewError(400, "invalid credentials")
+		return model.NewError(400, "Неверная почта и/или пароль")
 	}
 	cookie := model.Cookie{}
 	cookie.GenerateAuthCookie(user.ID, configs.Default.CookieAuthName, email)
@@ -69,7 +69,7 @@ func (u *authUsecase) LoginCheck(ctx echo.Context) bool {
 func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
 	session, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err != nil {
-		return model.NewError(http.StatusUnauthorized, "user is not authorized")
+		return model.NewError(http.StatusUnauthorized, "Пользователь не авторизован")
 	}
 	session.Expire()
 	u.cookieRepo.SetOnResponse(ctx.Response(), &session)
@@ -79,7 +79,7 @@ func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
 
 func (u *authUsecase) GetCookie(ctx echo.Context, cookieName string) (model.Cookie, *model.Error) {
 	if !u.CheckCookieExisting(ctx, cookieName) {
-		return model.Cookie{}, model.NewError(400, "no cookie")
+		return model.Cookie{}, model.NewError(400, "Пользователь не авторизован")
 	}
 	var cookie model.Cookie
 	cookieCommon, _ := ctx.Cookie(cookieName)

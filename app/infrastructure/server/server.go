@@ -49,8 +49,9 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	userRepo := interfaces.NewUserRepository(conn)
 	cookieRepo := interfaces.NewCookieRepository(conn)
 	reviewRepo := interfaces.NewReviewRepository(conn)
+	subscriptionRepo := interfaces.NewSubscriptionRepository(conn)
 
-	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo)
+	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
 	authUsecase := usecase.NewAuthUsecase(userRepo, cookieRepo)
 	userUsecase := usecase.NewUserUsecase(userRepo, cookieRepo)
@@ -58,11 +59,13 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
+	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
 
 	api := e.Group("/api")
 
 	films := api.Group("/films")
 	films.GET("/:film_id/", handlers.GetHandlerFilm(filmUsecase))
+	films.POST("/", handlers.GetHandlerFilmCreate(filmUsecase))
 
 	api.GET("/search/", handlers.GetHandlerSearch(searchUsecase))
 
@@ -81,10 +84,18 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	persons := api.Group("/persons")
 	persons.GET("/:person_id/", handlers.GetHandlerPerson(personUsecase))
+
 	reviews := api.Group("/reviews")
 	reviews.GET("/:film_id/", handlers.GetHandlerReviews(reviewUsecase))
 	reviews.GET("/", handlers.GetHandlerProfileReviews(reviewUsecase))
 	reviews.POST("/", handlers.GetHandlerReviewsCreate(reviewUsecase))
+
+	subscriptions := api.Group("/subscriptions")
+	subscriptions.GET("/", handlers.GetHandlerSubscriptionList(subscriptionUsecase))
+	subscriptions.GET("/events/", handlers.GetHandlerNewEvents(subscriptionUsecase))
+	subscriptions.POST("/", handlers.GetHandlerSubscribe(subscriptionUsecase))
+	subscriptions.DELETE("/", handlers.GetHandlerUnsubscribe(subscriptionUsecase))
+
 	//likes := api.Group("/likes")
 	//likes.POST("/", handlers.GetHandlerLikesCreate(conn))
 	//
@@ -93,6 +104,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	//
 	//lists := api.Group("/lists")
 	//lists.GET("/", handlers.GetHandlerList(conn))
+
 	api.GET("/common/:variable/", handlers.HandlerCommon())
 
 	pages := api.Group("/pages")

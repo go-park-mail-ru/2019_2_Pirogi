@@ -3,7 +3,6 @@ package model
 import (
 	"errors"
 	"github.com/labstack/echo"
-	"strings"
 )
 
 type Error struct {
@@ -14,7 +13,7 @@ type Error struct {
 func NewError(status int, details ...string) *Error {
 	return &Error{
 		Status: status,
-		Error:  strings.Join(details, "; "),
+		Error:  details[0],
 	}
 }
 

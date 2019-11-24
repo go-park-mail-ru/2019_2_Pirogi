@@ -15,13 +15,14 @@ type MongoConnection struct {
 	client  *mongo.Client
 	context context.Context
 
-	users    *mongo.Collection
-	cookies  *mongo.Collection
-	films    *mongo.Collection
-	persons  *mongo.Collection
-	likes    *mongo.Collection
-	reviews  *mongo.Collection
-	counters *mongo.Collection
+	users         *mongo.Collection
+	cookies       *mongo.Collection
+	films         *mongo.Collection
+	persons       *mongo.Collection
+	likes         *mongo.Collection
+	reviews       *mongo.Collection
+	counters      *mongo.Collection
+	subscriptions *mongo.Collection
 }
 
 func getMongoClient(mongoHost string) (*mongo.Client, error) {
@@ -54,15 +55,16 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 	}
 
 	conn := MongoConnection{
-		client:   client,
-		context:  context.Background(),
-		users:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.UsersCollectionName),
-		cookies:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
-		films:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
-		persons:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
-		likes:    client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
-		reviews:  client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
-		counters: client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
+		client:        client,
+		context:       context.Background(),
+		users:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.UsersCollectionName),
+		cookies:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
+		films:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
+		persons:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
+		likes:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
+		reviews:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
+		counters:      client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
+		subscriptions: client.Database(configs.Default.MongoDbName).Collection(configs.Default.SubscriptionCollectionName),
 	}
 
 	return &conn, err
@@ -103,8 +105,12 @@ func (conn *MongoConnection) Upsert(in interface{}) *model.Error {
 		e = InsertStars(conn, in)
 	case model.Like:
 		e = InsertLike(conn, in)
+	case model.SubscriptionNew:
+		e = InsertSubscription(conn, in)
+	case model.Subscription:
+		e = UpdateSubscription(conn, in)
 	default:
-		e = model.NewError(http.StatusBadRequest, "not supported type")
+		e = model.NewError(http.StatusBadRequest, "Данный тип данных не поддерживается базой данных")
 	}
 	return e
 }
@@ -129,8 +135,23 @@ func (conn *MongoConnection) Get(id model.ID, target string) (interface{}, *mode
 			return f, nil
 		}
 		return nil, model.NewError(http.StatusNotFound, "no person with the id: "+id.String())
+	case configs.Default.SubscriptionTargetName:
+		f, err := conn.FindSubscriptionByUserID(id)
+		if err == nil {
+			return f, nil
+		}
+		return nil, model.NewError(http.StatusNotFound, "Подписки не существует. ID: "+id.String())
 	}
-	return nil, model.NewError(http.StatusNotFound, "not supported type: "+target)
+	return nil, model.NewError(http.StatusNotFound, "Не поддерживаемые тип данных: "+target)
+}
+
+func (conn *MongoConnection) FindSubscriptionByUserID(userID model.ID) (model.Subscription, *model.Error) {
+	result := model.Subscription{}
+	err := conn.subscriptions.FindOne(conn.context, bson.M{"userid": userID}).Decode(&result)
+	if err != nil {
+		return model.Subscription{}, model.NewError(404, err.Error())
+	}
+	return result, nil
 }
 
 func (conn *MongoConnection) Delete(in interface{}) *model.Error {
@@ -259,6 +280,10 @@ func (conn *MongoConnection) FindReviewByID(id model.ID) (model.Review, bool) {
 	result := model.Review{}
 	err := conn.reviews.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
+}
+
+func (conn *MongoConnection) FindSubscriptionsOnPerson(personID model.ID) ([]model.Subscription, *model.Error) {
+	return AggregateSubscriptions(conn, personID)
 }
 
 func (conn *MongoConnection) GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *model.Error) {

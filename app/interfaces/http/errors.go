@@ -6,7 +6,6 @@ import (
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
 	"net/http"
-	"strconv"
 	"time"
 )
 
@@ -16,17 +15,12 @@ func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {
 			Status: http.StatusInternalServerError,
 			Error:  err.Error(),
 		}
+
 		if he, ok := err.(*echo.HTTPError); ok {
 			e.Status = he.Code
-			switch he.Message.(type) {
-			case string:
-				e.Error = err.Error()
-			case int:
-				e.Error = strconv.Itoa(he.Message.(int))
-			case *model.Error:
-				e.Error = he.Message.(*model.Error).Error
-			}
+			e.Error = he.Message.(string)
 		}
+
 		fields := []zapcore.Field{
 			zap.Int("status", e.Status),
 			zap.String("time", time.Now().String()),
