@@ -8,6 +8,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -198,6 +199,7 @@ func (conn *MongoConnection) FindUserByEmail(email string) (model.User, *model.E
 func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error) {
 	result := model.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
+	zap.S().Debug(result)
 	if err != nil {
 		return model.User{}, model.NewError(404, "Пользователя с таким ID не существует")
 	}
@@ -207,6 +209,7 @@ func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error
 func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (model.User, *model.Error) {
 	foundCookie := model.Cookie{}
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
+	zap.S().Debug(foundCookie)
 	if err != nil {
 		return model.User{}, model.NewError(404, err.Error())
 	}
