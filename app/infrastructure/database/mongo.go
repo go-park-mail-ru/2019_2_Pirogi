@@ -199,7 +199,6 @@ func (conn *MongoConnection) FindUserByEmail(email string) (model.User, *model.E
 func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error) {
 	result := model.User{}
 	err := conn.users.FindOne(conn.context, bson.M{"id": id}).Decode(&result)
-	zap.S().Debug(result)
 	if err != nil {
 		return model.User{}, model.NewError(404, "Пользователя с таким ID не существует")
 	}
@@ -209,6 +208,9 @@ func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error
 func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (model.User, *model.Error) {
 	foundCookie := model.Cookie{}
 	zap.S().Debug(cookie)
+	zap.S().Debug(conn.context)
+	zap.S().Debug(foundCookie)
+	zap.S().Debug(cookie.Value)
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
 	zap.S().Debug(err)
 	zap.S().Debug(foundCookie)
