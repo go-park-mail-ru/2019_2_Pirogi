@@ -25,6 +25,19 @@ func UnionToJSON(names []string, items ...[][]byte) (response []byte) {
 	return
 }
 
+func UnionToJSONBytes(names []string, items [][]byte) (response []byte) {
+	addSymbol('{', &response)
+	for i, item := range items {
+		addKey(names[i], &response)
+		response = append(response, item...)
+		if i != len(items)-1 {
+			addSymbol(',', &response)
+		}
+	}
+	addSymbol('}', &response)
+	return
+}
+
 func addSymbol(sym rune, response *[]byte) {
 	*response = append(*response, byte(sym))
 }
