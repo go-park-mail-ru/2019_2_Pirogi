@@ -9,7 +9,7 @@ import (
 )
 
 type AuthUsecase interface {
-	Login(ctx echo.Context, email, password string) *model.Error
+	Login(ctx echo.Context, email, password string) (int, *model.Error)
 	LoginCheck(ctx echo.Context) (int, bool)
 	Logout(ctx echo.Context) *model.Error
 	CheckCookieExisting(ctx echo.Context, cookieName string) bool
@@ -38,23 +38,30 @@ func (u *authUsecase) CheckCookieExisting(ctx echo.Context, cookieName string) b
 	return true
 }
 
-func (u *authUsecase) Login(ctx echo.Context, email, password string) *model.Error {
+func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *model.Error) {
 	_, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err == nil {
-		return model.NewError(400, "Пользователь уже авторизован")
+		return -1, model.NewError(400, "Пользователь уже авторизован")
 	}
 	user, err := u.userRepo.GetByEmail(email)
 	if err != nil || user.CheckPassword(password) {
-		return model.NewError(400, "Неверная почта и/или пароль")
+		return -1, model.NewError(400, "Неверная почта и/или пароль")
 	}
 	cookie := model.Cookie{}
 	cookie.GenerateAuthCookie(user.ID, configs.Default.CookieAuthName, email)
 	e := u.cookieRepo.Insert(cookie)
 	if e != nil {
-		return e
+		return -1, e
 	}
 	u.cookieRepo.SetOnResponse(ctx.Response(), &cookie)
-	return nil
+	subscription, err := u.subscriptionRepo.Find(user.ID)
+	var newEventsNumber int
+	for _, event := range subscription.SubscriptionEvents {
+		if !event.IsRead {
+			newEventsNumber++
+		}
+	}
+	return newEventsNumber, nil
 }
 
 func (u *authUsecase) LoginCheck(ctx echo.Context) (int, bool) {

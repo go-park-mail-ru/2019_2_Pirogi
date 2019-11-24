@@ -35,10 +35,15 @@ func GetHandlerLogin(usecase usecase.AuthUsecase) echo.HandlerFunc {
 		if e != nil {
 			return model.NewError(400, "Невалидные входные данные").HTTP()
 		}
-		err = usecase.Login(ctx, credentials.Email, credentials.Password)
+		newEventsNumber, err := usecase.Login(ctx, credentials.Email, credentials.Password)
 		if err != nil {
 			return err.HTTP()
 		}
+		body, e := json.Marshal(map[string]int{"new_events_number": newEventsNumber})
+		if e != nil {
+			return model.NewError(500, e.Error()).HTTP()
+		}
+		network.WriteJSONToResponse(ctx, 200, body)
 		return nil
 	}
 }
