@@ -148,7 +148,7 @@ func (conn *MongoConnection) Get(id model.ID, target string) (interface{}, *mode
 
 func (conn *MongoConnection) FindSubscriptionByUserID(userID model.ID) (model.Subscription, *model.Error) {
 	result := model.Subscription{}
-	err := conn.subscriptions.FindOne(conn.context, bson.M{"userid": userID}).Decode(&result)
+	err := conn.subscriptions.FindOne(conn.context, bson.M{"_id": userID}).Decode(&result)
 	if err != nil {
 		return model.Subscription{}, model.NewError(404, err.Error())
 	}

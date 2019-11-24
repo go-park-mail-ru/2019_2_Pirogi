@@ -177,7 +177,7 @@ func InsertSubscription(conn *MongoConnection, in model.SubscriptionNew) *model.
 }
 
 func UpdateSubscription(conn *MongoConnection, in model.Subscription) *model.Error {
-	filter := bson.M{"userid": in.UserID}
+	filter := bson.M{"_id": in.UserID}
 	update := bson.M{"$set": in}
 	_, err := conn.subscriptions.UpdateOne(conn.context, filter, update)
 	if err != nil {
@@ -204,7 +204,7 @@ func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{},
 }
 
 func AggregateSubscriptions(conn *MongoConnection, personID model.ID) ([]model.Subscription, *model.Error) {
-	curs, err := conn.subscriptions.Find(conn.context, bson.M{"personsid": bson.M{"$elemMatch": bson.M{"personsid": personID}}})
+	curs, err := conn.subscriptions.Find(conn.context, bson.M{"personsid": bson.M{"$all": []model.ID{personID}}})
 	if err != nil {
 		return nil, model.NewError(http.StatusInternalServerError, "error while aggregating subscriptions", err.Error())
 	}

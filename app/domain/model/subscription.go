@@ -33,7 +33,7 @@ func NewSubscriptionEvent(personID ID, filmID ID, description string) Subscripti
 
 // Дублирую Subscription, чтобы база понимала, когда обновлять, а когда создавать
 type SubscriptionNew struct {
-	UserID             ID                  `json:"user_id"`
+	UserID             ID                  `json:"user_id" bson:"_id"`
 	PersonsID          []ID                `json:"person_id"`
 	SubscriptionEvents []SubscriptionEvent `json:"subscription_events"`
 }
@@ -51,7 +51,7 @@ func (sn *SubscriptionNew) ToSubscription() Subscription {
 }
 
 type Subscription struct {
-	UserID             ID                  `json:"user_id"`
+	UserID             ID                  `json:"user_id" bson:"_id"`
 	PersonsID          []ID                `json:"person_id"`
 	SubscriptionEvents []SubscriptionEvent `json:"subscription_events"`
 }
