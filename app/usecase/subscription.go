@@ -47,7 +47,7 @@ func (u *subscriptionUsecase) GetPersonsTruncListJSONBlob(userID model.ID) ([]by
 	persons := u.personRepo.GetMany(subscription.PersonsID)
 	personsTrunc := modelWorker.TruncPersons(persons)
 	body := modelWorker.MarshalPersonsTrunc(personsTrunc)
-	jsonBlob := json.MakeJSONArray(body)
+	jsonBlob := json.UnionToJSON([]string{"subscriptions"}, body)
 	return jsonBlob, nil
 }
 
@@ -63,7 +63,7 @@ func (u *subscriptionUsecase) GetNewEventsListJSONBlob(userID model.ID) ([]byte,
 		}
 	}
 	body := modelWorker.MarshalSubscriptionEvents(newSubscriptionEvents)
-	jsonBlob := json.MakeJSONArray(body)
+	jsonBlob := json.UnionToJSON([]string{"new_events"}, body)
 	return jsonBlob, nil
 }
 
