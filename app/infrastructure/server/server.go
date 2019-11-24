@@ -16,6 +16,7 @@ import (
 
 func CreateLogger() (*zap.Logger, error) {
 	cfg := zap.NewDevelopmentConfig()
+	cfg.DisableStacktrace = true
 	cfg.OutputPaths = []string{
 		"stdout",
 		configs.Default.AccessLog,
