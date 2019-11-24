@@ -210,6 +210,7 @@ func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (model.User, 
 	foundCookie := model.Cookie{}
 	zap.S().Debug(cookie)
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
+	zap.S().Debug(err)
 	zap.S().Debug(foundCookie)
 	if err != nil {
 		return model.User{}, model.NewError(404, err.Error())
