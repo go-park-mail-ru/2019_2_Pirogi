@@ -143,7 +143,7 @@ func openFile(filename string) (io.ReadCloser, error) {
 	return reader, nil
 }
 
-func uploadAndSaveImage(url string, baseFolder string) (string, *model.Error) {
+func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 	//TODO: переделать)))
 	response, err := http.Get(url)
 	if err != nil {
@@ -160,7 +160,7 @@ func uploadAndSaveImage(url string, baseFolder string) (string, *model.Error) {
 		return "", e.Common()
 	}
 	filename := hash.SHA1(url) + ending
-	return filename, files.WriteFile(path.Join(baseFolder, filename), body)
+	return filename, errors.New(files.WriteFile(path.Join(baseFolder, filename), body).Error)
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
