@@ -91,15 +91,11 @@ func (u *subscriptionUsecase) Unsubscribe(userID, personID model.ID) *model.Erro
 }
 
 func (u *subscriptionUsecase) Subscribe(userID, personID model.ID) *model.Error {
-	var isAlreadySubscribed = false
 	subscription, err := u.subscriptionRepo.Find(userID)
 	if err != nil && err.Status == 404 {
 		subscriptionNew := model.NewSubscription(userID, personID)
 		err := u.subscriptionRepo.Insert(subscriptionNew)
-		if err != nil {
-			return err
-		}
-		return nil
+		return err
 	}
 
 	if err != nil && err.Status != 404 {
@@ -108,20 +104,13 @@ func (u *subscriptionUsecase) Subscribe(userID, personID model.ID) *model.Error 
 
 	for _, id := range subscription.PersonsID {
 		if id == personID {
-			isAlreadySubscribed = !isAlreadySubscribed
-			break
+			return model.NewError(400, "Пользователь уже подписан на этого актера")
 		}
-	}
-	if isAlreadySubscribed {
-		return model.NewError(400, "Пользователь уже подписан на этого актера")
 	}
 
 	subscription.PersonsID = append(subscription.PersonsID, personID)
 	err = u.subscriptionRepo.Update(subscription)
-	if err != nil {
-		return err
-	}
-	return nil
+	return err
 }
 
 func (u *subscriptionUsecase) ReadAllNewEvents(userID model.ID) *model.Error {
