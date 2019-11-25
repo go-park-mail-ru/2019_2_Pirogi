@@ -99,8 +99,7 @@ func (u *subscriptionUsecase) Subscribe(userID, personID model.ID) *model.Error 
 		if err != nil {
 			return err
 		}
-		subscription = subscriptionNew.ToSubscription()
-		isAlreadySubscribed = true
+		return nil
 	}
 
 	if err != nil && err.Status != 404 {
