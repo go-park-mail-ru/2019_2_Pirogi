@@ -27,11 +27,17 @@ func GetHandlerPerson(u usecase.PersonUsecase) echo.HandlerFunc {
 			subscriptions := u.CheckSubscription(user.ID, model.ID(id))
 			isSubscribed = subscriptions
 		}
-		params, e := json.Marshal(map[string]bool{"is_auth": isAuth, "is_subscribed": isSubscribed})
+		newEventsNumber, err := u.GetNewEventsNumber(user.ID)
+		if err != nil {
+			newEventsNumber = 0
+		}
+		params, e := json.Marshal(map[string]interface{}{"is_auth": isAuth, "is_subscribed": isSubscribed,
+			"new_events_number": newEventsNumber})
 		if e != nil {
 			return model.NewError(500, e.Error()).HTTP()
 		}
-		jsonBlob := json2.UnionToJSONBytes([]string{"params", "person"}, [][]byte{params, body})
+		jsonBlob := json2.UnionToJSONBytes([]string{"params", "person",},
+			[][]byte{params, body})
 		network.WriteJSONToResponse(ctx, 200, jsonBlob)
 		return nil
 	}

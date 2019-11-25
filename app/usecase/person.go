@@ -12,6 +12,7 @@ type PersonUsecase interface {
 	GetPersonFullByte(id model.ID) ([]byte, *model.Error)
 	CheckSubscription(userID model.ID, personID model.ID) (subscription bool)
 	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
+	GetNewEventsNumber(userID model.ID) (int, *model.Error)
 }
 
 type personUsecase struct {
@@ -73,4 +74,18 @@ func (u *personUsecase) CheckSubscription(userID model.ID, personID model.ID) bo
 
 func (u *personUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
 	return u.cookieRepo.GetUserByContext(ctx)
+}
+
+func (u *personUsecase) GetNewEventsNumber(userID model.ID) (int, *model.Error) {
+	subscription, err := u.subscriptionRepo.Find(userID)
+	if err != nil {
+		return -1, err
+	}
+	var eventsNumber int
+	for _, event := range subscription.SubscriptionEvents {
+		if !event.IsRead {
+			eventsNumber++
+		}
+	}
+	return eventsNumber, nil
 }
