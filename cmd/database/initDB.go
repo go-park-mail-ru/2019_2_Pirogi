@@ -160,7 +160,10 @@ func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 		return "", e.Common()
 	}
 	filename := hash.SHA1(url) + ending
-	return filename, errors.New(files.WriteFile(path.Join(baseFolder, filename), body).Error)
+	if files.WriteFile(path.Join(baseFolder, filename), body) != nil {
+		return filename, errors.New(files.WriteFile(path.Join(baseFolder, filename), body).Error)
+	}
+	return filename, nil
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
