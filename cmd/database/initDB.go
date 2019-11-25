@@ -9,8 +9,12 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/files"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/labstack/gommon/log"
 	"io"
+	"io/ioutil"
+	"net/http"
 	"os"
 	"path"
 )
@@ -139,7 +143,7 @@ func openFile(filename string) (io.ReadCloser, error) {
 	return reader, nil
 }
 
-/*func uploadAndSaveImage(url string, baseFolder string) (string, error) {
+func uploadAndSaveImage(url string, baseFolder string) (string, *model.Error) {
 	//TODO: переделать)))
 	response, err := http.Get(url)
 	if err != nil {
@@ -157,7 +161,7 @@ func openFile(filename string) (io.ReadCloser, error) {
 	}
 	filename := hash.SHA1(url) + ending
 	return filename, files.WriteFile(path.Join(baseFolder, filename), body)
-}*/
+}
 
 func FakeFillDB(conn *database.MongoConnection) {
 	/*persons, err := parse(configs.Default.PersonTargetName)
@@ -169,7 +173,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		conn.Upsert(person)
 	}*/
 
-	films, err := parse(configs.Default.FilmTargetName)
+	/*films, err := parse(configs.Default.FilmTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -186,9 +190,9 @@ func FakeFillDB(conn *database.MongoConnection) {
 			person.FilmsID = append(person.FilmsID, model.ID(i))
 			conn.Upsert(person)
 		}
-	}
+	}*/
 
-	/*filmImages, err := parse(configs.Default.FilmImageTargetName)
+	filmImages, err := parse(configs.Default.FilmImageTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -207,7 +211,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		conn.Upsert(f)
 	}
 
-	personImages, err := parse(configs.Default.PersonImageTargetName)
+	/*personImages, err := parse(configs.Default.PersonImageTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
