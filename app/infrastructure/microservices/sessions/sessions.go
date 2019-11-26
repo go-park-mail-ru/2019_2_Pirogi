@@ -1,11 +1,11 @@
-package main
+package sessions
 
 import (
 	"context"
 	"errors"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
-	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/cmd/sessions/protobuf"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"go.uber.org/zap"
 	"net/http"
@@ -19,9 +19,8 @@ func NewAuthManager(userRepo repository.UserRepository, cookieRepo repository.Co
 }
 
 type authManager struct {
-	userRepo         repository.UserRepository
-	cookieRepo       repository.CookieRepository
-	subscriptionRepo repository.SubscriptionRepository
+	userRepo   repository.UserRepository
+	cookieRepo repository.CookieRepository
 }
 
 func (u *authManager) Login(ctx context.Context, request *v1.LoginRequest) (*v1.LoginResponse, error) {

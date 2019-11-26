@@ -2,6 +2,7 @@ package model
 
 import (
 	"github.com/asaskevich/govalidator"
+	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/users/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 )
 
@@ -69,4 +70,38 @@ func (u *User) Trunc() UserTrunc {
 		Description: u.Description,
 		Image:       u.Image,
 	}
+}
+
+func (u *User) FromProtobuf(user v1.User) {
+	u.ID = ID(user.ID)
+	u.Email = user.Email
+	u.Username = user.Username
+	u.Password = user.Password
+	u.Description = user.Description
+	u.Image = Image(user.Image)
+	u.Mark = Mark(user.Mark)
+}
+
+func (u *User) ToProtobuf() (user v1.User) {
+	return v1.User{
+		ID:          int64(u.ID),
+		Email:       u.Email,
+		Password:    u.Password,
+		Username:    u.Username,
+		Mark:        float32(u.Mark),
+		Description: u.Description,
+		Image:       string(u.Image),
+	}
+}
+
+func (u *UserNew) ToProtobuf() (userNew v1.UserNew) {
+	return v1.UserNew{
+		Email:    u.Email,
+		Password: u.Password,
+	}
+}
+
+func (u *UserNew) FromProtobuf(userNew v1.UserNew) {
+	u.Email = userNew.Email
+	u.Password = userNew.Password
 }

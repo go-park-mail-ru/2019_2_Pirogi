@@ -3,8 +3,9 @@ package main
 import (
 	"flag"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions"
+	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/interfaces"
-	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/cmd/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
@@ -43,6 +44,6 @@ func main() {
 		log.Fatalln("can not listen on port: ", err)
 	}
 	server := grpc.NewServer()
-	v1.RegisterAuthServiceServer(server, NewAuthManager(userRepo, cookieRepo))
+	v1.RegisterAuthServiceServer(server, sessions.NewAuthManager(userRepo, cookieRepo))
 	log.Fatal(server.Serve(lis))
 }

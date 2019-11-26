@@ -1,0 +1,40 @@
+syntax = "proto3";
+package v1;
+
+// protoc --go_out=plugins=grpc:. *.proto
+
+
+message User {
+    int64 ID = 1;
+    string Email = 2;
+    string Password = 3;
+    string Username = 4;
+    float Mark = 5;
+    string Description = 6;
+    string Image = 7;
+}
+
+
+message UserNew {
+    string Email = 1;
+    string Password = 2;
+}
+
+message ID {
+    int64 ID = 1;
+}
+
+message CookieValue {
+    string cookieValue = 1;
+}
+
+
+message Nothing {
+}
+
+service UserService {
+    rpc GetByCookieValue (CookieValue) returns (User);
+    rpc GetByID (ID) returns (User);
+    rpc Create (UserNew) returns (Nothing);
+    rpc Update (User) returns (Nothing);
+}

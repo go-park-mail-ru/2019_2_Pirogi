@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
-	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/cmd/sessions/protobuf"
+	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
