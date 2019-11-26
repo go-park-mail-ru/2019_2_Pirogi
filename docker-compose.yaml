@@ -5,7 +5,8 @@ services:
       context: ./
       dockerfile: ./Dockerfile
     ports:
-      - "8000:8000"
+#   поменял порт с 8000 на 8080 из-за бага в новой версии Docker для Mac
+      - "8080:8080"
     depends_on:
       - mongo
     restart: always

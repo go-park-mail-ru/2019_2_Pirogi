@@ -14,6 +14,7 @@ mongo_pwd: "cinsear-pwd"
 mongo_host: "mongodb://mongo:27017"
 mongo_db_name: "cinsear"
 
+counters_collection_name: "counters"
 users_collection_name: "users"
 cookies_collection_name: "cookies"
 films_collection_name: "films"
@@ -21,20 +22,23 @@ persons_collection_name: "persons"
 likes_collection_name: "likes"
 reviews_collection_name: "reviews"
 lists_collection_name: "lists"
-counters_collection_name: "counters"
+subscriptions_collection_name: "subscription"
 
 user_target_name: "user"
 film_target_name: "film"
 cookie_target_name: "cookie"
-person_target_name: "person"
+person_target_name: "domains"
 review_target_name: "review"
 like_target_name: "like"
 star_target_name: "star"
 list_target_name: "list"
+subscription_target_name: "subscription"
 film_image_target_name: "filmimage"
 person_image_target_name: "personimage"
+default_image_name: "default.png"
 
-api_port: ":8000"
+#   поменял порт с 8000 на 8080 из-за бага в новой версии Docker для Mac
+api_port: ":8080"
 
 csrf_header: "X-CSRF-TOKEN"
 csrf_cookie_name: "_csrf"
@@ -44,3 +48,5 @@ default_entries_limit: 10
 default_order_by: "mark"
 default_year_min: 1700
 default_year_max: 2020
+
+max_file_upload_size: 5242880 # 5 MB

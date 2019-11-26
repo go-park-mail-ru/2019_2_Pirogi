@@ -9,4 +9,3 @@ WORKDIR /cinsear/cmd/server
 RUN go build -mod=vendor -o main .
 WORKDIR /cinsear
 CMD ["/cinsear/cmd/server/main"]
-EXPOSE 8000
