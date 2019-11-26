@@ -2,13 +2,12 @@ package main
 
 import (
 	"flag"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/server"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/server"
 	"github.com/labstack/gommon/log"
 )
 
@@ -16,7 +15,7 @@ func main() {
 	configsPath := flag.String("config", "configs/", "directory with configs")
 	flag.Parse()
 
-	err := common.UnmarshalConfigs(configsPath)
+	err := configuration.UnmarshalConfigs(*configsPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

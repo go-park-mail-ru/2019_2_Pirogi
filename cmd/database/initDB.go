@@ -5,10 +5,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/common"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/database"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/internal/pkg/models"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/files"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/labstack/gommon/log"
 	"io"
 	"io/ioutil"
@@ -34,9 +36,9 @@ func parse(target string) ([]interface{}, error) {
 	}
 	switch target {
 	case configs.Default.PersonTargetName:
-		var newPersons []models.NewPerson
+		var newPersons []model.PersonNew
 		for dec.More() {
-			var newPerson models.NewPerson
+			var newPerson model.PersonNew
 			err = dec.Decode(&newPerson)
 			if err != nil {
 				return nil, err
@@ -49,9 +51,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.FilmTargetName:
-		var newFilms []models.NewFilm
+		var newFilms []model.FilmNew
 		for dec.More() {
-			var newFilm models.NewFilm
+			var newFilm model.FilmNew
 			err = dec.Decode(&newFilm)
 			if err != nil {
 				return nil, err
@@ -64,9 +66,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.ReviewTargetName:
-		var newReviews []models.NewReview
+		var newReviews []model.ReviewNew
 		for dec.More() {
-			var newReview models.NewReview
+			var newReview model.ReviewNew
 			err = dec.Decode(&newReview)
 			if err != nil {
 				return nil, err
@@ -79,9 +81,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.StarTargetName:
-		var newStars []models.Stars
+		var newStars []model.Stars
 		for dec.More() {
-			var newStar models.Stars
+			var newStar model.Stars
 			err = dec.Decode(&newStar)
 			if err != nil {
 				return nil, err
@@ -94,9 +96,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.UserTargetName:
-		var newUsers []models.NewUser
+		var newUsers []model.UserNew
 		for dec.More() {
-			var newUser models.NewUser
+			var newUser model.UserNew
 			err = dec.Decode(&newUser)
 			if err != nil {
 				return nil, err
@@ -109,9 +111,9 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.FilmImageTargetName, configs.Default.PersonImageTargetName:
-		var images []models.Image
+		var images []model.Image
 		for dec.More() {
-			var image models.Image
+			var image model.Image
 			err = dec.Decode(&image)
 			if err != nil {
 				return nil, err
@@ -142,6 +144,7 @@ func openFile(filename string) (io.ReadCloser, error) {
 }
 
 func uploadAndSaveImage(url string, baseFolder string) (string, error) {
+	//TODO: переделать)))
 	response, err := http.Get(url)
 	if err != nil {
 		return "", err
@@ -149,7 +152,15 @@ func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 	defer response.Body.Close()
 
 	body, err := ioutil.ReadAll(response.Body)
-	return common.WriteFileWithGeneratedName(body, baseFolder)
+	if err != nil {
+		return "", err
+	}
+	ending, e := files.DetectContentType(body)
+	if e != nil {
+		return "", e.Common()
+	}
+	filename := hash.SHA1(url) + ending
+	return filename, files.WriteFile(path.Join(baseFolder, filename), body)
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
@@ -169,14 +180,14 @@ func FakeFillDB(conn *database.MongoConnection) {
 	for i, film := range films {
 		fmt.Printf("inserting %d film from %d\n", i, len(films))
 		conn.Upsert(film)
-		newFilm := film.(models.NewFilm)
+		newFilm := film.(model.FilmNew)
 		for _, id := range newFilm.PersonsID {
 			data, err := conn.Get(id, configs.Default.PersonTargetName)
 			if err != nil {
 				continue
 			}
-			person := data.(models.Person)
-			person.FilmsID = append(person.FilmsID, models.ID(i))
+			person := data.(model.Person)
+			person.FilmsID = append(person.FilmsID, model.ID(i))
 			conn.Upsert(person)
 		}
 	}
@@ -187,16 +198,16 @@ func FakeFillDB(conn *database.MongoConnection) {
 	}
 	for i, filmImage := range filmImages {
 		fmt.Printf("inserting %d film image from %d\n", i, len(filmImages))
-		film, e := conn.Get(models.ID(i), configs.Default.FilmTargetName)
+		film, e := conn.Get(model.ID(i), configs.Default.FilmTargetName)
 		if e != nil {
 			log.Fatal(e)
 		}
-		imagePath, err := uploadAndSaveImage(string(filmImage.(models.Image)), configs.Default.FilmsImageUploadPath)
+		imagePath, err := uploadAndSaveImage(string(filmImage.(model.Image)), configs.Default.FilmsImageUploadPath)
 		if err != nil {
 			log.Fatal(err)
 		}
-		f := film.(models.Film)
-		f.Images = []models.Image{models.Image(imagePath)}
+		f := film.(model.Film)
+		f.Images = []model.Image{model.Image(imagePath)}
 		conn.Upsert(f)
 	}
 
@@ -224,7 +235,7 @@ func main() {
 	configsPath := flag.String("config", "configs/", "directory with configs")
 	flag.Parse()
 
-	err := common.UnmarshalConfigs(configsPath)
+	err := configuration.UnmarshalConfigs(*configsPath)
 	if err != nil {
 		log.Fatal(err.Error())
 	}

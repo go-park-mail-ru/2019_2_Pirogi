@@ -1,6 +1,8 @@
 package configs
 
-import "time"
+import (
+	"time"
+)
 
 type DefaultConfig struct {
 	APIPort string `yaml:"api_port"`
@@ -37,6 +39,7 @@ type DefaultConfig struct {
 	StarTargetName        string `yaml:"star_target_name"`
 	FilmImageTargetName   string `yaml:"film_image_target_name"`
 	PersonImageTargetName string `yaml:"person_image_target_name"`
+	DefaultImageName      string `yaml:"default_image_name"`
 
 	CSRFHeader     string `yaml:"csrf_header"`
 	CSRFCookieName string `yaml:"csrf_cookie_name"`
@@ -47,6 +50,8 @@ type DefaultConfig struct {
 
 	DefaultYearMin int `yaml:"default_year_min"`
 	DefaultYearMax int `yaml:"default_year_max"`
+
+	MaxFileUploadSize int64 `yaml:"max_file_upload_size"`
 }
 
 var Default DefaultConfig
