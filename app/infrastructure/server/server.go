@@ -1,6 +1,7 @@
 package server
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/metrics"
 	"log"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
@@ -32,6 +33,7 @@ func CreateLogger() (*zap.Logger, error) {
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	validation.InitValidator()
+	metrics.InitMetrics()
 	e := echo.New()
 	logger, err := CreateLogger()
 	zap.ReplaceGlobals(logger)
@@ -64,7 +66,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
 
-	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
+	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))
 
 	api := e.Group("/api")
 
@@ -124,6 +126,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)
+	e.Use(middleware.CheckStatusMiddleware)
 	e.Use(echoMid.Recover())
 
 	return e, nil
