@@ -1,12 +1,9 @@
 package interfaces
 
 import (
-	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
-	"html"
 )
 
 type userRepository struct {
@@ -44,16 +41,6 @@ func (u userRepository) GetMany(ids []model.ID) []model.User {
 
 func (u userRepository) GetByEmail(email string) (model.User, *model.Error) {
 	return u.conn.FindUserByEmail(email)
-}
-
-func (u userRepository) PrepareUserNew(userNew *model.UserNew) *model.Error {
-	_, err := govalidator.ValidateStruct(userNew)
-	if err != nil {
-		return model.NewError(400, err.Error())
-	}
-	userNew.Password = hash.SHA1(html.EscapeString(userNew.Password))
-	userNew.Email = html.EscapeString(userNew.Email)
-	return nil
 }
 
 func NewUserRepository(conn database.Database) *userRepository {

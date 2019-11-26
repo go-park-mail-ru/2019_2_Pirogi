@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
 	"net/http"
 )
@@ -57,12 +58,10 @@ func (c *cookieRepository) SetOnResponse(res *echo.Response, r *model.Cookie) {
 }
 
 func (c *cookieRepository) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
-	cookieCommon, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
+	cookie, err := network.GetCookieFromContext(ctx, configs.Default.CookieAuthName)
 	if err != nil {
-		return model.User{}, model.NewError(400, err.Error())
+		return model.User{}, err
 	}
-	var cookie model.Cookie
-	cookie.CopyFromCommon(cookieCommon)
 	return c.conn.FindUserByCookie(cookie.Cookie)
 }
 

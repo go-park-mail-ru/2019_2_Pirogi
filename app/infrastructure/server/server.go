@@ -2,6 +2,8 @@ package server
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
+	v12 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
+	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/users/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/middleware"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/interfaces"
 	handlers "github.com/go-park-mail-ru/2019_2_Pirogi/app/interfaces/http"
@@ -11,6 +13,8 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"log"
 )
 
@@ -23,12 +27,33 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	}
 	defer logger.Sync()
 
+	usersConn, err := grpc.Dial(
+		"users"+configs.Default.UsersMicroservicePort,
+		grpc.WithInsecure(),
+	)
+	if err != nil {
+		zap.S().Error(err.Error())
+	} else {
+		zap.S().Debug("Dialing with users server was successful")
+	}
+
+	sessionsConn, err := grpc.Dial(
+		"sessions"+configs.Default.SessionsMicroservicePort,
+		grpc.WithInsecure())
+	if err != nil {
+		zap.S().Error(err.Error())
+	} else {
+		zap.S().Debug("Dialing with sessions server was successful")
+	}
+
+	sessionsClient := v12.NewAuthServiceClient(sessionsConn)
+	usersClient := v1.NewUserServiceClient(usersConn)
+
 	e.Server.Addr = configs.Default.APIPort
 	e.HTTPErrorHandler = handlers.GetHTTPErrorHandler(logger)
 
 	e.Pre(middleware.GetAccessLogMiddleware(logger))
 	e.Pre(echoMid.AddTrailingSlash())
-	//e.Pre(middleware.PostCheckMiddleware)
 
 	filmRepo := interfaces.NewFilmRepository(conn)
 	personRepo := interfaces.NewPersonRepository(conn)
@@ -39,8 +64,8 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 
 	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
-	authUsecase := usecase.NewAuthUsecase(userRepo, cookieRepo, subscriptionRepo)
-	userUsecase := usecase.NewUserUsecase(userRepo, cookieRepo)
+	authUsecase := usecase.NewAuthUsecase(subscriptionRepo, sessionsClient)
+	userUsecase := usecase.NewUserUsecase(usersClient, sessionsClient)
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo, cookieRepo, subscriptionRepo)
 	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)

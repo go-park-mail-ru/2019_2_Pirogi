@@ -5,6 +5,7 @@ import (
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"io/ioutil"
+	"net/http"
 	"strconv"
 )
 
@@ -45,4 +46,18 @@ func WriteJSONToResponse(ctx echo.Context, status int, body []byte) {
 	if err != nil {
 		zap.S().Warn(err.Error())
 	}
+}
+
+func GetCookieFromContext(ctx echo.Context, name string) (model.Cookie, *model.Error) {
+	cookieCommon, err := ctx.Request().Cookie(name)
+	if err != nil {
+		return model.Cookie{}, model.NewError(400, err.Error())
+	}
+	var cookie model.Cookie
+	cookie.CopyFromCommon(cookieCommon)
+	return cookie, nil
+}
+
+func SetCookieOnContext(ctx *echo.Context, cookie model.Cookie) {
+	http.SetCookie((*ctx).Response(), cookie.Cookie)
 }

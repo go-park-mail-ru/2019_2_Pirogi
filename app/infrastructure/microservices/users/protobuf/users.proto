@@ -3,6 +3,9 @@ package v1;
 
 // protoc --go_out=plugins=grpc:. *.proto
 
+message Email {
+    string Email = 1;
+}
 
 message User {
     int64 ID = 1;
@@ -35,6 +38,7 @@ message Nothing {
 service UserService {
     rpc GetByCookieValue (CookieValue) returns (User);
     rpc GetByID (ID) returns (User);
+    rpc GetByEmail (Email) returns (User);
     rpc Create (UserNew) returns (Nothing);
     rpc Update (User) returns (Nothing);
 }

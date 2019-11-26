@@ -9,6 +9,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
+	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"log"
 	"net"
@@ -39,9 +40,11 @@ func main() {
 
 	lis, err := net.Listen("tcp", configs.Default.UsersMicroservicePort)
 	if err != nil {
-		log.Fatalln("can not listen on port: ", err)
+		log.Fatal("can not listen on port: ", err)
 	}
+	zap.S().Debug("users microservice is listening on port ", configs.Default.UsersMicroservicePort)
 	server := grpc.NewServer()
 	v1.RegisterUserServiceServer(server, users.NewUsersManager(userRepo, cookieRepo))
+	zap.S().Debug("Registrations was successful")
 	log.Fatal(server.Serve(lis))
 }

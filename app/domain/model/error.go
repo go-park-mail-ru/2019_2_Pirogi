@@ -26,5 +26,8 @@ func (e *Error) HTTP() *echo.HTTPError {
 }
 
 func (e *Error) Common() error {
+	if e == nil {
+		return nil
+	}
 	return errors.New(e.String())
 }

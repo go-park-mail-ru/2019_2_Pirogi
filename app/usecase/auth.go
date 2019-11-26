@@ -6,9 +6,8 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
-	"go.uber.org/zap"
-	"google.golang.org/grpc"
 	"net/http"
 )
 
@@ -16,45 +15,22 @@ type AuthUsecase interface {
 	Login(ctx echo.Context, email, password string) (int, *model.Error)
 	LoginCheck(ctx echo.Context) (int, bool)
 	Logout(ctx echo.Context) *model.Error
-	CheckCookieExisting(ctx echo.Context, cookieName string) bool
-	GetCookie(ctx echo.Context, cookieName string) (model.Cookie, *model.Error)
 }
 
 type authUsecase struct {
-	userRepo         repository.UserRepository
-	cookieRepo       repository.CookieRepository
 	subscriptionRepo repository.SubscriptionRepository
 	rpcClient        v1.AuthServiceClient
 }
 
-func NewAuthUsecase(userRepo repository.UserRepository, cookieRepo repository.CookieRepository,
-	subscriptionRepository repository.SubscriptionRepository) *authUsecase {
-	grcpConn, err := grpc.Dial(
-		"sessions:8081",
-		grpc.WithInsecure(),
-	)
-	if err != nil {
-		zap.S().Error(err.Error())
-	}
-
-	client := v1.NewAuthServiceClient(grcpConn)
+func NewAuthUsecase(subscriptionRepo repository.SubscriptionRepository, rpcClient v1.AuthServiceClient) *authUsecase {
 	return &authUsecase{
-		userRepo:         userRepo,
-		cookieRepo:       cookieRepo,
-		subscriptionRepo: subscriptionRepository,
-		rpcClient:        client,
+		subscriptionRepo: subscriptionRepo,
+		rpcClient:        rpcClient,
 	}
-}
-func (u *authUsecase) CheckCookieExisting(ctx echo.Context, cookieName string) bool {
-	_, err := ctx.Cookie(cookieName)
-	if err != nil {
-		return false
-	}
-	return true
 }
 
 func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *model.Error) {
-	_, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	_, err := network.GetCookieFromContext(ctx, configs.Default.CookieAuthName)
 	if err == nil {
 		return -1, model.NewError(400, "Пользователь уже авторизован")
 	}
@@ -67,7 +43,7 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *mod
 	}
 	cookie := model.Cookie{}
 	cookie.GenerateAuthCookie(model.ID(response.UserID), configs.Default.CookieAuthName, response.CookieValue)
-	u.cookieRepo.SetOnResponse(ctx.Response(), &cookie)
+	network.SetCookieOnContext(&ctx, cookie)
 	subscription, err := u.subscriptionRepo.Find(model.ID(response.UserID))
 	var newEventsNumber int
 	for _, event := range subscription.SubscriptionEvents {
@@ -79,7 +55,7 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *mod
 }
 
 func (u *authUsecase) LoginCheck(ctx echo.Context) (int, bool) {
-	cookie, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	cookie, err := network.GetCookieFromContext(ctx, configs.Default.CookieAuthName)
 	if err != nil {
 		return -1, false
 	}
@@ -100,7 +76,7 @@ func (u *authUsecase) LoginCheck(ctx echo.Context) (int, bool) {
 }
 
 func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
-	session, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
+	session, err := network.GetCookieFromContext(ctx, configs.Default.CookieAuthName)
 	if err != nil {
 		return model.NewError(http.StatusUnauthorized, "Пользователь не авторизован")
 	}
@@ -111,16 +87,6 @@ func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
 		return model.NewError(500, e.Error())
 	}
 	session.Expire()
-	u.cookieRepo.SetOnResponse(ctx.Response(), &session)
+	network.SetCookieOnContext(&ctx, session)
 	return nil
-}
-
-func (u *authUsecase) GetCookie(ctx echo.Context, cookieName string) (model.Cookie, *model.Error) {
-	if !u.CheckCookieExisting(ctx, cookieName) {
-		return model.Cookie{}, model.NewError(400, "Пользователь не авторизован")
-	}
-	var cookie model.Cookie
-	cookieCommon, _ := ctx.Cookie(cookieName)
-	cookie.CopyFromCommon(cookieCommon)
-	return cookie, nil
 }
