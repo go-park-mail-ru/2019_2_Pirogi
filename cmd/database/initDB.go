@@ -167,16 +167,16 @@ func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
-	/*persons, err := parse(configs.Default.PersonTargetName)
+	persons, err := parse(configs.Default.PersonTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for i, person := range persons {
 		fmt.Printf("inserting %d person from %d\n", i, len(persons))
 		conn.Upsert(person)
-	}*/
+	}
 
-	/*films, err := parse(configs.Default.FilmTargetName)
+	films, err := parse(configs.Default.FilmTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -193,7 +193,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 			person.FilmsID = append(person.FilmsID, model.ID(i))
 			conn.Upsert(person)
 		}
-	}*/
+	}
 
 	filmImages, err := parse(configs.Default.FilmImageTargetName)
 	if err != nil {
@@ -214,24 +214,24 @@ func FakeFillDB(conn *database.MongoConnection) {
 		conn.Upsert(f)
 	}
 
-	/*personImages, err := parse(configs.Default.PersonImageTargetName)
+	personImages, err := parse(configs.Default.PersonImageTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for i, personImage := range personImages {
 		fmt.Printf("inserting %d person image from %d\n", i, len(personImages))
-		person, e := conn.Get(models.ID(i), configs.Default.PersonTargetName)
+		person, e := conn.Get(model.ID(i), configs.Default.PersonTargetName)
 		if e != nil {
 			continue
 		}
-		imagePath, err := uploadAndSaveImage(string(personImage.(models.Image)), configs.Default.PersonsImageUploadPath)
+		imagePath, err := uploadAndSaveImage(string(personImage.(model.Image)), configs.Default.PersonsImageUploadPath)
 		if err != nil {
 			continue
 		}
-		p := person.(models.Person)
-		p.Images = []models.Image{models.Image(imagePath)}
+		p := person.(model.Person)
+		p.Images = []model.Image{model.Image(imagePath)}
 		conn.Upsert(p)
-	}*/
+	}
 }
 
 func main() {
@@ -248,10 +248,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*conn.ClearDB()
+	conn.ClearDB()
 	err = conn.InitCounters()
 	if err != nil {
 		log.Fatal(err)
-	}*/
+	}
 	FakeFillDB(conn)
 }
