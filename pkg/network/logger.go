@@ -16,5 +16,10 @@ func CreateLogger() (*zap.Logger, error) {
 		"stderr",
 		configs.Default.ErrorLog,
 	}
-	return cfg.Build()
+	logger, err := cfg.Build()
+	if err != nil {
+		return nil, err
+	}
+	zap.ReplaceGlobals(logger)
+	return logger, nil
 }

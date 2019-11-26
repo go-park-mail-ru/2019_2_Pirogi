@@ -54,6 +54,9 @@ type DefaultConfig struct {
 	DefaultYearMax int `yaml:"default_year_max"`
 
 	MaxFileUploadSize int64 `yaml:"max_file_upload_size"`
+
+	SessionsMicroservicePort string `yaml:"sessions_microservice_port"`
+	UsersMicroservicePort    string `yaml:"users_microservice_port"`
 }
 
 var Default DefaultConfig

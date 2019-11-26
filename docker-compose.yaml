@@ -3,7 +3,7 @@ services:
   server:
     build:
       context: ./
-      dockerfile: ./Dockerfile
+      dockerfile: ./cmd/server/Dockerfile
     ports:
       #   поменял порт с 8000 на 8080 из-за бага в новой версии Docker для Mac
       - "8080:8080"
@@ -27,6 +27,19 @@ services:
     volumes:
       - "log:/log"
     container_name: cinsear-sessions
+
+  users:
+    build:
+      context: ./
+      dockerfile: ./cmd/users/Dockerfile
+    ports:
+      - "8082:8082"
+    depends_on:
+      - mongo
+    restart: always
+    volumes:
+      - "log:/log"
+    container_name: cinsear-users
 
   mongo:
     image: mongo

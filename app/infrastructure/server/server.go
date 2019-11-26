@@ -11,7 +11,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
-	"go.uber.org/zap"
 	"log"
 )
 
@@ -19,7 +18,6 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	validation.InitValidator()
 	e := echo.New()
 	logger, err := network.CreateLogger()
-	zap.ReplaceGlobals(logger)
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)
 	}
