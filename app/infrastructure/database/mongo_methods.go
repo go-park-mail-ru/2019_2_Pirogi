@@ -2,6 +2,7 @@ package database
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"go.uber.org/zap"
 	"net/http"
 
 	"github.com/pkg/errors"
@@ -167,6 +168,24 @@ func InsertLike(conn *MongoConnection, in model.Like) *model.Error {
 	return nil
 }
 
+func InsertSubscription(conn *MongoConnection, in model.SubscriptionNew) *model.Error {
+	_, err := conn.subscriptions.InsertOne(conn.context, in)
+	if err != nil {
+		return model.NewError(http.StatusInternalServerError, "cannot insert subscriptionNew in database")
+	}
+	return nil
+}
+
+func UpdateSubscription(conn *MongoConnection, in model.Subscription) *model.Error {
+	filter := bson.M{"_id": in.UserID}
+	update := bson.M{"$set": in}
+	_, err := conn.subscriptions.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		return model.NewError(http.StatusNotFound, "subscription not found")
+	}
+	return nil
+}
+
 func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{}, *model.Error) {
 	curs, err := conn.films.Aggregate(conn.context, pipeline)
 	if err != nil {
@@ -181,6 +200,24 @@ func AggregateFilms(conn *MongoConnection, pipeline interface{}) ([]interface{},
 		}
 		result = append(result, f)
 	}
+	return result, nil
+}
+
+func AggregateSubscriptions(conn *MongoConnection, personID model.ID) ([]model.Subscription, *model.Error) {
+	curs, err := conn.subscriptions.Find(conn.context, bson.M{"personsid": bson.M{"$all": []model.ID{personID}}})
+	if err != nil {
+		return nil, model.NewError(http.StatusInternalServerError, "error while aggregating subscriptions", err.Error())
+	}
+	var result []model.Subscription
+	for curs.Next(conn.context) {
+		p := model.Subscription{}
+		err = curs.Decode(&p)
+		if err != nil {
+			return nil, model.NewError(http.StatusInternalServerError, "error while decoding aggregated result in subscrtiptions", err.Error())
+		}
+		result = append(result, p)
+	}
+	zap.S().Debug(result)
 	return result, nil
 }
 

@@ -10,15 +10,15 @@ type reviewRepository struct {
 	conn database.Database
 }
 
-func (r reviewRepository) Insert(newReview model.ReviewNew) *model.Error {
+func (r *reviewRepository) Insert(newReview model.ReviewNew) *model.Error {
 	return r.conn.Upsert(newReview)
 }
 
-func (r reviewRepository) Update(id model.ID, review model.Review) *model.Error {
+func (r *reviewRepository) Update(id model.ID, review model.Review) *model.Error {
 	panic("implement me")
 }
 
-func (r reviewRepository) Delete(id model.ID) *model.Error {
+func (r *reviewRepository) Delete(id model.ID) *model.Error {
 	panic("implement me")
 }
 

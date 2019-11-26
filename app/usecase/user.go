@@ -8,7 +8,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
-	"go.uber.org/zap"
 	"net/http"
 	"time"
 )
@@ -60,7 +59,6 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 		return model.NewError(400, e.Error())
 	}
 	_, err = u.userRepo.GetByEmail(userNew.Email)
-	model.NewError(err)
 	if err == nil {
 		return model.NewError(400, "user with the email is already existed")
 	}

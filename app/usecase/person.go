@@ -3,23 +3,32 @@ package usecase
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
+	"github.com/labstack/echo"
 )
 
 type PersonUsecase interface {
 	Create(body []byte) *model.Error
 	List(ids []model.ID) []model.Person
 	GetPersonFullByte(id model.ID) ([]byte, *model.Error)
+	CheckSubscription(userID model.ID, personID model.ID) (subscription bool)
+	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
+	GetNewEventsNumber(userID model.ID) (int, *model.Error)
 }
 
 type personUsecase struct {
-	personRepo repository.PersonRepository
-	filmRepo   repository.FilmRepository
+	personRepo       repository.PersonRepository
+	filmRepo         repository.FilmRepository
+	cookieRepo       repository.CookieRepository
+	subscriptionRepo repository.SubscriptionRepository
 }
 
-func NewPersonUsecase(personRepo repository.PersonRepository, filmRepo repository.FilmRepository) *personUsecase {
+func NewPersonUsecase(personRepo repository.PersonRepository, filmRepo repository.FilmRepository,
+	cookieRepo repository.CookieRepository, subscriptionRepo repository.SubscriptionRepository) *personUsecase {
 	return &personUsecase{
-		personRepo: personRepo,
-		filmRepo:   filmRepo,
+		personRepo:       personRepo,
+		filmRepo:         filmRepo,
+		cookieRepo:       cookieRepo,
+		subscriptionRepo: subscriptionRepo,
 	}
 }
 
@@ -48,4 +57,35 @@ func (u *personUsecase) GetPersonFullByte(id model.ID) ([]byte, *model.Error) {
 		return nil, model.NewError(500, e.Error())
 	}
 	return body, nil
+}
+
+func (u *personUsecase) CheckSubscription(userID model.ID, personID model.ID) bool {
+	subscription, err := u.subscriptionRepo.Find(userID)
+	if err != nil {
+		return false
+	}
+	for _, id := range subscription.PersonsID {
+		if id == personID {
+			return true
+		}
+	}
+	return false
+}
+
+func (u *personUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
+	return u.cookieRepo.GetUserByContext(ctx)
+}
+
+func (u *personUsecase) GetNewEventsNumber(userID model.ID) (int, *model.Error) {
+	subscription, err := u.subscriptionRepo.Find(userID)
+	if err != nil {
+		return -1, err
+	}
+	var eventsNumber int
+	for _, event := range subscription.SubscriptionEvents {
+		if !event.IsRead {
+			eventsNumber++
+		}
+	}
+	return eventsNumber, nil
 }

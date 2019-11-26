@@ -12,14 +12,17 @@ type FilmUsecase interface {
 }
 
 type filmUsecase struct {
-	filmRepo   repository.FilmRepository
-	personRepo repository.PersonRepository
+	filmRepo         repository.FilmRepository
+	personRepo       repository.PersonRepository
+	subscriptionRepo repository.SubscriptionRepository
 }
 
-func NewFilmUsecase(filmRepo repository.FilmRepository, personRepository repository.PersonRepository) *filmUsecase {
+func NewFilmUsecase(filmRepo repository.FilmRepository, personRepository repository.PersonRepository,
+	subscriptionRepository repository.SubscriptionRepository) *filmUsecase {
 	return &filmUsecase{
-		filmRepo:   filmRepo,
-		personRepo: personRepository,
+		filmRepo:         filmRepo,
+		personRepo:       personRepository,
+		subscriptionRepo: subscriptionRepository,
 	}
 }
 
@@ -27,7 +30,7 @@ func (u *filmUsecase) Create(body []byte) *model.Error {
 	filmNew := model.FilmNew{}
 	err := filmNew.UnmarshalJSON(body)
 	if err != nil {
-		return model.NewError(400, "Film: Create: ", err.Error())
+		return model.NewError(400, "Невалидные данные ", err.Error())
 	}
 	e := u.filmRepo.Insert(filmNew)
 	if e != nil {
@@ -35,7 +38,7 @@ func (u *filmUsecase) Create(body []byte) *model.Error {
 	}
 	film, ok := u.filmRepo.GetByTitle(filmNew.Title)
 	if !ok {
-		return model.NewError(500, "Film: Create: insert error")
+		return model.NewError(500, "Ошибка при сохранении нового фильма", filmNew.Title)
 	}
 	id := film.ID
 	persons := u.personRepo.GetMany(filmNew.PersonsID)
@@ -50,6 +53,8 @@ func (u *filmUsecase) Create(body []byte) *model.Error {
 			}
 		}
 		go u.personRepo.Update(persons[idx])
+		event := model.NewSubscriptionEvent(person.ID, film.ID, "Новый фильм \""+film.Title+"\" с "+person.Name)
+		go u.subscriptionRepo.SendEventToSubscribers(event)
 	}
 	return e
 }

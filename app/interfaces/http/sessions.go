@@ -1,23 +1,30 @@
 package http
 
 import (
+	"encoding/json"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
-	usecase2 "github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
 )
 
-func GetHandlerLoginCheck(usecase usecase2.AuthUsecase) echo.HandlerFunc {
+func GetHandlerLoginCheck(usecase usecase.AuthUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		ok := usecase.LoginCheck(ctx)
+		newEventsNumber, ok := usecase.LoginCheck(ctx)
 		if !ok {
-			return echo.NewHTTPError(401, "no auth")
+			return echo.NewHTTPError(401, "Пользователь не авторизован")
 		}
+		newEventsResponse := map[string]int{"new_events_number": newEventsNumber}
+		jsonBlob, err := json.Marshal(newEventsResponse)
+		if err != nil {
+			return model.NewError(500, err.Error()).HTTP()
+		}
+		network.WriteJSONToResponse(ctx, 200, jsonBlob)
 		return nil
 	}
 }
 
-func GetHandlerLogin(usecase usecase2.AuthUsecase) echo.HandlerFunc {
+func GetHandlerLogin(usecase usecase.AuthUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		rawBody, err := network.ReadBody(ctx)
 		if err != nil {
@@ -26,17 +33,22 @@ func GetHandlerLogin(usecase usecase2.AuthUsecase) echo.HandlerFunc {
 		credentials := model.UserCredentials{}
 		e := credentials.UnmarshalJSON(rawBody)
 		if e != nil {
-			return e
+			return model.NewError(400, "Невалидные входные данные").HTTP()
 		}
-		err = usecase.Login(ctx, credentials.Email, credentials.Password)
+		newEventsNumber, err := usecase.Login(ctx, credentials.Email, credentials.Password)
 		if err != nil {
-			return err.Common()
+			return err.HTTP()
 		}
+		body, e := json.Marshal(map[string]int{"new_events_number": newEventsNumber})
+		if e != nil {
+			return model.NewError(500, e.Error()).HTTP()
+		}
+		network.WriteJSONToResponse(ctx, 200, body)
 		return nil
 	}
 }
 
-func GetHandlerLogout(usecase usecase2.AuthUsecase) echo.HandlerFunc {
+func GetHandlerLogout(usecase usecase.AuthUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		e := usecase.Logout(ctx)
 		if e != nil {

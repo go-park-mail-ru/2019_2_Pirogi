@@ -56,3 +56,14 @@ func MarshalTrailers(trailers []model.TrailerWithTitle) (body [][]byte) {
 	}
 	return body
 }
+
+func MarshalSubscriptionEvents(events []model.SubscriptionEvent) (body [][]byte) {
+	for _, event := range events {
+		raw, err := event.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}

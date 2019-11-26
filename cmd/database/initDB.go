@@ -160,7 +160,10 @@ func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 		return "", e.Common()
 	}
 	filename := hash.SHA1(url) + ending
-	return filename, files.WriteFile(path.Join(baseFolder, filename), body)
+	if files.WriteFile(path.Join(baseFolder, filename), body) != nil {
+		return filename, errors.New(files.WriteFile(path.Join(baseFolder, filename), body).Error)
+	}
+	return filename, nil
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
@@ -217,16 +220,16 @@ func FakeFillDB(conn *database.MongoConnection) {
 	}
 	for i, personImage := range personImages {
 		fmt.Printf("inserting %d person image from %d\n", i, len(personImages))
-		person, e := conn.Get(models.ID(i), configs.Default.PersonTargetName)
+		person, e := conn.Get(model.ID(i), configs.Default.PersonTargetName)
 		if e != nil {
 			continue
 		}
-		imagePath, err := uploadAndSaveImage(string(personImage.(models.Image)), configs.Default.PersonsImageUploadPath)
+		imagePath, err := uploadAndSaveImage(string(personImage.(model.Image)), configs.Default.PersonsImageUploadPath)
 		if err != nil {
 			continue
 		}
-		p := person.(models.Person)
-		p.Images = []models.Image{models.Image(imagePath)}
+		p := person.(model.Person)
+		p.Images = []model.Image{model.Image(imagePath)}
 		conn.Upsert(p)
 	}
 }
