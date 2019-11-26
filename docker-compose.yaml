@@ -32,7 +32,7 @@ services:
     image: prom/prometheus:latest
     container_name: prometheus
     ports:
-      - 9090:9090
+      - 8090:9090
     volumes:
       - ./prometheus.yml:/etc/prometheus/prometheus.yml:Z
     command:
@@ -49,7 +49,7 @@ services:
     container_name: nodeexporter
     restart: always
     ports:
-      - 9100:9100
+      - 8100:9100
 
   grafana:
     image: grafana/grafana:latest

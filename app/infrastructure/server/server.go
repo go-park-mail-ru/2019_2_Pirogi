@@ -12,6 +12,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 )
 
@@ -62,6 +63,8 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
+
+	e.GET("/metrics", echo.WrapHandler(promhttp.Handler()))
 
 	api := e.Group("/api")
 
