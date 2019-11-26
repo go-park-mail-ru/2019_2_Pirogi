@@ -1,14 +1,15 @@
 package files
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/labstack/echo"
-	"go.uber.org/zap"
 	"io/ioutil"
 	"net/http"
 	"os"
 	"path/filepath"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/labstack/echo"
+	"go.uber.org/zap"
 )
 
 func WriteFile(filename string, fileBytes []byte) *model.Error {

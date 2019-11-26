@@ -1,12 +1,13 @@
 package http
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net/http"
-	"time"
 )
 
 func GetHTTPErrorHandler(logger *zap.Logger) func(err error, ctx echo.Context) {

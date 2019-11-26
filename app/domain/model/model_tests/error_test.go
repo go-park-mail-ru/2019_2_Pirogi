@@ -1,9 +1,10 @@
 package model_tests
 
 import (
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestNew(t *testing.T) {
@@ -14,4 +15,3 @@ func TestNew(t *testing.T) {
 	newError := model.NewError(404, "Страница не найдена", "Что делать?")
 	require.Equal(t, expectedError, newError)
 }
-

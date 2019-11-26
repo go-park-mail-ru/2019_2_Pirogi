@@ -1,10 +1,11 @@
 package files
 
 import (
-	"github.com/stretchr/testify/require"
 	"io/ioutil"
 	"os"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestReadLinesInvalidFile(t *testing.T) {
@@ -36,6 +37,6 @@ func TestReadLines(t *testing.T) {
 	require.NoError(t, err)
 	err = WriteFile(validPath+filename, validImage)
 	require.NoError(t, err)
-	err = os.Remove(validPath+filename)
+	err = os.Remove(validPath + filename)
 	require.NoError(t, err)
 }

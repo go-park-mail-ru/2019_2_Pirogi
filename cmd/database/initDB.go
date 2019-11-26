@@ -5,6 +5,12 @@ import (
 	"errors"
 	"flag"
 	"fmt"
+	"io"
+	"io/ioutil"
+	"net/http"
+	"os"
+	"path"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
@@ -12,11 +18,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/files"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/labstack/gommon/log"
-	"io"
-	"io/ioutil"
-	"net/http"
-	"os"
-	"path"
 )
 
 func parse(target string) ([]interface{}, error) {

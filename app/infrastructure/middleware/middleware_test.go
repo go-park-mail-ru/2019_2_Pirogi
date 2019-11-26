@@ -2,13 +2,14 @@ package middleware
 
 import (
 	"bytes"
+	"net/http"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
 	"go.uber.org/zap"
-	"net/http"
-	"net/http/httptest"
-	"testing"
 )
 
 const configsPath = "../../../configs"

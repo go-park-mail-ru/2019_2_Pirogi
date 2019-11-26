@@ -1,9 +1,10 @@
 package configuration
 
 import (
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestUnmarshalConfigs(t *testing.T) {

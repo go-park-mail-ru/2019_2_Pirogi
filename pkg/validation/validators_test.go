@@ -1,9 +1,10 @@
 package validation
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"testing"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 
 	valid "github.com/asaskevich/govalidator"
 	"github.com/stretchr/testify/require"

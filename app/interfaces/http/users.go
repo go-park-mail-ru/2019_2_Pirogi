@@ -1,11 +1,12 @@
 package http
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"go.uber.org/zap"
-	"net/http"
 
 	"github.com/labstack/echo"
 )

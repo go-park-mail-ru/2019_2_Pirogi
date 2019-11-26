@@ -1,11 +1,12 @@
 package validation
 
 import (
+	"regexp"
+	"time"
+
 	valid "github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"regexp"
-	"time"
 )
 
 //var datePattern = regexp.MustCompile("([0-9]{2}.){2}[1-2][0-9]{3}")

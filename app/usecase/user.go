@@ -1,6 +1,9 @@
 package usecase
 
 import (
+	"net/http"
+	"time"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
@@ -8,8 +11,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
-	"net/http"
-	"time"
 )
 
 type UserUsecase interface {

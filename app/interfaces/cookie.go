@@ -1,12 +1,13 @@
 package interfaces
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type cookieRepository struct {

@@ -1,11 +1,12 @@
 package network
 
 import (
+	"io/ioutil"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
-	"io/ioutil"
-	"strconv"
 )
 
 func ReadBody(ctx echo.Context) ([]byte, *model.Error) {

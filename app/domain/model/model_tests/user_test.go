@@ -1,10 +1,11 @@
 package model_tests
 
 import (
+	"testing"
+
 	model2 "github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/stretchr/testify/require"
-	"testing"
 )
 
 func TestPrepareModelNewUser(t *testing.T) {

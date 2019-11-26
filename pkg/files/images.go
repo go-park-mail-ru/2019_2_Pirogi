@@ -1,9 +1,10 @@
 package files
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"mime"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 )
 
 const MaxUploadSize = 2 * 1024 * 1024
@@ -24,4 +25,3 @@ func DetectContentType(data []byte) (ending string, err *model.Error) {
 	}
 	return endings[0], nil
 }
-

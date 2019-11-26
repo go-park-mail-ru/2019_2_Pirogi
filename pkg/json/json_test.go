@@ -1,8 +1,9 @@
 package json
 
 import (
-	"github.com/stretchr/testify/require"
 	"testing"
+
+	"github.com/stretchr/testify/require"
 )
 
 func TestMakeJSONArray(t *testing.T) {
