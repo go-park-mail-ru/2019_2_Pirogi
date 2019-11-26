@@ -1,12 +1,13 @@
 package http
 
 import (
+	"net/http"
+	"strconv"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
-	"net/http"
-	"strconv"
 )
 
 func GetHandlerProfileReviews(u usecase.ReviewUsecase) echo.HandlerFunc {

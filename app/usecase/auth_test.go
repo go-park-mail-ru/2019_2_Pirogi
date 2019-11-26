@@ -1,13 +1,14 @@
 package usecase
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"log"
 	"net/http"
 	"testing"
 	"time"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 
 	"github.com/stretchr/testify/require"
 )

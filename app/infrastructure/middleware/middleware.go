@@ -2,12 +2,13 @@ package middleware
 
 import (
 	"errors"
+	"net/http"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/security"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net/http"
-	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"

@@ -1,9 +1,10 @@
 package model
 
 import (
+	"time"
+
 	"github.com/asaskevich/govalidator"
 	"golang.org/x/net/html"
-	"time"
 )
 
 type ReviewNew struct {

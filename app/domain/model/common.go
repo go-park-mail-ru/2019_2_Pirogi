@@ -2,8 +2,9 @@ package model
 
 import (
 	"fmt"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"strconv"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 )
 
 type ID int

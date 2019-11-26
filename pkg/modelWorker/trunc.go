@@ -9,7 +9,6 @@ func TruncFilms(films []model.Film) (filmsTrunc []model.FilmTrunc) {
 	return
 }
 
-
 func TruncPersons(persons []model.Person) (personsTrunc []model.PersonTrunc) {
 	for _, person := range persons {
 		personsTrunc = append(personsTrunc, person.Trunc())

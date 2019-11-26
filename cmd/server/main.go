@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/server"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"

@@ -1,8 +1,9 @@
 package database
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 )
 
 type Database interface {

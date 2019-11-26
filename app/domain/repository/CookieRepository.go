@@ -1,9 +1,10 @@
 package repository
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/labstack/echo"
-	"net/http"
 )
 
 type CookieRepository interface {

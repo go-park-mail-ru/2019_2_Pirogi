@@ -1,6 +1,8 @@
 package server
 
 import (
+	"log"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/middleware"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/interfaces"
@@ -11,7 +13,6 @@ import (
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
 	"go.uber.org/zap"
-	"log"
 )
 
 func CreateLogger() (*zap.Logger, error) {

@@ -2,6 +2,8 @@ package database
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/pkg/errors"
@@ -9,7 +11,6 @@ import (
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.uber.org/zap"
-	"net/http"
 )
 
 type MongoConnection struct {

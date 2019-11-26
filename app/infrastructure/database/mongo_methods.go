@@ -1,9 +1,10 @@
 package database
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"go.uber.org/zap"
-	"net/http"
 
 	"github.com/pkg/errors"
 
