@@ -1,10 +1,14 @@
 package usecase
 
 import (
+	"context"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
+	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/cmd/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
+	"google.golang.org/grpc"
 	"net/http"
 )
 
@@ -20,14 +24,25 @@ type authUsecase struct {
 	userRepo         repository.UserRepository
 	cookieRepo       repository.CookieRepository
 	subscriptionRepo repository.SubscriptionRepository
+	rpcClient        v1.AuthServiceClient
 }
 
 func NewAuthUsecase(userRepo repository.UserRepository, cookieRepo repository.CookieRepository,
 	subscriptionRepository repository.SubscriptionRepository) *authUsecase {
+	grcpConn, err := grpc.Dial(
+		"sessions:8081",
+		grpc.WithInsecure(),
+	)
+	if err != nil {
+		zap.S().Error(err.Error())
+	}
+
+	client := v1.NewAuthServiceClient(grcpConn)
 	return &authUsecase{
 		userRepo:         userRepo,
 		cookieRepo:       cookieRepo,
 		subscriptionRepo: subscriptionRepository,
+		rpcClient:        client,
 	}
 }
 func (u *authUsecase) CheckCookieExisting(ctx echo.Context, cookieName string) bool {
@@ -43,18 +58,17 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *mod
 	if err == nil {
 		return -1, model.NewError(400, "Пользователь уже авторизован")
 	}
-	user, err := u.userRepo.GetByEmail(email)
-	if err != nil || user.CheckPassword(password) {
-		return -1, model.NewError(400, "Неверная почта и/или пароль")
+	response, e := u.rpcClient.Login(context.Background(), &v1.LoginRequest{
+		Email:    email,
+		Password: password,
+	})
+	if e != nil {
+		return -1, model.NewError(500, e.Error())
 	}
 	cookie := model.Cookie{}
-	cookie.GenerateAuthCookie(user.ID, configs.Default.CookieAuthName, email)
-	e := u.cookieRepo.Insert(cookie)
-	if e != nil {
-		return -1, e
-	}
+	cookie.GenerateAuthCookie(model.ID(response.UserID), configs.Default.CookieAuthName, response.CookieValue)
 	u.cookieRepo.SetOnResponse(ctx.Response(), &cookie)
-	subscription, err := u.subscriptionRepo.Find(user.ID)
+	subscription, err := u.subscriptionRepo.Find(model.ID(response.UserID))
 	var newEventsNumber int
 	for _, event := range subscription.SubscriptionEvents {
 		if !event.IsRead {
@@ -65,11 +79,17 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *mod
 }
 
 func (u *authUsecase) LoginCheck(ctx echo.Context) (int, bool) {
-	user, err := u.cookieRepo.GetUserByContext(ctx)
+	cookie, err := u.cookieRepo.GetCookieFromRequest(ctx.Request(), configs.Default.CookieAuthName)
 	if err != nil {
 		return -1, false
 	}
-	subscription, err := u.subscriptionRepo.Find(user.ID)
+	response, e := u.rpcClient.LoginCheck(context.Background(), &v1.LoginCheckRequest{
+		CookieValue: cookie.Cookie.Value,
+	})
+	if e != nil {
+		return -1, false
+	}
+	subscription, err := u.subscriptionRepo.Find(model.ID(response.UserID))
 	var newEventsNumber int
 	for _, event := range subscription.SubscriptionEvents {
 		if !event.IsRead {
@@ -84,9 +104,14 @@ func (u *authUsecase) Logout(ctx echo.Context) *model.Error {
 	if err != nil {
 		return model.NewError(http.StatusUnauthorized, "Пользователь не авторизован")
 	}
+	_, e := u.rpcClient.Logout(context.Background(), &v1.LogoutRequest{
+		CookieValue: session.Cookie.Value,
+	})
+	if e != nil {
+		return model.NewError(500, e.Error())
+	}
 	session.Expire()
 	u.cookieRepo.SetOnResponse(ctx.Response(), &session)
-	u.cookieRepo.Delete(session)
 	return nil
 }
 

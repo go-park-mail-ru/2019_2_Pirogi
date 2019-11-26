@@ -5,7 +5,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -59,12 +58,21 @@ func (c *cookieRepository) SetOnResponse(res *echo.Response, r *model.Cookie) {
 
 func (c *cookieRepository) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
 	cookieCommon, err := ctx.Request().Cookie(configs.Default.CookieAuthName)
-	zap.S().Debug(cookieCommon)
 	if err != nil {
 		return model.User{}, model.NewError(400, err.Error())
 	}
 	var cookie model.Cookie
 	cookie.CopyFromCommon(cookieCommon)
-	zap.S().Debug(cookie)
 	return c.conn.FindUserByCookie(cookie.Cookie)
+}
+
+func (c *cookieRepository) GetUserByCookieValue(cookieValue string) (model.User, *model.Error) {
+	cookie := &http.Cookie{
+		Name:     configs.Default.CookieAuthName,
+		Value:    cookieValue,
+		Path:     "/",
+		HttpOnly: true,
+		SameSite: http.SameSiteStrictMode,
+	}
+	return c.conn.FindUserByCookie(cookie)
 }

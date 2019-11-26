@@ -8,7 +8,6 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -207,13 +206,7 @@ func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error
 
 func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (model.User, *model.Error) {
 	foundCookie := model.Cookie{}
-	zap.S().Debug(cookie)
-	zap.S().Debug(conn.context)
-	zap.S().Debug(foundCookie)
-	zap.S().Debug(cookie.Value)
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
-	zap.S().Debug(err)
-	zap.S().Debug(foundCookie)
 	if err != nil {
 		return model.User{}, model.NewError(404, err.Error())
 	}

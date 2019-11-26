@@ -7,6 +7,7 @@ import (
 	handlers "github.com/go-park-mail-ru/2019_2_Pirogi/app/interfaces/http"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
@@ -14,24 +15,10 @@ import (
 	"log"
 )
 
-func CreateLogger() (*zap.Logger, error) {
-	cfg := zap.NewDevelopmentConfig()
-	cfg.DisableStacktrace = true
-	cfg.OutputPaths = []string{
-		"stdout",
-		configs.Default.AccessLog,
-	}
-	cfg.ErrorOutputPaths = []string{
-		"stderr",
-		configs.Default.ErrorLog,
-	}
-	return cfg.Build()
-}
-
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	validation.InitValidator()
 	e := echo.New()
-	logger, err := CreateLogger()
+	logger, err := network.CreateLogger()
 	zap.ReplaceGlobals(logger)
 	if err != nil {
 		log.Fatalf("can't initialize zap logger: %v", err)

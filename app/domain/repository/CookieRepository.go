@@ -14,4 +14,5 @@ type CookieRepository interface {
 	GetCookieFromRequest(r *http.Request, name string) (model.Cookie, *model.Error)
 	SetOnResponse(res *echo.Response, r *model.Cookie)
 	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
+	GetUserByCookieValue(cookieValue string) (model.User, *model.Error)
 }
