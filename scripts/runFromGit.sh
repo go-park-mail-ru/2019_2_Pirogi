@@ -5,5 +5,4 @@ else
   echo "pulling from origin $2..."
   git pull origin "$2"
 fi
-easyjson --all ./internal/pkg/models
 ./scripts/run.sh

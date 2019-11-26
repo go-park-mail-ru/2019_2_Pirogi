@@ -1,32 +1,63 @@
 version: '3'
 services:
   server:
+    container_name: cinsear
+    ports:
+#   поменял порт с 8000 на 8080 из-за бага в новой версии Docker для Mac
+      - 8080:8080
     build:
       context: ./
       dockerfile: ./Dockerfile
-    ports:
-#   поменял порт с 8000 на 8080 из-за бага в новой версии Docker для Mac
-      - "8080:8080"
     depends_on:
       - mongo
     restart: always
     volumes:
-      - "media:/media"
-      - "log:/log"
-    container_name: cinsear
+      - 'media:/media'
+      - 'log:/log'
 
   mongo:
     image: mongo
+    container_name: cinsear-db
     ports:
-      - "27017:27017"
+      - 27017:27017
     volumes:
       - db:/data/db
       - ./mongoInit.js:/docker-entrypoint-initdb.d/mongoInit.js:ro
-    container_name: cinsear-db
     environment:
       - MONGO_INITDB_DATABASE=cinsear
       - MONGO_INITDB_USERNAME=cinsear-user
       - MONGO_INITDB_PASSWORD=cinsear-pwd
+
+  prometheus:
+    image: prom/prometheus:latest
+    container_name: prometheus
+    ports:
+      - 9090:9090
+    volumes:
+      - ./prometheus.yml:/etc/prometheus/prometheus.yml:Z
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--storage.tsdb.path=/prometheus'
+      - '--storage.tsdb.retention=20d'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+      - '--web.enable-lifecycle'
+    restart: always
+    
+  nodeexporter:
+    image: prom/node-exporter:latest
+    container_name: nodeexporter
+    restart: always
+    ports:
+      - 9100:9100
+
+  grafana:
+    image: grafana/grafana:latest
+    container_name: grafana
+    restart: always
+    ports:
+      - 3000:3000
+
 volumes:
   media:
   log:

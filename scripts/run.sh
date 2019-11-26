@@ -12,6 +12,9 @@ docker volume create media
 docker volume create log
 docker volume create db
 
+echo "---Parsing models..."
+easyjson -all -pkg app/domain/model
+
 echo "---Starting..."
 docker-compose up --build --detach server mongo
 
