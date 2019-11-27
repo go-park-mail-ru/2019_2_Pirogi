@@ -80,6 +80,7 @@ func (conn *MongoConnection) InitCounters() error {
 		bson.M{"_id": configs.Default.FilmTargetName, "seq": 0},
 		bson.M{"_id": configs.Default.PersonTargetName, "seq": 0},
 		bson.M{"_id": configs.Default.ReviewTargetName, "seq": 0},
+		bson.M{"_id": configs.Default.ListTargetName, "seq": 0},
 	})
 	return errors.Wrap(err, "init counters collection failed")
 }
@@ -109,8 +110,10 @@ func (conn *MongoConnection) Upsert(in interface{}) *model.Error {
 		e = InsertStars(conn, in)
 	case model.Like:
 		e = InsertLike(conn, in)
-	case model.List:
+	case model.ListNew:
 		e = InsertList(conn, in)
+	case model.List:
+		e = UpdateList(conn, in)
 	case model.SubscriptionNew:
 		e = InsertSubscription(conn, in)
 	case model.Subscription:
@@ -299,6 +302,12 @@ func (conn *MongoConnection) FindPersonByID(id model.ID) (model.Person, bool) {
 func (conn *MongoConnection) FindListByID(id model.ID) (model.List, bool) {
 	result := model.List{}
 	err := conn.lists.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindListByTitle(title string) (model.List, bool) {
+	result := model.List{}
+	err := conn.lists.FindOne(conn.context, bson.M{"title": title}).Decode(&result)
 	return result, err == nil
 }
 
