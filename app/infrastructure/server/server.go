@@ -126,7 +126,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)
-	e.Use(middleware.CheckStatusMiddleware)
+	e.Use(middleware.GetMetricsMiddleware)
 	e.Use(echoMid.Recover())
 
 	return e, nil

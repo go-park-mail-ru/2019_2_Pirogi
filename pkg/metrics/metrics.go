@@ -14,7 +14,8 @@ var ApiMetrics Metrics
 
 func InitMetrics() {
 	ApiMetrics.HitsTotal = prometheus.NewCounter(prometheus.CounterOpts{Name: "hits_total"})
-	ApiMetrics.Hits = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "hits"}, []string{"status", "method", "path"})
+	ApiMetrics.Hits = prometheus.NewCounterVec(prometheus.CounterOpts{Name: "hits"}, []string{"status",
+		"method", "path", "time"})
 	prometheus.MustRegister(ApiMetrics.HitsTotal, ApiMetrics.Hits)
 }
 
@@ -22,6 +23,6 @@ func (m *Metrics) IncHitsTotal() {
 	m.HitsTotal.Inc()
 }
 
-func (m *Metrics) IncHitOfResponse(status int, method, path string) {
-	m.Hits.WithLabelValues(strconv.Itoa(status), method, path).Inc()
+func (m *Metrics) IncHitOfResponse(status int, method, path string, time int) {
+	m.Hits.WithLabelValues(strconv.Itoa(status), method, path, strconv.Itoa(time)).Inc()
 }
