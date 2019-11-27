@@ -1,0 +1,44 @@
+syntax = "proto3";
+package v1;
+
+// protoc --go_out=plugins=grpc:. *.proto
+
+message LoginRequest {
+    string email = 1;
+    string password = 2;
+}
+
+message LoginResponse {
+    int64 userID = 1;
+    string cookieValue = 2;
+}
+
+
+message LogoutRequest {
+    string cookieValue = 1;
+}
+
+
+message LogoutResponse {
+}
+
+
+message LoginCheckRequest {
+    string cookieValue = 1;
+}
+
+message LoginCheckResponse {
+    int64 userID = 1;
+}
+
+service AuthService {
+    rpc Login (LoginRequest) returns (LoginResponse) {
+    }
+    rpc LoginCheck (LoginCheckRequest) returns (LoginCheckResponse) {
+    }
+    rpc Logout (LogoutRequest) returns (LogoutResponse) {
+    }
+}
+
+
+
