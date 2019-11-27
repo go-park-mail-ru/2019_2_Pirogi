@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
@@ -36,7 +37,7 @@ func GetHandlerLogin(usecase usecase.AuthUsecase) echo.HandlerFunc {
 		if e != nil {
 			return model.NewError(400, "Невалидные входные данные").HTTP()
 		}
-		newEventsNumber, err := usecase.Login(ctx, credentials.Email, credentials.Password)
+		newEventsNumber, err := usecase.Login(ctx, credentials.Email, hash.SHA1(credentials.Password))
 		if err != nil {
 			return err.HTTP()
 		}
