@@ -43,7 +43,7 @@ type User struct {
 	Image       Image  `json:"image" valid:"image,optional"`
 }
 
-func (u *User) CheckPassword(password string) bool {
+func (u *User) IsPasswordCorrect(password string) bool {
 	return u.Password == password
 }
 

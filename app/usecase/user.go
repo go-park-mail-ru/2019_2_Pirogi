@@ -6,11 +6,9 @@ import (
 	v12 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/users/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
-	"time"
 )
 
 type UserUsecase interface {
@@ -96,7 +94,7 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	if e != nil {
 		return model.NewError(404, e.Error())
 	}
-	_, e = u.sessionsRpcClient.Login(context.Background(), &v12.LoginRequest{
+	response, e := u.sessionsRpcClient.Login(context.Background(), &v12.LoginRequest{
 		Email:    user.Email,
 		Password: user.Password,
 	})
@@ -104,8 +102,7 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 		return model.NewError(500, e.Error())
 	}
 	var cookie model.Cookie
-	cookie.GenerateAuthCookie(model.ID(user.ID), configs.Default.CookieAuthName,
-		hash.SHA1(userNew.Password+userNew.Email+time.Now().String()))
+	cookie.GenerateAuthCookie(model.ID(user.ID), configs.Default.CookieAuthName, response.CookieValue)
 	network.SetCookieOnContext(&ctx, cookie)
 	return nil
 }

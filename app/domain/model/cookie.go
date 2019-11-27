@@ -2,7 +2,6 @@ package model
 
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"net/http"
 	"time"
 )
@@ -28,7 +27,7 @@ func (c *Cookie) CopyFromCommon(cookie *http.Cookie) {
 func (c *Cookie) GenerateAuthCookie(id ID, cookieName, value string) {
 	cookie := &http.Cookie{
 		Name:       cookieName,
-		Value:      hash.SHA1(value),
+		Value:      value,
 		Path:       "/",
 		Expires:    time.Now().Add(configs.Default.CookieAuthDurationHours * time.Hour),
 		HttpOnly:   true,

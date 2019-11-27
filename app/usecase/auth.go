@@ -8,6 +8,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 	"net/http"
 )
 
@@ -43,6 +44,7 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *mod
 	}
 	cookie := model.Cookie{}
 	cookie.GenerateAuthCookie(model.ID(response.UserID), configs.Default.CookieAuthName, response.CookieValue)
+	zap.S().Debug(cookie.Cookie.Value)
 	network.SetCookieOnContext(&ctx, cookie)
 	subscription, err := u.subscriptionRepo.Find(model.ID(response.UserID))
 	var newEventsNumber int
