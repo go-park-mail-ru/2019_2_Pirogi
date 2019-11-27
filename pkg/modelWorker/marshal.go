@@ -67,3 +67,14 @@ func MarshalSubscriptionEvents(events []model.SubscriptionEvent) (body [][]byte)
 	}
 	return body
 }
+
+func MarshalListsFull(listsFull []model.ListFull) (body [][]byte) {
+	for _, list := range listsFull {
+		raw, err := list.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}

@@ -9,6 +9,14 @@ type listsRepository struct {
 	conn database.Database
 }
 
+func (l listsRepository) GetByUserIDAndTitle(userID model.ID, title string) (model.List, *model.Error) {
+	list, ok := l.conn.FindListByUserIDAndTitle(userID, title)
+	if !ok {
+		return model.List{}, model.NewError(404, "не найден")
+	}
+	return list, nil
+}
+
 func (l listsRepository) Insert(listNew model.ListNew) *model.Error {
 	return l.conn.Upsert(listNew)
 }

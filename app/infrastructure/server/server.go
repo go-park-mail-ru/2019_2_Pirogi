@@ -76,7 +76,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
-	listsUsecase := usecase.NewListsUsecase(cookieRepo, listsRepo)
+	listsUsecase := usecase.NewListsUsecase(cookieRepo, listsRepo, filmRepo)
 
 	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))
 
@@ -124,7 +124,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	//
 	lists := api.Group("/lists")
 	lists.GET("/", handlers.GetHandlerLists(listsUsecase))
-	lists.PUT("/", handlers.GetHandlerCreateOrUpdate(listsUsecase))
+	lists.PUT("/", handlers.GetHandlerCreateOrUpdateList(listsUsecase))
 
 	api.GET("/common/:variable/", handlers.HandlerCommon())
 
