@@ -305,9 +305,9 @@ func (conn *MongoConnection) FindListByID(id model.ID) (model.List, bool) {
 	return result, err == nil
 }
 
-func (conn *MongoConnection) FindListByTitle(title string) (model.List, bool) {
+func (conn *MongoConnection) FindListByUserIDAndTitle(userId model.ID, title string) (model.List, bool) {
 	result := model.List{}
-	err := conn.lists.FindOne(conn.context, bson.M{"title": title}).Decode(&result)
+	err := conn.lists.FindOne(conn.context, bson.M{"userid": userId, "title": title}).Decode(&result)
 	return result, err == nil
 }
 
