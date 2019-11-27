@@ -6,6 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
 	"go.uber.org/zap"
@@ -37,7 +38,7 @@ func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *mod
 	}
 	response, e := u.rpcClient.Login(context.Background(), &v1.LoginRequest{
 		Email:    email,
-		Password: password,
+		Password: hash.SHA1(password),
 	})
 	if e != nil {
 		return -1, model.NewError(500, e.Error())
