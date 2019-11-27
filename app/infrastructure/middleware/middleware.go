@@ -91,10 +91,24 @@ func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
 	}
 }
 
-func CheckStatusMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+func GetMetricsMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		metrics.ApiMetrics.IncHitsTotal()
-		metrics.ApiMetrics.IncHitOfResponse(ctx.Response().Status, ctx.Request().Method, ctx.Path())
-		return next(ctx)
+		start := time.Now()
+		err := next(ctx)
+		var status int
+		if err == nil {
+			status = 200
+		} else {
+			switch e := err.(type) {
+			case *echo.HTTPError:
+				zap.S().Debug(e.Code)
+				status = e.Code
+			}
+		}
+		metrics.ApiMetrics.IncHitOfResponse(status, ctx.Request().Method, ctx.Path())
+		metrics.ApiMetrics.ObserveResponseTime(status, ctx.Request().Method, ctx.Path(),
+			float64(time.Since(start).Nanoseconds())/1000000)
+		return err
 	}
 }
