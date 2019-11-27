@@ -6,6 +6,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 )
 
 type ListsUsecase interface {
@@ -35,6 +36,7 @@ func (l listsUsecase) CreateOrUpdateList(ctx echo.Context) *model.Error {
 	}
 	listOld, err := l.listsRepo.GetByUserIDAndTitle(user.ID, list.Title)
 	if err != nil {
+		list.UserID = user.ID
 		return l.listsRepo.Insert(list)
 	}
 	listOld.FilmsID = append(listOld.FilmsID, list.FilmID)
@@ -47,17 +49,22 @@ func (l listsUsecase) GetListsByUserCtx(ctx echo.Context) ([]model.ListFull, *mo
 		return nil, err
 	}
 	lists, err := l.listsRepo.GetByUserID(user.ID)
+	zap.S().Debug(lists)
 	if err != nil {
 		return nil, err
 	}
 	var listsFull []model.ListFull
 	for _, list := range lists {
 		var listFull model.ListFull
+		listFull.Title = list.Title
+		listFull.ID = list.ID
+		listFull.UserID = list.UserID
 		films := l.filmsRepo.GetMany(list.FilmsID)
 		filmsTrunc := modelWorker.TruncFilms(films)
 		listFull.Films = filmsTrunc
 		listsFull = append(listsFull, listFull)
 	}
+	zap.S().Debug(listsFull)
 	return listsFull, nil
 }
 
