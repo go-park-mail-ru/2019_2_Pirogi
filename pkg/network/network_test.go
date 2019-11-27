@@ -3,12 +3,13 @@ package network
 import (
 	"bufio"
 	"bytes"
+	"net/http/httptest"
+	"testing"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/configuration"
 	"github.com/labstack/echo"
 	"github.com/stretchr/testify/require"
-	"net/http/httptest"
-	"testing"
 )
 
 func TestNormalizePath(t *testing.T) {

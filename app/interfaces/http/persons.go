@@ -2,6 +2,7 @@ package http
 
 import (
 	"encoding/json"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/usecase"
 	json2 "github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
@@ -36,7 +37,7 @@ func GetHandlerPerson(u usecase.PersonUsecase) echo.HandlerFunc {
 		if e != nil {
 			return model.NewError(500, e.Error()).HTTP()
 		}
-		jsonBlob := json2.UnionToJSONBytes([]string{"params", "person",},
+		jsonBlob := json2.UnionToJSONBytes([]string{"params", "person"},
 			[][]byte{params, body})
 		network.WriteJSONToResponse(ctx, 200, jsonBlob)
 		return nil

@@ -1,6 +1,8 @@
 package usecase
 
 import (
+	"strconv"
+
 	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
@@ -8,7 +10,6 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/json"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/labstack/echo"
-	"strconv"
 )
 
 type ReviewUsecase interface {
@@ -53,7 +54,7 @@ func (u *reviewUsecase) GetFilmReviewsFullJSONBlob(filmID model.ID, limit, offse
 	if err != nil {
 		return nil, err
 	}
-	var reviewsFull[] model.ReviewFull
+	var reviewsFull []model.ReviewFull
 	for _, review := range reviews {
 		user, err := u.userRepo.Get(review.AuthorID)
 		if err != nil {

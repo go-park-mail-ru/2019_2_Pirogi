@@ -1,16 +1,17 @@
 package usecase
 
 import (
+	"net/http"
+	"path"
+	"strings"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/files"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/labstack/echo"
-	"net/http"
-	"path"
-	"strings"
-	"time"
 )
 
 type ImageUsecase interface {

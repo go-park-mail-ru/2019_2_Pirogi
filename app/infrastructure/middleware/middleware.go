@@ -2,12 +2,14 @@ package middleware
 
 import (
 	"errors"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/metrics"
+	"net/http"
+	"time"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/hash"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/security"
 	"go.uber.org/zap"
 	"go.uber.org/zap/zapcore"
-	"net/http"
-	"time"
 
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
@@ -85,6 +87,14 @@ func SetCSRFCookie(next echo.HandlerFunc) echo.HandlerFunc {
 			SameSite: http.SameSiteStrictMode,
 		}
 		http.SetCookie(ctx.Response(), csrfCookie)
+		return next(ctx)
+	}
+}
+
+func CheckStatusMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
+	return func(ctx echo.Context) error {
+		metrics.ApiMetrics.IncHitsTotal()
+		metrics.ApiMetrics.IncHitOfResponse(ctx.Response().Status, ctx.Request().Method, ctx.Path())
 		return next(ctx)
 	}
 }

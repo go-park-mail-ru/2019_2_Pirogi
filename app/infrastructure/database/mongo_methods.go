@@ -1,9 +1,10 @@
 package database
 
 import (
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"go.uber.org/zap"
-	"net/http"
 
 	"github.com/pkg/errors"
 
@@ -164,6 +165,19 @@ func InsertLike(conn *MongoConnection, in model.Like) *model.Error {
 	_, err := conn.likes.InsertOne(conn.context, in)
 	if err != nil {
 		return model.NewError(http.StatusInternalServerError, "cannot insert like in database")
+	}
+	return nil
+}
+
+func InsertList(conn *MongoConnection, in model.List) *model.Error {
+	filter := bson.M{"_id": in.ID}
+	update := bson.M{"$set": in}
+	_, err := conn.lists.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		_, err = conn.lists.InsertOne(conn.context, in)
+		if err != nil {
+			return model.NewError(http.StatusInternalServerError, "cannot insert list in database")
+		}
 	}
 	return nil
 }

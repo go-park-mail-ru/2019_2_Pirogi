@@ -1,13 +1,14 @@
 package queryWorker
 
 import (
+	"reflect"
+	"strconv"
+	"strings"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/labstack/echo"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"reflect"
-	"strconv"
-	"strings"
 )
 
 type querySearchParams struct {

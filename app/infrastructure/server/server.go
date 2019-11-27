@@ -1,6 +1,9 @@
 package server
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/metrics"
+	"log"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	v12 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/sessions/protobuf"
 	v1 "github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/microservices/users/protobuf"
@@ -13,13 +16,14 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/labstack/echo"
 	echoMid "github.com/labstack/echo/middleware"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
-	"log"
 )
 
 func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	validation.InitValidator()
+	metrics.InitMetrics()
 	e := echo.New()
 	logger, err := network.CreateLogger()
 	if err != nil {
@@ -71,6 +75,8 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
+
+	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))
 
 	api := e.Group("/api")
 
@@ -130,6 +136,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	e.Use(echoMid.Secure())
 	e.Use(middleware.SetCSRFCookie)
 	e.Use(middleware.HeaderMiddleware)
+	e.Use(middleware.CheckStatusMiddleware)
 	e.Use(echoMid.Recover())
 
 	return e, nil

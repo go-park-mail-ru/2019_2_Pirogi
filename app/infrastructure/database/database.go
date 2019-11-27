@@ -1,8 +1,9 @@
 package database
 
 import (
-	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"net/http"
+
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 )
 
 type Database interface {
@@ -27,6 +28,9 @@ type Database interface {
 	FindPersonsByIDs(ids []model.ID) ([]model.Person, bool)
 
 	FindReviewByID(id model.ID) (model.Review, bool)
+
+	FindListByID(id model.ID) (model.List, bool)
+	FindListsByUserID(userId model.ID) ([]model.List, *model.Error)
 
 	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *model.Error)
 

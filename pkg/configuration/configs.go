@@ -1,9 +1,10 @@
 package configuration
 
 import (
+	"io/ioutil"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"gopkg.in/yaml.v2"
-	"io/ioutil"
 )
 
 func UnmarshalConfigs(configsPath string) error {

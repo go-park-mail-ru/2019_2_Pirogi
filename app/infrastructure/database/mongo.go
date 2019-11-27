@@ -2,26 +2,29 @@ package database
 
 import (
 	"context"
+	"net/http"
+
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
 	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
-	"net/http"
+	"go.uber.org/zap"
 )
 
 type MongoConnection struct {
 	client  *mongo.Client
 	context context.Context
 
+	counters      *mongo.Collection
 	users         *mongo.Collection
 	cookies       *mongo.Collection
 	films         *mongo.Collection
 	persons       *mongo.Collection
 	likes         *mongo.Collection
 	reviews       *mongo.Collection
-	counters      *mongo.Collection
+	lists         *mongo.Collection
 	subscriptions *mongo.Collection
 }
 
@@ -57,13 +60,14 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 	conn := MongoConnection{
 		client:        client,
 		context:       context.Background(),
+		counters:      client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
 		users:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.UsersCollectionName),
 		cookies:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
 		films:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
 		persons:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
 		likes:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
 		reviews:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
-		counters:      client.Database(configs.Default.MongoDbName).Collection(configs.Default.CountersCollectionName),
+		lists:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.ListsCollectionName),
 		subscriptions: client.Database(configs.Default.MongoDbName).Collection(configs.Default.SubscriptionCollectionName),
 	}
 
@@ -105,6 +109,8 @@ func (conn *MongoConnection) Upsert(in interface{}) *model.Error {
 		e = InsertStars(conn, in)
 	case model.Like:
 		e = InsertLike(conn, in)
+	case model.List:
+		e = InsertList(conn, in)
 	case model.SubscriptionNew:
 		e = InsertSubscription(conn, in)
 	case model.Subscription:
@@ -135,6 +141,12 @@ func (conn *MongoConnection) Get(id model.ID, target string) (interface{}, *mode
 			return f, nil
 		}
 		return nil, model.NewError(http.StatusNotFound, "no person with the id: "+id.String())
+	case configs.Default.ListTargetName:
+		f, ok := conn.FindListByID(id)
+		if ok {
+			return f, nil
+		}
+		return nil, model.NewError(http.StatusNotFound, "no list with the id: "+id.String())
 	case configs.Default.SubscriptionTargetName:
 		f, err := conn.FindSubscriptionByUserID(id)
 		if err == nil {
@@ -178,6 +190,8 @@ func (conn *MongoConnection) ClearDB() {
 	_, _ = conn.reviews.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.persons.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.likes.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.lists.DeleteMany(conn.context, bson.M{})
+	_, _ = conn.subscriptions.DeleteMany(conn.context, bson.M{})
 }
 
 func (conn *MongoConnection) CheckCookie(cookie *http.Cookie) bool {
@@ -206,7 +220,13 @@ func (conn *MongoConnection) FindUserByID(id model.ID) (model.User, *model.Error
 
 func (conn *MongoConnection) FindUserByCookie(cookie *http.Cookie) (model.User, *model.Error) {
 	foundCookie := model.Cookie{}
+	zap.S().Debug(cookie)
+	zap.S().Debug(conn.context)
+	zap.S().Debug(foundCookie)
+	zap.S().Debug(cookie.Value)
 	err := conn.cookies.FindOne(conn.context, bson.M{"cookie.value": cookie.Value}).Decode(&foundCookie)
+	zap.S().Debug(err)
+	zap.S().Debug(foundCookie)
 	if err != nil {
 		return model.User{}, model.NewError(404, err.Error())
 	}
@@ -274,6 +294,30 @@ func (conn *MongoConnection) FindPersonByID(id model.ID) (model.Person, bool) {
 	result := model.Person{}
 	err := conn.persons.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
 	return result, err == nil
+}
+
+func (conn *MongoConnection) FindListByID(id model.ID) (model.List, bool) {
+	result := model.List{}
+	err := conn.lists.FindOne(conn.context, bson.M{"_id": id}).Decode(&result)
+	return result, err == nil
+}
+
+func (conn *MongoConnection) FindListsByUserID(userId model.ID) ([]model.List, *model.Error) {
+	curs, err := conn.lists.Find(conn.context, bson.M{"userid": userId})
+	if err != nil {
+		return nil, model.NewError(http.StatusInternalServerError, "error while finding lists", err.Error())
+	}
+	var result []model.List
+	for curs.Next(conn.context) {
+		l := model.List{}
+		err = curs.Decode(&l)
+		if err != nil {
+			return nil, model.NewError(http.StatusInternalServerError, "error while decoding result in lists", err.Error())
+		}
+		result = append(result, l)
+	}
+	zap.S().Debug(result)
+	return result, nil
 }
 
 func (conn *MongoConnection) FindReviewByID(id model.ID) (model.Review, bool) {
