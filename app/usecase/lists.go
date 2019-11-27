@@ -8,8 +8,7 @@ import (
 )
 
 type ListsUsecase interface {
-	CreateList(list model.ListNew) *model.Error
-	AddFilmToList(id model.ID, filmID model.ID) *model.Error
+	CreateOrUpdateList(ctx echo.Context) *model.Error
 	GetListsByUserID(userID model.ID) ([]model.ID, *model.Error)
 }
 
@@ -18,7 +17,7 @@ type listsUsecase struct {
 	listsRepo  repository.ListRepository
 }
 
-func (l listsUsecase) CreateListByContext(ctx echo.Context) *model.Error {
+func (l listsUsecase) CreateOrUpdateList(ctx echo.Context) *model.Error {
 	user, err := l.cookieRepo.GetUserByContext(ctx)
 	if err != nil {
 		return err
@@ -32,6 +31,10 @@ func (l listsUsecase) CreateListByContext(ctx echo.Context) *model.Error {
 	if e != nil {
 		return model.NewError(400, e.Error())
 	}
+}
+
+func (l listsUsecase) CreateListByContext(ctx echo.Context) *model.Error {
+
 
 	list.UserID = user.ID
 	err = l.listsRepo.Insert(list)
@@ -50,8 +53,13 @@ func (l listsUsecase) AddFilmToUserList(ctx echo.Context) *model.Error {
 	if err != nil {
 		return err
 	}
-	var
-	list, err :=
+	var listUpdate model.ListUpdate
+	e := listUpdate.UnmarshalJSON(body)
+	if e != nil {
+		return model.NewError(400, e.Error())
+	}
+	var list model.List
+	lists, err := l.listsRepo.GetByUserID(user.ID)
 }
 
 func (l listsUsecase) GetListsByUserID(userID model.ID) ([]model.ID, *model.Error) {
