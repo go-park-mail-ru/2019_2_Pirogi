@@ -47,10 +47,6 @@ func (u *User) IsPasswordCorrect(password string) bool {
 	return u.Password == password
 }
 
-func (un *UserNew) Create(email, password, username string) {
-
-}
-
 func (un *UserNew) ToUser(id ID) User {
 	return User{
 		ID:          id,
