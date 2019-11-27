@@ -5,7 +5,7 @@ access_log: "/log/access.log"
 error_log: "/log/error.log"
 
 users_image_upload_path: "/media/images/users/"
-films_image_upload_path: "/media/images/films/"
+films_image_upload_path: "/home/artbakulev/media/images/films/"
 persons_image_upload_path: "/media/images/persons/"
 
 # Put the credentials of MongoDB user here
