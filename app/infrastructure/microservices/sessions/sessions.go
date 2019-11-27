@@ -28,7 +28,7 @@ func (u *authManager) Login(ctx context.Context, request *v1.LoginRequest) (*v1.
 	user, err := u.userRepo.GetByEmail(request.Email)
 	zap.S().Debug(user.Email, user.Password)
 	zap.S().Debug(request.Email, request.Password)
-	if err != nil || !user.IsPasswordCorrect(hash.SHA1(request.Password)) {
+	if err != nil || !user.IsPasswordCorrect(request.Password) {
 		return &v1.LoginResponse{}, errors.New("400, Неверная почта и/или пароль")
 	}
 	cookie := model.Cookie{}

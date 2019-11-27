@@ -31,6 +31,7 @@ func NewAuthUsecase(subscriptionRepo repository.SubscriptionRepository, rpcClien
 }
 
 func (u *authUsecase) Login(ctx echo.Context, email, password string) (int, *model.Error) {
+	zap.S().Debug(password)
 	_, err := network.GetCookieFromContext(ctx, configs.Default.CookieAuthName)
 	if err == nil {
 		return -1, model.NewError(400, "Пользователь уже авторизован")
