@@ -106,7 +106,9 @@ func GetMetricsMiddleware(next echo.HandlerFunc) echo.HandlerFunc {
 				status = e.Code
 			}
 		}
-		metrics.ApiMetrics.IncHitOfResponse(status, ctx.Request().Method, ctx.Path(), int(time.Since(start).Microseconds()))
+		metrics.ApiMetrics.IncHitOfResponse(status, ctx.Request().Method, ctx.Path())
+		metrics.ApiMetrics.ObserveResponseTime(status, ctx.Request().Method, ctx.Path(),
+			float64(time.Since(start).Nanoseconds())/1000000)
 		return err
 	}
 }
