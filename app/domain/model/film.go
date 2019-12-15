@@ -73,7 +73,7 @@ type FilmFull struct {
 	Images      []Image       `json:"images" valid:"images, optional"`
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string        `json:"trailer" valid:"link, optional"`
-	Related     []FilmTrunc   `json:"related" valid:"optional"`
+	Related     []FilmTrunc   `json:"related,omitempty" valid:"optional"`
 }
 
 func (f *Film) SetMark(mark Mark) {

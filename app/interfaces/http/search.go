@@ -14,7 +14,7 @@ func GetHandlerSearch(usecase usecase2.SearchUsecase) echo.HandlerFunc {
 			return nil
 		}
 
-		jsonBody, e = usecase.GetPersonsByGetParams(ctx)
+		jsonBody, e = usecase.GetPersonsByGetParamsJSONBlob(ctx)
 		network.WriteJSONToResponse(ctx, 200, jsonBody)
 		return nil
 	}

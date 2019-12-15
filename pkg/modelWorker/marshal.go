@@ -13,6 +13,28 @@ func MarshalFilmsTrunc(filmsTrunc []model.FilmTrunc) (body [][]byte) {
 	return body
 }
 
+func MarshalFilms(films []model.Film) (body [][]byte) {
+	for _, film := range films {
+		raw, err := film.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}
+
+func MarshalFilmsFull(films []model.FilmFull) (body [][]byte) {
+	for _, film := range films {
+		raw, err := film.MarshalJSON()
+		if err != nil {
+			continue
+		}
+		body = append(body, raw)
+	}
+	return body
+}
+
 func MarshalPersonsTrunc(personsTrunc []model.PersonTrunc) (body [][]byte) {
 	for _, personTrunc := range personsTrunc {
 		raw, err := personTrunc.MarshalJSON()
