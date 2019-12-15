@@ -25,6 +25,10 @@ type querySearchParams struct {
 	Year       int      `json:"year" valid:"numeric, optional"`
 }
 
+func NewQueryParams() *querySearchParams {
+	return &querySearchParams{}
+}
+
 func (qp *querySearchParams) filter() {
 	if qp.Limit == 0 {
 		qp.Limit = configs.Default.DefaultEntriesLimit
@@ -100,7 +104,7 @@ func (qp *querySearchParams) mapQueryParams(ctx echo.Context) {
 	}
 }
 
-func (qp *querySearchParams) generatePipeline(target string) interface{} {
+func (qp *querySearchParams) GeneratePipeline(target string) interface{} {
 	qp.filter()
 	baseBSON := []bson.M{
 		{"$limit": qp.Limit},
@@ -151,12 +155,12 @@ func (qp *querySearchParams) generatePipeline(target string) interface{} {
 func GetPipelineForMongoByContext(ctx echo.Context, target string) interface{} {
 	qp := querySearchParams{}
 	qp.mapQueryParams(ctx)
-	return qp.generatePipeline(target)
+	return qp.GeneratePipeline(target)
 }
 
 func GetCustomPipelineForMongo(limit, offset int, target string) interface{} {
 	qp := querySearchParams{}
 	qp.Limit = limit
 	qp.Offset = offset
-	return qp.generatePipeline(target)
+	return qp.GeneratePipeline(target)
 }
