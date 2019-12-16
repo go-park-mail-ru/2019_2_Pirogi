@@ -1,3 +1,7 @@
 language: go
 rvm:
   -1.13
+install:
+  -go mod vendor
+script:
+  - ./scripts/run.sh
