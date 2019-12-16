@@ -3,7 +3,7 @@ go:
   - 1.13.x
 sudo: false
 before_install:
-  - ssh -p22 artbakulev@cinsear.ru "cd ~ && touch build.successful"
+  - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p22 artbakulev@cinsear.ru "cd ~ && touch build.successful"
   - go get -u github.com/mailru/easyjson/...
 install:
   - GO111MODULE=on
