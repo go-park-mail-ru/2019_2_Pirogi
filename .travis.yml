@@ -2,12 +2,13 @@ language: go
 go:
   - 1.13.x
 sudo: false
-#  - go get -u github.com/mailru/easyjson/...
-
+before_install:
+  - ssh -p22 artbakulev@cinsear.ru "cd ~ && touch build.successful"
+  - go get -u github.com/mailru/easyjson/...
 install:
   - GO111MODULE=on
   - go mod vendor
-#  - easyjson --all ./app/domain/model
+  - easyjson --all ./app/domain/model
 #script:
 #  - ./scripts/run.sh
 before_deploy:
