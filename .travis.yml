@@ -11,6 +11,8 @@ install:
   - GO111MODULE=on
   - go mod vendor
   - easyjson --all ./app/domain/model
+#script:
+#  - ./scripts/run.sh
 deploy:
   provider: script
   skip_cleanup: true
