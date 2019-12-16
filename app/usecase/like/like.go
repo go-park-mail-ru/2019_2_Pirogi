@@ -3,7 +3,6 @@ package usecase
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
-	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
 )
 
@@ -27,20 +26,20 @@ func NewLikeUsecase(likeRepo repository.LikeRepository, userRepo repository.User
 	}
 }
 
-func (u *likeUsecase) Set(ctx echo.Context) *model.Error {
-	user, ok := u.userRepo.GetByContext(ctx)
-	if !ok {
-		return model.NewError(400, "not found")
-	}
-	body, err := network.ReadBody(ctx)
-	if err != nil {
-		return err
-	}
-	like := model.Like{}
-	e := like.UnmarshalJSON(body)
-	if e != nil {
-		return model.NewError(400, e.Error())
-	}
-	like.UserID = user.ID
-	return u.likeRepo.Insert(like)
-}
+//func (u *likeUsecase) Set(ctx echo.Context) *model.Error {
+//	user, ok := u.userRepo.GetByContext(ctx)
+//	if !ok {
+//		return model.NewError(400, "not found")
+//	}
+//	body, err := network.ReadBody(ctx)
+//	if err != nil {
+//		return err
+//	}
+//	like := model.Like{}
+//	e := like.UnmarshalJSON(body)
+//	if e != nil {
+//		return model.NewError(400, e.Error())
+//	}
+//	like.UserID = user.ID
+//	return u.likeRepo.Insert(like)
+//}
