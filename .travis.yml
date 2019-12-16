@@ -1,11 +1,11 @@
-#language: go
-#rvm: 1.13
+language: go
+rvm: 1.13
 sudo: false
 #before_install:
 #  - go get -u github.com/mailru/easyjson/...
-#install:
-#  - GO111MODULE=on
-#  - go mod vendor
+install:
+  - GO111MODULE=on
+  - go mod vendor
 #  - easyjson --all ./app/domain/model
 #script:
 #  - ./scripts/run.sh
