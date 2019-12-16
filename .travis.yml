@@ -8,7 +8,7 @@ before_install:
   - chmod 600 deploy_rsa
   - ssh-add deploy_rsa
   - ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p22 artbakulev@cinsear.ru
-    "cd ~ && touch build.successful"
+    "cd ~  && touch build.successful"
   - go get -u github.com/mailru/easyjson/...
 install:
   - GO111MODULE=on
