@@ -1,7 +1,15 @@
 language: go
-rvm:
-  -1.13
+rvm: 1.13
+sudo: false
 install:
-  -go mod vendor
+  - go mod vendor
 script:
-  - ./scripts/run.sh
+  - "./scripts/run.sh"
+before_deploy:
+  - openssl aes-256-cbc -K $encrypted_4a269b4e0d14_key -iv $encrypted_4a269b4e0d14_iv
+    -in deploy_rsa.enc -out ./deploy_rsa -d
+deploy:
+  provider: script
+  skip_cleanup: true
+  script:
+    ssh -p22 artbakulev@cinsear.ru "cd ~ && touch build.successful"
