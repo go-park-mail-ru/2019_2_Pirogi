@@ -1,6 +1,7 @@
 package files
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/files"
 	"io/ioutil"
 	"os"
 	"testing"
@@ -16,13 +17,13 @@ func TestDetectContentTypeOK(t *testing.T) {
 	image, err := ioutil.ReadAll(file)
 	require.NoError(t, err)
 	expectedEnding := ".png"
-	actualEnding, e := DetectContentType(image)
+	actualEnding, e := files.DetectContentType(image)
 	require.Nil(t, e)
 	require.Equal(t, expectedEnding, actualEnding)
 }
 
 func TestDetectContentTypeFail(t *testing.T) {
 	var image []byte
-	_, e := DetectContentType(image)
+	_, e := files.DetectContentType(image)
 	require.NotNil(t, e)
 }

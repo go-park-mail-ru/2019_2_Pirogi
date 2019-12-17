@@ -8,6 +8,9 @@ import (
 )
 
 func UnmarshalConfigs(configsPath string) error {
+	if string(configsPath[len(configsPath)-1]) != "/" {
+		configsPath += "/"
+	}
 	file, err := ioutil.ReadFile(configsPath + "default.yaml")
 	if err != nil {
 		return err

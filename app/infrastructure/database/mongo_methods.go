@@ -161,14 +161,6 @@ func InsertStars(conn *MongoConnection, in model.Stars) *model.Error {
 	return nil
 }
 
-func InsertLike(conn *MongoConnection, in model.Like) *model.Error {
-	_, err := conn.likes.InsertOne(conn.context, in)
-	if err != nil {
-		return model.NewError(http.StatusInternalServerError, "cannot insert like in database")
-	}
-	return nil
-}
-
 func InsertList(conn *MongoConnection, in model.ListNew) *model.Error {
 	id, err := conn.GetNextSequence(configs.Default.ListTargetName)
 	if err != nil {

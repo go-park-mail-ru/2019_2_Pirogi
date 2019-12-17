@@ -47,7 +47,7 @@ type Film struct {
 	PersonsID   []ID     `json:"persons_id" valid:"ids, optional"`
 	Images      []Image  `json:"images" valid:"images, optional"`
 	ReviewsNum  int      `json:"reviews_num" valid:"numeric, optional"`
-	Trailer     string   `json:"trailer" valid:"link, optional"`
+	Trailer     string   `json:"trailer" valid:"text, optional"`
 }
 
 type FilmTrunc struct {
@@ -72,7 +72,7 @@ type FilmFull struct {
 	Persons     []PersonTrunc `json:"persons" valid:"optional"`
 	Images      []Image       `json:"images" valid:"images, optional"`
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
-	Trailer     string        `json:"trailer" valid:"link, optional"`
+	Trailer     string        `json:"trailer" valid:"text, optional"`
 	Related     []FilmTrunc   `json:"related,omitempty" valid:"optional"`
 }
 
@@ -82,12 +82,13 @@ func (f *Film) SetMark(mark Mark) {
 
 func (f *Film) Trunc() FilmTrunc {
 	return FilmTrunc{
-		ID:     f.ID,
-		Title:  f.Title,
-		Year:   f.Year,
-		Genres: f.Genres,
-		Mark:   f.Mark,
-		Image:  f.Images[0],
+		ID:          f.ID,
+		Title:       f.Title,
+		Year:        f.Year,
+		Description: f.Description,
+		Genres:      f.Genres,
+		Mark:        f.Mark,
+		Image:       f.Images[0],
 	}
 }
 

@@ -14,23 +14,6 @@ func TestMakeTruncFilm(t *testing.T) {
 	require.Equal(t, expected, actual)
 }
 
-func TestMakeFilm(t *testing.T) {
-	expected := model.Film{
-		ID:          2,
-		Title:       testFilmNew.Title,
-		Year:        testFilmNew.Year,
-		Genres:      testFilmNew.Genres,
-		Mark:        model.Mark(0),
-		Description: testFilmNew.Description,
-		Countries:   testFilmNew.Countries,
-		PersonsID:   testFilmNew.PersonsID,
-		Images:      []model.Image{"default.png"},
-		ReviewsNum:  0,
-	}
-	actual := testFilmNew.ToFilm(2)
-	require.Equal(t, expected, actual)
-}
-
 func TestMakeFullFilm(t *testing.T) {
 	expected := testFilmFull
 	actual := testFilm.Full([]model.Person{testPerson})

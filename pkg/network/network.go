@@ -27,10 +27,11 @@ func ReadBody(ctx echo.Context) ([]byte, *model.Error) {
 	return rawBody, nil
 }
 
-func NormalizePath(path string) {
+func NormalizePath(path string) string {
 	if path[len(path)-1] != '/' {
 		path += "/"
 	}
+	return path
 }
 
 func GetIntParam(ctx echo.Context, param string) (int, *model.Error) {

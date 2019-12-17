@@ -1,6 +1,7 @@
 package queryWorker
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/common"
 	"reflect"
 	"strconv"
 	"strings"
@@ -12,9 +13,9 @@ import (
 )
 
 type querySearchParams struct {
-	Query      string   `json:"query" valid:"text"`
+	Query      string   `json:"query" valid:"text, optional"`
 	Genres     []string `json:"genres" valid:"text, optional"`
-	PersonsIDs []int    `json:"persons_id" valid:"numeric, optional"`
+	PersonsIds []int    `json:"persons_ids" valid:"numeric, optional"`
 	YearMin    int      `json:"year_min" valid:"optional"`
 	YearMax    int      `json:"year_max" valid:"optional"`
 	Countries  []string `json:"countries" valid:"text, optional"`
@@ -22,7 +23,6 @@ type querySearchParams struct {
 	Offset     int      `json:"offset" valid:"numeric, optional"`
 	Limit      int      `json:"limit" valid:"numeric, optional"`
 	OrderBy    string   `json:"order_by" valid:"text, optional"`
-	Year       int      `json:"year" valid:"numeric, optional"`
 }
 
 func NewQueryParams() *querySearchParams {
@@ -54,28 +54,29 @@ func all(query interface{}) bson.M {
 	return bson.M{"$all": query}
 }
 
-func (qp *querySearchParams) mapQueryParams(ctx echo.Context) {
+func (qp *querySearchParams) MapQueryParams(ctx echo.Context) {
 	qp.Limit = configs.Default.DefaultEntriesLimit // limit must be positive, default value(0) is not suitable
 	p := reflect.ValueOf(qp).Elem()
 	t := reflect.TypeOf(*qp)
 	for i := 0; i < p.NumField(); i++ {
+		fieldName := common.ToSnakeCase(t.Field(i).Name)
 		switch p.Field(i).Kind() {
 		case reflect.Int:
-			val, err := strconv.Atoi(ctx.QueryParam(strings.ToLower(t.Field(i).Name)))
+			val, err := strconv.Atoi(ctx.QueryParam(fieldName))
 			if err != nil {
 				continue
 			}
 			p.Field(i).SetInt(int64(val))
 			continue
 		case reflect.String:
-			param := ctx.QueryParam(strings.ToLower(t.Field(i).Name))
+			param := ctx.QueryParam(fieldName)
 			if param != "" {
 				p.Field(i).SetString(param)
 			}
 		case reflect.Slice:
 			switch t.Field(i).Type.Elem().Kind() {
 			case reflect.String:
-				querySlice := strings.Split(ctx.QueryParam(strings.ToLower(t.Field(i).Name)), ",")
+				querySlice := strings.Split(ctx.QueryParam(fieldName), ",")
 				newStringSlice := reflect.MakeSlice(reflect.TypeOf([]string{}), 0, 0)
 				for _, item := range querySlice {
 					if item != "" {
@@ -84,8 +85,7 @@ func (qp *querySearchParams) mapQueryParams(ctx echo.Context) {
 				}
 				p.Field(i).Set(newStringSlice)
 			case reflect.Int:
-				querySlice := strings.Split(ctx.QueryParam(strings.ToLower(t.Field(i).Name)), ",")
-				println(strings.ToLower(t.Field(i).Name))
+				querySlice := strings.Split(ctx.QueryParam(fieldName), ",")
 				var newIntValues []int
 				for _, item := range querySlice {
 					value, err := strconv.Atoi(item)
@@ -104,7 +104,7 @@ func (qp *querySearchParams) mapQueryParams(ctx echo.Context) {
 	}
 }
 
-func (qp *querySearchParams) GeneratePipeline(target string) interface{} {
+func (qp *querySearchParams) GeneratePipeline(target string) []bson.M {
 	qp.filter()
 	baseBSON := []bson.M{
 		{"$limit": qp.Limit},
@@ -127,8 +127,8 @@ func (qp *querySearchParams) GeneratePipeline(target string) interface{} {
 		}
 		matchBSON = append(matchBSON, match(bson.M{"genres": all(regexpGenres)}))
 	}
-	if len(qp.PersonsIDs) > 0 {
-		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIDs)}))
+	if len(qp.PersonsIds) > 0 {
+		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIds)}))
 	}
 	if len(qp.Countries) > 0 {
 		var regexp_countries []primitive.Regex
@@ -136,9 +136,6 @@ func (qp *querySearchParams) GeneratePipeline(target string) interface{} {
 			regexp_countries = append(regexp_countries, pattern(country))
 		}
 		matchBSON = append(matchBSON, match(bson.M{"countries": all(regexp_countries)}))
-	}
-	if qp.Year != 0 {
-		matchBSON = append(matchBSON, match(bson.M{"year": qp.Year}))
 	}
 	if qp.Query != "" {
 		switch target {
@@ -152,13 +149,13 @@ func (qp *querySearchParams) GeneratePipeline(target string) interface{} {
 	return matchBSON
 }
 
-func GetPipelineForMongoByContext(ctx echo.Context, target string) interface{} {
+func GetPipelineForMongoByContext(ctx echo.Context, target string) []bson.M {
 	qp := querySearchParams{}
-	qp.mapQueryParams(ctx)
+	qp.MapQueryParams(ctx)
 	return qp.GeneratePipeline(target)
 }
 
-func GetCustomPipelineForMongo(limit, offset int, target string) interface{} {
+func GetCustomPipelineForMongo(limit, offset int, target string) []bson.M {
 	qp := querySearchParams{}
 	qp.Limit = limit
 	qp.Offset = offset
