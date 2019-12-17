@@ -16,6 +16,6 @@ before_deploy:
 deploy:
   provider: script
   skip_cleanup: true
-  script: ssh -p22 artbakulev@cinsear.ru "./backend/scripts/deployGo.sh -b $TRAVIS_BRANCH"
+  script: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p22 artbakulev@cinsear.ru "./backend/scripts/deployGo.sh -b $TRAVIS_BRANCH"
   on:
     all_branches: true
