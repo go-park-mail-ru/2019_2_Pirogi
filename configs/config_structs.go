@@ -27,7 +27,6 @@ type DefaultConfig struct {
 	CookiesCollectionName      string `yaml:"cookies_collection_name"`
 	FilmsCollectionName        string `yaml:"films_collection_name"`
 	PersonsCollectionName      string `yaml:"persons_collection_name"`
-	LikesCollectionName        string `yaml:"likes_collection_name"`
 	ReviewsCollectionName      string `yaml:"reviews_collection_name"`
 	ListsCollectionName        string `yaml:"lists_collection_name"`
 	SubscriptionCollectionName string `yaml:"subscriptions_collection_name"`
@@ -37,7 +36,6 @@ type DefaultConfig struct {
 	CookieTargetName       string `yaml:"cookie_target_name"`
 	PersonTargetName       string `yaml:"person_target_name"`
 	ReviewTargetName       string `yaml:"review_target_name"`
-	LikeTargetName         string `yaml:"like_target_name"`
 	StarTargetName         string `yaml:"star_target_name"`
 	ListTargetName         string `yaml:"list_target_name"`
 	SubscriptionTargetName string `yaml:"subscription_target_name"`

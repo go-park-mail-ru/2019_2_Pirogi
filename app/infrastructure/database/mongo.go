@@ -22,7 +22,6 @@ type MongoConnection struct {
 	cookies       *mongo.Collection
 	films         *mongo.Collection
 	persons       *mongo.Collection
-	likes         *mongo.Collection
 	reviews       *mongo.Collection
 	lists         *mongo.Collection
 	subscriptions *mongo.Collection
@@ -65,7 +64,6 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 		cookies:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.CookiesCollectionName),
 		films:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.FilmsCollectionName),
 		persons:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.PersonsCollectionName),
-		likes:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.LikesCollectionName),
 		reviews:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
 		lists:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.ListsCollectionName),
 		subscriptions: client.Database(configs.Default.MongoDbName).Collection(configs.Default.SubscriptionCollectionName),
@@ -190,7 +188,6 @@ func (conn *MongoConnection) ClearDB() {
 	_, _ = conn.counters.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.reviews.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.persons.DeleteMany(conn.context, bson.M{})
-	_, _ = conn.likes.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.lists.DeleteMany(conn.context, bson.M{})
 	_, _ = conn.subscriptions.DeleteMany(conn.context, bson.M{})
 }

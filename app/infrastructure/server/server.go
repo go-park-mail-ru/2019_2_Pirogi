@@ -116,9 +116,6 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	subscriptions.POST("/", handlers.GetHandlerSubscribe(subscriptionUsecase))
 	subscriptions.DELETE("/", handlers.GetHandlerUnsubscribe(subscriptionUsecase))
 
-	//likes := api.Group("/likes")
-	//likes.POST("/", handlers.GetHandlerLikesCreate(conn))
-	//
 	//marks := api.Group("/marks")
 	//marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
 	//
