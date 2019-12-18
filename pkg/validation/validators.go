@@ -2,6 +2,7 @@ package validation
 
 import (
 	"regexp"
+	"strings"
 	"time"
 
 	valid "github.com/asaskevich/govalidator"
@@ -45,12 +46,12 @@ func InitValidator() {
 			}
 			return textPattern.MatchString(subject)
 		},
-		"date": func(i interface{}, o interface{}) bool {
-			subject, ok := i.(int)
+		"birthday": func(i interface{}, o interface{}) bool {
+			subject, ok := i.(string)
 			if !ok {
 				return false
 			}
-			return subject > 0
+			return len(strings.Split(subject, ".")) == 3
 		},
 		"mark": func(i interface{}, o interface{}) bool {
 			subject, ok := i.(model.Mark)
@@ -164,6 +165,14 @@ func InitValidator() {
 			}
 			return validatePassword(subject)
 		},
+
+		"year": func(i interface{}, o interface{}) bool {
+			subject, ok := i.(int)
+			if !ok {
+				return false
+			}
+			return subject < 2020 && subject > 1800
+		},
 	}
 	for key, value := range validators {
 		valid.CustomTypeTagMap.Set(key, value)
@@ -204,30 +213,6 @@ func validateRole(role string) bool {
 	return false
 }
 
-//TODO: в продакшене расскоментировать
 func validatePassword(password string) bool {
 	return len(password) > 3
-	//letters := 0
-	//var flags = []bool{false, false, false, false}
-	//for _, c := range password {
-	//	switch {
-	//case unicode.IsNumber(c):
-	//	flags[0] = true
-	//case unicode.IsUpper(c):
-	//	flags[1] = true
-	//	letters++
-	//case unicode.IsPunct(c) || unicode.IsSymbol(c):
-	//	flags[2] = true
-	//	case unicode.IsLetter(c) || c == ' ':
-	//		letters++
-	//	default:
-	//		return false
-	//	}
-	//
-	//}
-	//flags[3] = letters > 7
-	//if flags[0] && flags[1] && flags[2] && flags[3] {
-	//	return true
-	//}
-	//return letters > 7
 }

@@ -1,20 +1,20 @@
 package model_tests
 
 import (
+	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/test/fixture"
 	"testing"
 
-	model2 "github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/validation"
 	"github.com/stretchr/testify/require"
 )
 
 func TestPrepareModelNewUser(t *testing.T) {
 	validation.InitValidator()
-	userNew := model2.UserNew{}
-	userNew.Create("i@artbakulev.com", "1234567890", "Artyom")
+	userNew := fixture.UserNew
 	body, err := userNew.MarshalJSON()
 	require.NoError(t, err)
-	model := model2.UserNew{}
+	model := model.UserNew{}
 	err = model.Make(body)
 	require.NoError(t, err)
 	require.Equal(t, userNew, model)

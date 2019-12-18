@@ -12,7 +12,7 @@ import (
 
 type SearchUsecase interface {
 	GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error)
-	GetPersonsByGetParams(ctx echo.Context) ([]byte, *model.Error)
+	GetPersonsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error)
 }
 
 func NewSearchUsecase(filmRepo repository.FilmRepository, personRepo repository.PersonRepository) *searchUsecase {
@@ -33,13 +33,17 @@ func (u *searchUsecase) GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *
 	if err != nil {
 		return nil, err
 	}
-	filmsTrunc := modelWorker.TruncFilms(films)
-	body := modelWorker.MarshalFilmsTrunc(filmsTrunc)
+	var filmsFull []model.FilmFull
+	for _, film := range films {
+		persons := u.personRepo.GetMany(film.PersonsID)
+		filmsFull = append(filmsFull, film.Full(persons))
+	}
+	body := modelWorker.MarshalFilmsFull(filmsFull)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil
 }
 
-func (u *searchUsecase) GetPersonsByGetParams(ctx echo.Context) ([]byte, *model.Error) {
+func (u *searchUsecase) GetPersonsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error) {
 	pipeline := queryWorker.GetPipelineForMongoByContext(ctx, configs.Default.PersonTargetName)
 	persons, err := u.personRepo.GetByPipeline(pipeline)
 	if err != nil {

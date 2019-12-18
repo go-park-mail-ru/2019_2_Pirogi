@@ -19,7 +19,6 @@ func (nr *ReviewNew) ToReview(id ID) Review {
 	return Review{
 		ID:       id,
 		Date:     time.Now(),
-		Likes:    0,
 		Title:    html.EscapeString(nr.Title),
 		Body:     html.EscapeString(nr.Body),
 		FilmID:   nr.FilmID,
@@ -43,8 +42,7 @@ type Review struct {
 	FilmID   ID        `json:"film_id" valid:"numeric"`
 	AuthorID ID        `json:"author_id, omitempty" valid:"numeric"`
 	Date     time.Time `json:"date" valid:"time"`
-	Likes    int       `json:"likes" valid:"numeric, optional"`
-	Mark     Mark      `json:"mark" valid:"numeric, optional"`
+	Mark     Mark      `json:"mark" valid:"float, optional"`
 }
 
 type ReviewFull struct {
@@ -54,16 +52,7 @@ type ReviewFull struct {
 	FilmID ID        `json:"film_id" valid:"numeric"`
 	Author UserTrunc `json:"author, omitempty" valid:"numeric"`
 	Date   time.Time `json:"date" valid:"time"`
-	Likes  int       `json:"likes" valid:"numeric, optional"`
 	Mark   Mark      `json:"stars" valid:"numeric, optional"`
-}
-
-func (r *Review) AddLike() {
-	r.Likes += 1
-}
-
-func (r *Review) RemoveLike() {
-	r.Likes -= 1
 }
 
 func (r *Review) SetMark(mark Mark) {
@@ -78,7 +67,6 @@ func (r *Review) Full(author UserTrunc) ReviewFull {
 		FilmID: r.FilmID,
 		Author: author,
 		Date:   r.Date,
-		Likes:  r.Likes,
 		Mark:   r.Mark,
 	}
 }

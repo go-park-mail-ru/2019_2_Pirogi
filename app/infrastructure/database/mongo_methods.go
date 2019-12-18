@@ -161,23 +161,25 @@ func InsertStars(conn *MongoConnection, in model.Stars) *model.Error {
 	return nil
 }
 
-func InsertLike(conn *MongoConnection, in model.Like) *model.Error {
-	_, err := conn.likes.InsertOne(conn.context, in)
+func InsertList(conn *MongoConnection, in model.ListNew) *model.Error {
+	id, err := conn.GetNextSequence(configs.Default.ListTargetName)
 	if err != nil {
-		return model.NewError(http.StatusInternalServerError, "cannot insert like in database")
+		return model.NewError(http.StatusInternalServerError, "cannot insert list in database")
+	}
+	list := in.ToList(id)
+	_, e := conn.lists.InsertOne(conn.context, list)
+	if e != nil {
+		return model.NewError(http.StatusInternalServerError, "cannot insert list in database")
 	}
 	return nil
 }
 
-func InsertList(conn *MongoConnection, in model.List) *model.Error {
+func UpdateList(conn *MongoConnection, in model.List) *model.Error {
 	filter := bson.M{"_id": in.ID}
 	update := bson.M{"$set": in}
 	_, err := conn.lists.UpdateOne(conn.context, filter, update)
 	if err != nil {
-		_, err = conn.lists.InsertOne(conn.context, in)
-		if err != nil {
-			return model.NewError(http.StatusInternalServerError, "cannot insert list in database")
-		}
+		return model.NewError(http.StatusNotFound, "list not found")
 	}
 	return nil
 }

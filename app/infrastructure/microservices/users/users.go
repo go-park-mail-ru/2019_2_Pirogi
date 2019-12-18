@@ -9,7 +9,6 @@ import (
 )
 
 func NewUsersManager(userRepo repository.UserRepository, cookieRepo repository.CookieRepository) *usersManager {
-	zap.S().Debug("Creating new users manager")
 	return &usersManager{
 		userRepo:   userRepo,
 		cookieRepo: cookieRepo,

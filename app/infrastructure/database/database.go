@@ -30,6 +30,7 @@ type Database interface {
 	FindReviewByID(id model.ID) (model.Review, bool)
 
 	FindListByID(id model.ID) (model.List, bool)
+	FindListByUserIDAndTitle(userId model.ID, title string) (model.List, bool)
 	FindListsByUserID(userId model.ID) ([]model.List, *model.Error)
 
 	GetByQuery(collectionName string, pipeline interface{}) ([]interface{}, *model.Error)

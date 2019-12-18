@@ -70,6 +70,11 @@ func (u *filmUsecase) GetFilmFullByte(id model.ID) ([]byte, *model.Error) {
 	}
 	persons := u.personRepo.GetMany(film.PersonsID)
 	filmFull := film.Full(persons)
+	related, err := u.filmRepo.GetRelated(filmFull)
+	if err != nil {
+		return nil, err
+	}
+	filmFull.Related = related
 	body, e := filmFull.MarshalJSON()
 	if e != nil {
 		return nil, model.NewError(500, e.Error())
