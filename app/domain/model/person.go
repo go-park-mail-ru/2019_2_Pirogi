@@ -8,7 +8,7 @@ import (
 type PersonNew struct {
 	Name       string `json:"name" valid:"text, stringlength(1|50)"`
 	Roles      []Role `json:"roles" valid:"roles"`
-	Birthday   string `json:"birthday" valid:"date"`
+	Birthday   string `json:"birthday" valid:"birthday"`
 	Birthplace string `json:"birthplace" valid:"text, stringlength(2|50)"`
 }
 
@@ -21,7 +21,6 @@ func (pn *PersonNew) ToPerson(id ID) Person {
 		Birthplace: pn.Birthplace,
 		Genres:     []Genre{},
 		FilmsID:    []ID{},
-		Likes:      0,
 		Images:     []Image{Image(configs.Default.DefaultImageName)},
 	}
 }
@@ -40,11 +39,10 @@ type Person struct {
 	Name       string  `json:"name" valid:"text, stringlength(1|50)"`
 	Mark       Mark    `json:"mark" valid:"mark, optional"`
 	Roles      []Role  `json:"type" valid:"roles"`
-	Birthday   string  `json:"birthday" valid:"date"`
+	Birthday   string  `json:"birthday" valid:"birthday"`
 	Birthplace string  `json:"birthplace" valid:"text, stringlength(2|50)"`
 	Genres     []Genre `json:"genres" valid:"genres, optional"`
 	FilmsID    []ID    `json:"films_id" valid:"ids, optional"`
-	Likes      int     `json:"likes, omitempty" valid:"numeric, optional"`
 	Images     []Image `json:"images" valid:"images, optional"`
 }
 
@@ -57,7 +55,6 @@ type PersonFull struct {
 	Birthplace string      `json:"birthplace" valid:"text, stringlength(2|50)"`
 	Genres     []Genre     `json:"genres" valid:"genres, optional"`
 	Films      []FilmTrunc `json:"films" valid:"optional"`
-	Likes      int         `json:"likes, omitempty" valid:"numeric, optional"`
 	Images     []Image     `json:"images" valid:"images, optional"`
 }
 
@@ -65,14 +62,6 @@ type PersonTrunc struct {
 	ID    ID     `json:"id, omitempty" valid:"numeric"`
 	Name  string `json:"name" valid:"text, stringlength(1|50)"`
 	Image Image  `json:"image" valid:"image"`
-}
-
-func (p *Person) AddLike() {
-	p.Likes += 1
-}
-
-func (p *Person) RemoveLike() {
-	p.Likes -= 1
 }
 
 func (p *Person) Trunc() PersonTrunc {
@@ -97,7 +86,6 @@ func (p *Person) Full(films []Film) PersonFull {
 		Birthplace: p.Birthplace,
 		Genres:     p.Genres,
 		Films:      filmsTrunc,
-		Likes:      p.Likes,
 		Images:     p.Images,
 	}
 }

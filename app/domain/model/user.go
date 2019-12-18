@@ -28,7 +28,6 @@ func (un *UserNew) Make(body []byte) error {
 type UserTrunc struct {
 	ID          ID     `json:"id" valid:"numeric"`
 	Username    string `json:"username" valid:"title"`
-	Mark        Mark   `json:"mark" valid:"mark, optional"`
 	Description string `json:"description" valid:"description"`
 	Image       Image  `json:"image" valid:"image, optional"`
 }
@@ -38,7 +37,6 @@ type User struct {
 	Email       string `json:"email" valid:"email,optional"`
 	Password    string `json:"password,omitempty" valid:"password,optional"`
 	Username    string `json:"username" valid:"title,optional"`
-	Mark        Mark   `json:"mark" valid:"mark,optional"`
 	Description string `json:"description" valid:"description,optional"`
 	Image       Image  `json:"image" valid:"image,optional"`
 }
@@ -52,7 +50,6 @@ func (un *UserNew) ToUser(id ID) User {
 		ID:          id,
 		Email:       un.Email,
 		Password:    un.Password,
-		Mark:        0,
 		Description: "",
 		Image:       Image(configs.Default.DefaultImageName),
 	}
@@ -62,7 +59,6 @@ func (u *User) Trunc() UserTrunc {
 	return UserTrunc{
 		ID:          u.ID,
 		Username:    u.Username,
-		Mark:        u.Mark,
 		Description: u.Description,
 		Image:       u.Image,
 	}
@@ -75,7 +71,6 @@ func (u *User) FromProtobuf(user v1.User) {
 	u.Password = user.Password
 	u.Description = user.Description
 	u.Image = Image(user.Image)
-	u.Mark = Mark(user.Mark)
 }
 
 func (u *User) ToProtobuf() (user v1.User) {
@@ -84,7 +79,6 @@ func (u *User) ToProtobuf() (user v1.User) {
 		Email:       u.Email,
 		Password:    u.Password,
 		Username:    u.Username,
-		Mark:        float32(u.Mark),
 		Description: u.Description,
 		Image:       string(u.Image),
 	}
