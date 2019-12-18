@@ -18,4 +18,5 @@ deploy:
   skip_cleanup: true
   script: ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p22 artbakulev@cinsear.ru "./backend/scripts/deployGo.sh -b $TRAVIS_BRANCH"
   on:
+    repo: go-park-mail-ru/2019_2_Pirogi
     all_branches: true
