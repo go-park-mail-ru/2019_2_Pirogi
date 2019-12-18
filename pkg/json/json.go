@@ -8,6 +8,7 @@ func MakeJSONArray(items [][]byte) []byte {
 		}
 		jsonBody = append(jsonBody, item...)
 	}
+
 	jsonBody = append(jsonBody, []byte{']'}...)
 	return jsonBody
 }

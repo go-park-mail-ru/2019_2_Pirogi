@@ -10,8 +10,8 @@ import (
 func TestNew(t *testing.T) {
 	expectedError := &model.Error{
 		Status: 404,
-		Error:  "Страница не найдена; Что делать?",
+		Error:  "Страница не найдена",
 	}
-	newError := model.NewError(404, "Страница не найдена", "Что делать?")
+	newError := model.NewError(404, "Страница не найдена")
 	require.Equal(t, expectedError, newError)
 }

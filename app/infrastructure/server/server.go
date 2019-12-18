@@ -65,6 +65,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	cookieRepo := interfaces.NewCookieRepository(conn)
 	reviewRepo := interfaces.NewReviewRepository(conn)
 	subscriptionRepo := interfaces.NewSubscriptionRepository(conn)
+	listsRepo := interfaces.NewListsRepository(conn)
 
 	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
@@ -75,6 +76,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
+	listsUsecase := usecase.NewListsUsecase(cookieRepo, listsRepo, filmRepo)
 
 	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))
 
@@ -120,8 +122,9 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	//marks := api.Group("/marks")
 	//marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
 	//
-	//lists := api.Group("/lists")
-	//lists.GET("/", handlers.GetHandlerList(conn))
+	lists := api.Group("/lists")
+	lists.GET("/", handlers.GetHandlerLists(listsUsecase))
+	lists.PUT("/", handlers.GetHandlerCreateOrUpdateList(listsUsecase))
 
 	api.GET("/common/:variable/", handlers.HandlerCommon())
 

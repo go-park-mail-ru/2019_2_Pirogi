@@ -10,4 +10,5 @@ type FilmRepository interface {
 	GetMany(ids []model.ID) []model.Film
 	GetByPipeline(pipeline interface{}) ([]model.Film, *model.Error)
 	GetByTitle(title string) (model.Film, bool)
+	GetRelated(filmFull model.FilmFull) ([]model.FilmTrunc, *model.Error)
 }

@@ -4,6 +4,8 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/infrastructure/database"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/configs"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
+	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/queryWorker"
 )
 
 type filmRepository struct {
@@ -51,4 +53,18 @@ func (r *filmRepository) GetByPipeline(pipeline interface{}) ([]model.Film, *mod
 }
 func (r *filmRepository) GetByTitle(title string) (model.Film, bool) {
 	return r.conn.FindFilmByTitle(title)
+}
+
+func (r *filmRepository) GetRelated(filmFull model.FilmFull) ([]model.FilmTrunc, *model.Error) {
+	qp := queryWorker.NewQueryParams()
+	qp.Limit = 10
+	qp.Genres = modelWorker.GenresToStrings(filmFull.Genres)
+	pipeline := qp.GeneratePipeline(configs.Default.FilmTargetName)
+	films, err := r.GetByPipeline(pipeline)
+	for i, film := range films {
+		if filmFull.ID == film.ID {
+			films = append(films[:i], films[i+1:]...)
+		}
+	}
+	return modelWorker.TruncFilms(films), err
 }
