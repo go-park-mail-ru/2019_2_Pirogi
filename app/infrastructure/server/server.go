@@ -65,6 +65,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	cookieRepo := interfaces.NewCookieRepository(conn)
 	reviewRepo := interfaces.NewReviewRepository(conn)
 	subscriptionRepo := interfaces.NewSubscriptionRepository(conn)
+	ratingsRepo := interfaces.NewRatingRepository(conn)
 	listsRepo := interfaces.NewListsRepository(conn)
 
 	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
@@ -76,6 +77,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
+	ratingUsecase := usecase.NewRatingUsecase(ratingsRepo, cookieRepo, userRepo)
 	listsUsecase := usecase.NewListsUsecase(cookieRepo, listsRepo, filmRepo)
 
 	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))
@@ -116,9 +118,9 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	subscriptions.POST("/", handlers.GetHandlerSubscribe(subscriptionUsecase))
 	subscriptions.DELETE("/", handlers.GetHandlerUnsubscribe(subscriptionUsecase))
 
-	//marks := api.Group("/marks")
-	//marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
-	//
+	ratings := api.Group("/ratings")
+	ratings.POST("/", handlers.GetHandlerRatingsCreateOrUpdate(ratingUsecase))
+
 	lists := api.Group("/lists")
 	lists.GET("/", handlers.GetHandlerLists(listsUsecase))
 	lists.PUT("/", handlers.GetHandlerCreateOrUpdateList(listsUsecase))

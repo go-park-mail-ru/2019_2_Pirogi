@@ -149,7 +149,7 @@ func UpdateReview(conn *MongoConnection, in model.Review) *model.Error {
 	return nil
 }
 
-func InsertStars(conn *MongoConnection, in model.Stars) *model.Error {
+func InsertStars(conn *MongoConnection, in model.Rating) *model.Error {
 	filter := bson.M{"_id": in.FilmID}
 	// TODO: рассчитывать newMark
 	newMark := in.Mark

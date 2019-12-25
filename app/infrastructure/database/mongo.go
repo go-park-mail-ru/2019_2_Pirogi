@@ -104,7 +104,7 @@ func (conn *MongoConnection) Upsert(in interface{}) *model.Error {
 		e = InsertReview(conn, in)
 	case model.Review:
 		e = UpdateReview(conn, in)
-	case model.Stars:
+	case model.Rating:
 		e = InsertStars(conn, in)
 	case model.ListNew:
 		e = InsertList(conn, in)

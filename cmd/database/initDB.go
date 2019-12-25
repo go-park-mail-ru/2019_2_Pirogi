@@ -82,17 +82,17 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.StarTargetName:
-		var newStars []model.Stars
+		var newRatings []model.Rating
 		for dec.More() {
-			var newStar model.Stars
-			err = dec.Decode(&newStar)
+			var newRating model.Rating
+			err = dec.Decode(&newRating)
 			if err != nil {
 				return nil, err
 			}
-			newStars = append(newStars, newStar)
+			newRatings = append(newRatings, newRating)
 		}
-		interfaces := make([]interface{}, len(newStars))
-		for i, val := range newStars {
+		interfaces := make([]interface{}, len(newRatings))
+		for i, val := range newRatings {
 			interfaces[i] = val
 		}
 		return interfaces, nil
