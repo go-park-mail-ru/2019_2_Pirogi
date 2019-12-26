@@ -24,6 +24,5 @@ docker-compose up --build --detach server sessions users mongo
 
 if [ "$1" = "-first-time" ]; then
   echo "---Filling db..."
-
   go run cmd/database/initDB.go
 fi
