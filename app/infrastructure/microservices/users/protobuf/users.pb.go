@@ -68,7 +68,7 @@ type User struct {
 	Email                string   `protobuf:"bytes,2,opt,name=Email,proto3" json:"Email,omitempty"`
 	Password             string   `protobuf:"bytes,3,opt,name=Password,proto3" json:"Password,omitempty"`
 	Username             string   `protobuf:"bytes,4,opt,name=Username,proto3" json:"Username,omitempty"`
-	Mark                 float32  `protobuf:"fixed32,5,opt,name=Mark,proto3" json:"Mark,omitempty"`
+	Mark                 float32  `protobuf:"fixed32,5,opt,name=Stars,proto3" json:"Stars,omitempty"`
 	Description          string   `protobuf:"bytes,6,opt,name=Description,proto3" json:"Description,omitempty"`
 	Image                string   `protobuf:"bytes,7,opt,name=Image,proto3" json:"Image,omitempty"`
 	XXX_NoUnkeyedLiteral struct{} `json:"-"`

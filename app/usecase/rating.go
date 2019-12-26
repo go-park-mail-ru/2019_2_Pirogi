@@ -50,16 +50,16 @@ func (u *ratingUsecase) CreateOrUpdateRating(body []byte, user model.User) *mode
 		if e != nil {
 			return e
 		}
-		film.RatingSum += int(rating.Mark)
+		film.RatingSum += int(rating.Stars)
 		film.VotersNum++
 	} else {
 		ratingUpdate := foundRating.ToRatingUpdate()
-		ratingUpdate.Mark = ratingNew.Mark
+		ratingUpdate.Stars = ratingNew.Stars
 		e = u.ratingRepo.Update(ratingUpdate)
 		if e != nil {
 			return e
 		}
-		film.RatingSum = film.RatingSum - int(foundRating.Mark) + int(ratingUpdate.Mark)
+		film.RatingSum = film.RatingSum - int(foundRating.Stars) + int(ratingUpdate.Stars)
 	}
 
 	film.CountAndSetMark()

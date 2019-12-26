@@ -159,7 +159,7 @@ func InsertRating(conn *MongoConnection, in model.Rating) *model.Error {
 
 func UpdateRating(conn *MongoConnection, in model.RatingUpdate) *model.Error {
 	filter := bson.M{"userid": in.UserID, "filmid": in.FilmID}
-	update := bson.M{"$set": bson.M{"mark": in.Mark}}
+	update := bson.M{"$set": bson.M{"mark": in.Stars}}
 	_, err := conn.ratings.UpdateOne(conn.context, filter, update)
 	if err != nil {
 		return model.NewError(http.StatusNotFound, "rating not found")
