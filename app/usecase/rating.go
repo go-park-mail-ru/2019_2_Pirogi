@@ -1,7 +1,6 @@
 package usecase
 
 import (
-	"github.com/asaskevich/govalidator"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	"github.com/labstack/echo"
@@ -34,11 +33,6 @@ func (u *ratingUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.E
 func (u *ratingUsecase) CreateOrUpdateRating(body []byte, user model.User) *model.Error {
 	var ratingNew model.RatingNew
 	err := ratingNew.UnmarshalJSON(body)
-	if err != nil {
-		return model.NewError(400, "Невалидные данные ", err.Error())
-	}
-
-	_, err = govalidator.ValidateStruct(ratingNew)
 	if err != nil {
 		return model.NewError(400, "Невалидные данные ", err.Error())
 	}

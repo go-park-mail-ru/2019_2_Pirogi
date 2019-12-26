@@ -421,7 +421,7 @@ func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID model.ID, l
 
 func (conn *MongoConnection) FindRatingByUserIDAndFilmID(userID model.ID, filmID model.ID) (model.Rating, *model.Error) {
 	result := model.Rating{}
-	err := conn.ratings.FindOne(conn.context, bson.M{"user_id": userID, "film_id": filmID}).Decode(&result)
+	err := conn.ratings.FindOne(conn.context, bson.M{"userid": userID, "filmid": filmID}).Decode(&result)
 	if err != nil {
 		return model.Rating{}, model.NewError(http.StatusNotFound, "Такой оценки не существует")
 	}

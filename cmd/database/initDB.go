@@ -208,7 +208,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		}
 		imagePath, err := uploadAndSaveImage(string(filmImage.(model.Image)), configs.Default.FilmsImageUploadPath)
 		if err != nil {
-			log.Fatal(err)
+			continue
 		}
 		f := film.(model.Film)
 		f.Images = []model.Image{model.Image(imagePath)}
@@ -223,7 +223,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		fmt.Printf("inserting %d person image from %d\n", i, len(personImages))
 		person, e := conn.Get(model.ID(i), configs.Default.PersonTargetName)
 		if e != nil {
-			continue
+			log.Fatal(e)
 		}
 		imagePath, err := uploadAndSaveImage(string(personImage.(model.Image)), configs.Default.PersonsImageUploadPath)
 		if err != nil {

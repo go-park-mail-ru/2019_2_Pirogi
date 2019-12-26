@@ -158,7 +158,7 @@ func InsertRating(conn *MongoConnection, in model.Rating) *model.Error {
 }
 
 func UpdateRating(conn *MongoConnection, in model.RatingUpdate) *model.Error {
-	filter := bson.M{"user_id": in.UserID, "film_id": in.FilmID}
+	filter := bson.M{"userid": in.UserID, "filmid": in.FilmID}
 	update := bson.M{"$set": bson.M{"mark": in.Mark}}
 	_, err := conn.ratings.UpdateOne(conn.context, filter, update)
 	if err != nil {
