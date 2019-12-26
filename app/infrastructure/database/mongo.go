@@ -25,6 +25,7 @@ type MongoConnection struct {
 	reviews       *mongo.Collection
 	lists         *mongo.Collection
 	subscriptions *mongo.Collection
+	ratings       *mongo.Collection
 }
 
 func getMongoClient(mongoHost string) (*mongo.Client, error) {
@@ -67,6 +68,7 @@ func InitMongo(mongoHost string) (*MongoConnection, error) {
 		reviews:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.ReviewsCollectionName),
 		lists:         client.Database(configs.Default.MongoDbName).Collection(configs.Default.ListsCollectionName),
 		subscriptions: client.Database(configs.Default.MongoDbName).Collection(configs.Default.SubscriptionCollectionName),
+		ratings:       client.Database(configs.Default.MongoDbName).Collection(configs.Default.RatingsCollectionName),
 	}
 
 	return &conn, err
@@ -105,7 +107,9 @@ func (conn *MongoConnection) Upsert(in interface{}) *model.Error {
 	case model.Review:
 		e = UpdateReview(conn, in)
 	case model.Rating:
-		e = InsertStars(conn, in)
+		e = InsertRating(conn, in)
+	case model.RatingUpdate:
+		e = UpdateRating(conn, in)
 	case model.ListNew:
 		e = InsertList(conn, in)
 	case model.List:
@@ -413,4 +417,13 @@ func (conn *MongoConnection) GetReviewsOfAuthorSortedByDate(authorID model.ID, l
 		{"$skip": offset},
 	}
 	return AggregateReviews(conn, pipeline)
+}
+
+func (conn *MongoConnection) FindRatingByUserIDAndFilmID(userID model.ID, filmID model.ID) (model.Rating, *model.Error) {
+	result := model.Rating{}
+	err := conn.ratings.FindOne(conn.context, bson.M{"user_id": userID, "film_id": filmID}).Decode(&result)
+	if err != nil {
+		return model.Rating{}, model.NewError(http.StatusNotFound, "Такой оценки не существует")
+	}
+	return result, nil
 }

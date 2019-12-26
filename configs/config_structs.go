@@ -30,6 +30,7 @@ type DefaultConfig struct {
 	ReviewsCollectionName      string `yaml:"reviews_collection_name"`
 	ListsCollectionName        string `yaml:"lists_collection_name"`
 	SubscriptionCollectionName string `yaml:"subscriptions_collection_name"`
+	RatingsCollectionName      string `yaml:"ratings_collection_name"`
 
 	UserTargetName         string `yaml:"user_target_name"`
 	FilmTargetName         string `yaml:"film_target_name"`

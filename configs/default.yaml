@@ -22,6 +22,7 @@ persons_collection_name: "persons"
 reviews_collection_name: "reviews"
 lists_collection_name: "lists"
 subscriptions_collection_name: "subscription"
+ratings_collection_name: "ratings"
 
 user_target_name: "user"
 film_target_name: "film"
