@@ -77,7 +77,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
-	ratingUsecase := usecase.NewRatingUsecase(ratingsRepo, cookieRepo, userRepo)
+	ratingUsecase := usecase.NewRatingUsecase(ratingsRepo, cookieRepo, filmRepo)
 	listsUsecase := usecase.NewListsUsecase(cookieRepo, listsRepo, filmRepo)
 
 	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))

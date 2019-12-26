@@ -1,21 +1,21 @@
 package model
 
 type RatingNew struct {
-	FilmID ID   `json:"film_id" valid:"numeric"`
-	Mark   Mark `json:"mark" valid:"mark, optional"`
+	FilmID ID    `json:"film_id" valid:"numeric"`
+	Mark   Stars `json:"mark" valid:"stars, optional"`
 }
 
 type Rating struct {
-	UserID ID   `json:"user_id, omitempty" valid:"numeric"`
-	FilmID ID   `json:"film_id" valid:"numeric"`
-	Mark   Mark `json:"mark" valid:"mark, optional"`
+	UserID ID    `json:"user_id, omitempty" valid:"numeric"`
+	FilmID ID    `json:"film_id" valid:"numeric"`
+	Mark   Stars `json:"mark" valid:"stars, optional"`
 }
 
 // Чтобы база понимала, обновлять или создавать рейтинг
 type RatingUpdate struct {
-	UserID ID   `json:"user_id, omitempty" valid:"numeric"`
-	FilmID ID   `json:"film_id" valid:"numeric"`
-	Mark   Mark `json:"mark" valid:"mark, optional"`
+	UserID ID    `json:"user_id, omitempty" valid:"numeric"`
+	FilmID ID    `json:"film_id" valid:"numeric"`
+	Mark   Stars `json:"mark" valid:"stars, optional"`
 }
 
 func (rn *RatingNew) ToRating(userId ID) Rating {
@@ -32,8 +32,4 @@ func (rn *Rating) ToRatingUpdate() RatingUpdate {
 		FilmID: rn.FilmID,
 		Mark:   rn.Mark,
 	}
-}
-
-func (r *RatingUpdate) SetMark(mark Mark) {
-	r.Mark = mark
 }

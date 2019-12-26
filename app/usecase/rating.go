@@ -4,6 +4,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
 	"github.com/labstack/echo"
+	"net/http"
 )
 
 type RatingUsecase interface {
@@ -14,15 +15,15 @@ type RatingUsecase interface {
 type ratingUsecase struct {
 	ratingRepo repository.RatingRepository
 	cookieRepo repository.CookieRepository
-	userRepo   repository.UserRepository
+	filmRepo   repository.FilmRepository
 }
 
 func NewRatingUsecase(ratingRepo repository.RatingRepository, cookieRepo repository.CookieRepository,
-	userRepo repository.UserRepository) *ratingUsecase {
+	filmRepo repository.FilmRepository) *ratingUsecase {
 	return &ratingUsecase{
 		ratingRepo: ratingRepo,
 		cookieRepo: cookieRepo,
-		userRepo:   userRepo,
+		filmRepo:   filmRepo,
 	}
 }
 
@@ -34,7 +35,12 @@ func (u *ratingUsecase) CreateOrUpdateRating(body []byte, user model.User) *mode
 	var ratingNew model.RatingNew
 	err := ratingNew.UnmarshalJSON(body)
 	if err != nil {
-		return model.NewError(400, "Невалидные данные ", err.Error())
+		return model.NewError(http.StatusNotFound, "Невалидные данные ", err.Error())
+	}
+
+	film, e := u.filmRepo.Get(ratingNew.FilmID)
+	if e != nil {
+		return e
 	}
 
 	foundRating, e := u.ratingRepo.FindRatingByUserIDAndFilmID(user.ID, ratingNew.FilmID)
@@ -44,14 +50,19 @@ func (u *ratingUsecase) CreateOrUpdateRating(body []byte, user model.User) *mode
 		if e != nil {
 			return e
 		}
+		film.RatingSum += int(rating.Mark)
+		film.VotersNum++
 	} else {
 		ratingUpdate := foundRating.ToRatingUpdate()
-		ratingUpdate.SetMark(ratingNew.Mark)
+		ratingUpdate.Mark = ratingNew.Mark
 		e = u.ratingRepo.Update(ratingUpdate)
 		if e != nil {
 			return e
 		}
+		film.RatingSum = film.RatingSum - int(foundRating.Mark) + int(ratingUpdate.Mark)
 	}
 
+	film.CountAndSetMark()
+	u.filmRepo.Update(film)
 	return nil
 }

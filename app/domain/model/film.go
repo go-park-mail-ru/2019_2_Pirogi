@@ -78,8 +78,8 @@ type FilmFull struct {
 	Related     []FilmTrunc   `json:"related,omitempty" valid:"optional"`
 }
 
-func (f *Film) SetMark(mark Mark) {
-	f.Mark = mark
+func (f *Film) CountAndSetMark() {
+	f.Mark = Mark(f.RatingSum) / Mark(f.VotersNum)
 }
 
 func (f *Film) Trunc() FilmTrunc {
