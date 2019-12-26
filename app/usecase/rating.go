@@ -37,14 +37,27 @@ func (u *ratingUsecase) CreateOrUpdateRating(body []byte, user model.User) *mode
 	if err != nil {
 		return model.NewError(400, "Невалидные данные ", err.Error())
 	}
+
 	_, err = govalidator.ValidateStruct(ratingNew)
 	if err != nil {
 		return model.NewError(400, "Невалидные данные ", err.Error())
 	}
-	rating := ratingNew.ToRating(user.ID)
-	e := u.ratingRepo.Upsert(rating)
+
+	foundRating, e := u.ratingRepo.FindRatingByUserIDAndFilmID(user.ID, ratingNew.FilmID)
 	if e != nil {
-		return e
+		rating := ratingNew.ToRating(user.ID)
+		e = u.ratingRepo.Insert(rating)
+		if e != nil {
+			return e
+		}
+	} else {
+		ratingUpdate := foundRating.ToRatingUpdate()
+		ratingUpdate.SetMark(ratingNew.Mark)
+		e = u.ratingRepo.Update(ratingUpdate)
+		if e != nil {
+			return e
+		}
 	}
+
 	return nil
 }

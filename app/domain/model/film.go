@@ -37,7 +37,7 @@ func (fn *FilmNew) Make(body []byte) error {
 }
 
 type Film struct {
-	ID          ID       `json:"id" bson:"_id" valid:"numeric,optional"`
+	ID          ID       `json:"id" bson:"_id" valid:"numeric, optional"`
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
 	Year        int      `json:"year" valid:"year"`
 	Genres      []Genre  `json:"genres" valid:"genres"`
@@ -48,6 +48,8 @@ type Film struct {
 	Images      []Image  `json:"images" valid:"images, optional"`
 	ReviewsNum  int      `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string   `json:"trailer" valid:"text, optional"`
+	RatingSum   int      `json:"-" valid:"numeric, optional"`
+	VotersNum   int      `json:"-" valid:"numeric, optional"`
 }
 
 type FilmTrunc struct {

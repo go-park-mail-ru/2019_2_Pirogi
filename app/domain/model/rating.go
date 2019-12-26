@@ -26,6 +26,14 @@ func (rn *RatingNew) ToRating(userId ID) Rating {
 	}
 }
 
-func (s *Rating) SetMark(mark Mark) {
-	s.Mark = mark
+func (rn *Rating) ToRatingUpdate() RatingUpdate {
+	return RatingUpdate{
+		UserID: rn.UserID,
+		FilmID: rn.FilmID,
+		Mark:   rn.Mark,
+	}
+}
+
+func (r *RatingUpdate) SetMark(mark Mark) {
+	r.Mark = mark
 }
