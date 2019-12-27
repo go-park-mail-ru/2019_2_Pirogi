@@ -73,7 +73,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	authUsecase := usecase.NewAuthUsecase(subscriptionRepo, sessionsClient)
 	userUsecase := usecase.NewUserUsecase(usersClient, sessionsClient)
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo, cookieRepo, subscriptionRepo)
-	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
+	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo, filmRepo)
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)

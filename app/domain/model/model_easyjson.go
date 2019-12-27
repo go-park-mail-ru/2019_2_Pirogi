@@ -1223,6 +1223,8 @@ func easyjsonC80ae7adDecodeGithubComGoParkMailRu20192PirogiAppDomainModel12(in *
 			out.Body = string(in.String())
 		case "film_id":
 			out.FilmID = ID(in.Int())
+		case "film_title":
+			out.FilmTitle = string(in.String())
 		case "author_id":
 			out.AuthorID = ID(in.Int())
 		case "date":
@@ -1264,6 +1266,11 @@ func easyjsonC80ae7adEncodeGithubComGoParkMailRu20192PirogiAppDomainModel12(out 
 		const prefix string = ",\"film_id\":"
 		out.RawString(prefix)
 		out.Int(int(in.FilmID))
+	}
+	{
+		const prefix string = ",\"film_title\":"
+		out.RawString(prefix)
+		out.String(string(in.FilmTitle))
 	}
 	{
 		const prefix string = ",\"author_id\":"
