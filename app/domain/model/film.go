@@ -50,6 +50,7 @@ type Film struct {
 	Trailer     string   `json:"trailer" valid:"text, optional"`
 	RatingSum   int      `json:"-" valid:"numeric, optional"`
 	VotersNum   int      `json:"-" valid:"numeric, optional"`
+	TicketLink  string   `json:"ticket_link" valid:"text, optional"`
 }
 
 type FilmTrunc struct {
@@ -76,6 +77,7 @@ type FilmFull struct {
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string        `json:"trailer" valid:"text, optional"`
 	Related     []FilmTrunc   `json:"related,omitempty" valid:"optional"`
+	TicketLink  string        `json:"ticket_link" valid:"text, optional"`
 }
 
 func (f *Film) CountAndSetMark() {
@@ -111,5 +113,6 @@ func (f *Film) Full(persons []Person) FilmFull {
 		Images:      f.Images,
 		ReviewsNum:  f.ReviewsNum,
 		Trailer:     f.Trailer,
+		TicketLink:  f.TicketLink,
 	}
 }
