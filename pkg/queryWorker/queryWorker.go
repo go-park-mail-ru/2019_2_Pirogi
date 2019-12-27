@@ -69,6 +69,13 @@ func (qp *querySearchParams) MapQueryParams(ctx echo.Context) {
 			}
 			p.Field(i).SetInt(int64(val))
 			continue
+		case reflect.Float32:
+			val, err := strconv.ParseFloat(ctx.QueryParam(fieldName), 32)
+			if err != nil {
+				continue
+			}
+			p.Field(i).SetFloat(val)
+			continue
 		case reflect.String:
 			param := ctx.QueryParam(fieldName)
 			if param != "" {
@@ -136,6 +143,9 @@ func (qp *querySearchParams) GeneratePipeline(target string) []bson.M {
 			regexp_countries = append(regexp_countries, pattern(country))
 		}
 		paramsBSON = append(paramsBSON, match(bson.M{"countries": all(regexp_countries)}))
+	}
+	if qp.RatingMin != 0 {
+		paramsBSON = append(paramsBSON, match(bson.M{"mark": bson.M{"$gte": qp.RatingMin}}))
 	}
 	if qp.Query != "" {
 		switch target {
