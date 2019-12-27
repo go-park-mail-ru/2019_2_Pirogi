@@ -1,5 +1,7 @@
 # 2019_2_Pirogi Backend Repo
 
+[![Build Status](https://travis-ci.com/go-park-mail-ru/2019_2_Pirogi.svg?branch=master)](https://travis-ci.com/go-park-mail-ru/2019_2_Pirogi)
+
 Репозиторий бекенда
 
 ## Описание
