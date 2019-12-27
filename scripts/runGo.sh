@@ -1,4 +1,5 @@
 echo "---Checking or updating vendors"
+su - artbakulev
 go mod vendor
 
 echo "---Stopping containers"
