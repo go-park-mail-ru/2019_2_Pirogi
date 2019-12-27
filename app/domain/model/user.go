@@ -50,6 +50,7 @@ func (un *UserNew) ToUser(id ID) User {
 	return User{
 		ID:          id,
 		Email:       un.Email,
+		Username:    un.Username,
 		Password:    un.Password,
 		Description: "",
 		Image:       Image(configs.Default.DefaultImageName),
@@ -89,6 +90,7 @@ func (u *UserNew) ToProtobuf() (userNew v1.UserNew) {
 	return v1.UserNew{
 		Email:    u.Email,
 		Password: u.Password,
+		Username: u.Username,
 	}
 }
 

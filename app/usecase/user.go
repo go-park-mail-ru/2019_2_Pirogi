@@ -71,7 +71,6 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	}
 	var userNew model.UserNew
 	e := userNew.UnmarshalJSON(body)
-	zap.S().Warn(userNew.Username)
 	if e != nil {
 		return model.NewError(400, e.Error())
 	}
@@ -83,6 +82,7 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	if err != nil {
 		return err
 	}
+	zap.S().Warn("usecase ", userNew.Username)
 	_, e = u.usersRpcClient.Create(context.Background(), &v1.UserNew{
 		Email:    userNew.Email,
 		Password: userNew.Password,
