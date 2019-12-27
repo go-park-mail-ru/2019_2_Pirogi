@@ -33,9 +33,6 @@ func (qp *querySearchParams) filter() {
 	if qp.Limit == 0 {
 		qp.Limit = configs.Default.DefaultEntriesLimit
 	}
-	if qp.OrderBy == "" {
-		qp.OrderBy = configs.Default.DefaultOrderBy
-	}
 }
 
 func regexp(query string) bson.M {
@@ -48,6 +45,10 @@ func pattern(query string) primitive.Regex {
 
 func match(query interface{}) bson.M {
 	return bson.M{"$match": query}
+}
+
+func sort(query interface{}) bson.M {
+	return bson.M{"$sort": query}
 }
 
 func all(query interface{}) bson.M {
@@ -109,46 +110,47 @@ func (qp *querySearchParams) GeneratePipeline(target string) []bson.M {
 	baseBSON := []bson.M{
 		{"$limit": qp.Limit},
 		{"$skip": qp.Offset},
-		{"$sort": bson.M{qp.OrderBy: -1}},
 	}
-	var matchBSON []bson.M
+	var paramsBSON []bson.M
 	if qp.YearMin != 0 || qp.YearMax != 0 {
 		if qp.YearMin == 0 {
 			qp.YearMin = configs.Default.DefaultYearMin
 		} else if qp.YearMax == 0 {
 			qp.YearMax = configs.Default.DefaultYearMax
 		}
-		matchBSON = append(matchBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin, "$lte": qp.YearMax}}))
+		paramsBSON = append(paramsBSON, match(bson.M{"year": bson.M{"$gte": qp.YearMin, "$lte": qp.YearMax}}))
 	}
 	if len(qp.Genres) > 0 {
 		var regexpGenres []primitive.Regex
 		for _, genre := range qp.Genres {
 			regexpGenres = append(regexpGenres, pattern(genre))
 		}
-		matchBSON = append(matchBSON, match(bson.M{"genres": all(regexpGenres)}))
+		paramsBSON = append(paramsBSON, match(bson.M{"genres": all(regexpGenres)}))
 	}
 	if len(qp.PersonsIds) > 0 {
-		matchBSON = append(matchBSON, match(bson.M{"personsid": all(qp.PersonsIds)}))
+		paramsBSON = append(paramsBSON, match(bson.M{"personsid": all(qp.PersonsIds)}))
 	}
 	if len(qp.Countries) > 0 {
 		var regexp_countries []primitive.Regex
 		for _, country := range qp.Countries {
 			regexp_countries = append(regexp_countries, pattern(country))
 		}
-		matchBSON = append(matchBSON, match(bson.M{"countries": all(regexp_countries)}))
+		paramsBSON = append(paramsBSON, match(bson.M{"countries": all(regexp_countries)}))
 	}
 	if qp.Query != "" {
 		switch target {
 		case configs.Default.PersonTargetName:
-			matchBSON = append(matchBSON, match(bson.M{"name": regexp(qp.Query)}))
+			paramsBSON = append(paramsBSON, match(bson.M{"name": regexp(qp.Query)}))
 		default:
-			matchBSON = append(matchBSON, match(bson.M{"title": regexp(qp.Query)}))
+			paramsBSON = append(paramsBSON, match(bson.M{"title": regexp(qp.Query)}))
 		}
-	} else if len(matchBSON) == 0 {
-		return nil // В случае пустого запроса
+	} else if qp.OrderBy != "" {
+		paramsBSON = append(paramsBSON, sort(bson.M{qp.OrderBy: -1}))
+	} else if len(paramsBSON) == 0 {
+		return nil // В случае запроса без параметров (либо только с limit и orderby)
 	}
-	matchBSON = append(matchBSON, baseBSON...)
-	return matchBSON
+	paramsBSON = append(paramsBSON, baseBSON...)
+	return paramsBSON
 }
 
 func GetPipelineForMongoByContext(ctx echo.Context, target string) []bson.M {
