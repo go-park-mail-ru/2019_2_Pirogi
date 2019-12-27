@@ -223,7 +223,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		fmt.Printf("inserting %d person image from %d\n", i, len(personImages))
 		person, e := conn.Get(model.ID(i), configs.Default.PersonTargetName)
 		if e != nil {
-			log.Fatal(e)
+			return
 		}
 		imagePath, err := uploadAndSaveImage(string(personImage.(model.Image)), configs.Default.PersonsImageUploadPath)
 		if err != nil {
