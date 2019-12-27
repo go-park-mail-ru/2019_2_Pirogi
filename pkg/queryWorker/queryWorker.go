@@ -105,6 +105,9 @@ func (qp *querySearchParams) MapQueryParams(ctx echo.Context) {
 }
 
 func (qp *querySearchParams) GeneratePipeline(target string) []bson.M {
+	if qp.Query == "" {
+		return nil
+	}
 	qp.filter()
 	baseBSON := []bson.M{
 		{"$limit": qp.Limit},
