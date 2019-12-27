@@ -15,5 +15,5 @@ func TestGetPipelineForMongoByContext(t *testing.T) {
 	ctx := fixture.NewEchoContext(nil,
 		map[string]string{"year_min": "1998", "year_max": "2018", "genres": "драма,мелодрама"})
 	pipeline := queryWorker.GetPipelineForMongoByContext(ctx, configs.Default.FilmTargetName)
-	require.Equal(t, 5, len(pipeline))
+	require.Equal(t, 4, len(pipeline))
 }
