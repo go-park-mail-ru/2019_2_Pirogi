@@ -168,7 +168,7 @@ func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
-	/*persons, err := parse(configs.Default.PersonTargetName)
+	persons, err := parse(configs.Default.PersonTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -208,12 +208,12 @@ func FakeFillDB(conn *database.MongoConnection) {
 		}
 		imagePath, err := uploadAndSaveImage(string(filmImage.(model.Image)), configs.Default.FilmsImageUploadPath)
 		if err != nil {
-			continue
+			log.Fatal(err)
 		}
 		f := film.(model.Film)
 		f.Images = []model.Image{model.Image(imagePath)}
 		conn.Upsert(f)
-	}*/
+	}
 
 	personImages, err := parse(configs.Default.PersonImageTargetName)
 	if err != nil {
@@ -223,7 +223,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		fmt.Printf("inserting %d person image from %d\n", i, len(personImages))
 		person, e := conn.Get(model.ID(i), configs.Default.PersonTargetName)
 		if e != nil {
-			return
+			log.Fatal(e)
 		}
 		imagePath, err := uploadAndSaveImage(string(personImage.(model.Image)), configs.Default.PersonsImageUploadPath)
 		if err != nil {
@@ -249,10 +249,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	/*conn.ClearDB()
+	conn.ClearDB()
 	err = conn.InitCounters()
 	if err != nil {
 		log.Fatal(err)
-	}*/
+	}
 	FakeFillDB(conn)
 }
