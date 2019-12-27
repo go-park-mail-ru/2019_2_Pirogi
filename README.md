@@ -6,13 +6,14 @@
 
 ## Описание
 
+Удобный и быстрый поиск нужных фильмов.
 
 ### Старт
 
-<code>cd scripts/ && sudo ./run.sh</code>
+<code>./scripts/run.sh</code>
 
 ### Ссылка на поиграть
-[CINSEAR](http://167.71.5.55)
+[CINSEAR](https://cinsear.ru)
 
 ### Ментор
  - [Пупчин Павел](https://github.com/4taa)
