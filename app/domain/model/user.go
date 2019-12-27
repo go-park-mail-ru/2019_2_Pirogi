@@ -95,4 +95,5 @@ func (u *UserNew) ToProtobuf() (userNew v1.UserNew) {
 func (u *UserNew) FromProtobuf(userNew v1.UserNew) {
 	u.Email = userNew.Email
 	u.Password = userNew.Password
+	u.Username = userNew.Username
 }
