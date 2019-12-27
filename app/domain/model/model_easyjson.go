@@ -3167,6 +3167,8 @@ func easyjsonC80ae7adDecodeGithubComGoParkMailRu20192PirogiAppDomainModel26(in *
 				}
 				in.Delim(']')
 			}
+		case "ticket_link":
+			out.TicketLink = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -3293,6 +3295,11 @@ func easyjsonC80ae7adEncodeGithubComGoParkMailRu20192PirogiAppDomainModel26(out 
 			}
 			out.RawByte(']')
 		}
+	}
+	{
+		const prefix string = ",\"ticket_link\":"
+		out.RawString(prefix)
+		out.String(string(in.TicketLink))
 	}
 	out.RawByte('}')
 }
@@ -3445,6 +3452,8 @@ func easyjsonC80ae7adDecodeGithubComGoParkMailRu20192PirogiAppDomainModel27(in *
 			out.ReviewsNum = int(in.Int())
 		case "trailer":
 			out.Trailer = string(in.String())
+		case "ticket_link":
+			out.TicketLink = string(in.String())
 		default:
 			in.SkipRecursive()
 		}
@@ -3557,6 +3566,11 @@ func easyjsonC80ae7adEncodeGithubComGoParkMailRu20192PirogiAppDomainModel27(out 
 		const prefix string = ",\"trailer\":"
 		out.RawString(prefix)
 		out.String(string(in.Trailer))
+	}
+	{
+		const prefix string = ",\"ticket_link\":"
+		out.RawString(prefix)
+		out.String(string(in.TicketLink))
 	}
 	out.RawByte('}')
 }
