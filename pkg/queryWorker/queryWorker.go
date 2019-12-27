@@ -105,9 +105,6 @@ func (qp *querySearchParams) MapQueryParams(ctx echo.Context) {
 }
 
 func (qp *querySearchParams) GeneratePipeline(target string) []bson.M {
-	if qp.Query == "" {
-		return nil
-	}
 	qp.filter()
 	baseBSON := []bson.M{
 		{"$limit": qp.Limit},
@@ -147,6 +144,8 @@ func (qp *querySearchParams) GeneratePipeline(target string) []bson.M {
 		default:
 			matchBSON = append(matchBSON, match(bson.M{"title": regexp(qp.Query)}))
 		}
+	} else if len(matchBSON) == 0 {
+		return nil // В случае пустого запроса
 	}
 	matchBSON = append(matchBSON, baseBSON...)
 	return matchBSON
