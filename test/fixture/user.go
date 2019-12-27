@@ -21,6 +21,7 @@ var User = model.User{
 var UserNew = model.UserNew{
 	Email:    Email,
 	Password: Password,
+	Username: Username,
 }
 
 var UserTrunc = model.UserTrunc{

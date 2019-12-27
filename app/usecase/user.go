@@ -9,6 +9,7 @@ import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/modelWorker"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/pkg/network"
 	"github.com/labstack/echo"
+	"go.uber.org/zap"
 )
 
 type UserUsecase interface {
@@ -70,6 +71,7 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	}
 	var userNew model.UserNew
 	e := userNew.UnmarshalJSON(body)
+	zap.S().Warn(userNew.Username)
 	if e != nil {
 		return model.NewError(400, e.Error())
 	}
@@ -84,6 +86,7 @@ func (u userUsecase) CreateUserNewFromContext(ctx echo.Context) *model.Error {
 	_, e = u.usersRpcClient.Create(context.Background(), &v1.UserNew{
 		Email:    userNew.Email,
 		Password: userNew.Password,
+		Username: userNew.Username,
 	})
 	if e != nil {
 		return model.NewError(500, e.Error())
