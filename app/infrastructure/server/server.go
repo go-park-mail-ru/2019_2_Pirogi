@@ -68,7 +68,7 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	ratingsRepo := interfaces.NewRatingRepository(conn)
 	listsRepo := interfaces.NewListsRepository(conn)
 
-	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
+	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo, cookieRepo, listsRepo, ratingsRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
 	authUsecase := usecase.NewAuthUsecase(subscriptionRepo, sessionsClient)
 	userUsecase := usecase.NewUserUsecase(usersClient, sessionsClient)

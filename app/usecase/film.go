@@ -3,26 +3,43 @@ package usecase
 import (
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 	"github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/repository"
+	"github.com/labstack/echo"
 )
 
 type FilmUsecase interface {
 	Create(body []byte) *model.Error
 	List(ids []model.ID) []model.Film
 	GetFilmFullByte(id model.ID) ([]byte, *model.Error)
+	GetUserByContext(ctx echo.Context) (model.User, *model.Error)
+	GetUserLists(user model.User) ([]model.List, *model.Error)
+	GetActiveList(filmID model.ID, lists []model.List) string
+	GetStars(filmID model.ID, userID model.ID) model.Stars
 }
 
 type filmUsecase struct {
 	filmRepo         repository.FilmRepository
 	personRepo       repository.PersonRepository
 	subscriptionRepo repository.SubscriptionRepository
+	cookieRepo       repository.CookieRepository
+	listsRepo        repository.ListRepository
+	ratingRepo       repository.RatingRepository
 }
 
-func NewFilmUsecase(filmRepo repository.FilmRepository, personRepository repository.PersonRepository,
-	subscriptionRepository repository.SubscriptionRepository) *filmUsecase {
+func NewFilmUsecase(
+	filmRepo repository.FilmRepository,
+	personRepository repository.PersonRepository,
+	subscriptionRepository repository.SubscriptionRepository,
+	cookieRepository repository.CookieRepository,
+	listsRepository repository.ListRepository,
+	ratingRepository repository.RatingRepository,
+) *filmUsecase {
 	return &filmUsecase{
 		filmRepo:         filmRepo,
 		personRepo:       personRepository,
 		subscriptionRepo: subscriptionRepository,
+		cookieRepo:       cookieRepository,
+		listsRepo:        listsRepository,
+		ratingRepo:       ratingRepository,
 	}
 }
 
@@ -80,4 +97,24 @@ func (u *filmUsecase) GetFilmFullByte(id model.ID) ([]byte, *model.Error) {
 		return nil, model.NewError(500, e.Error())
 	}
 	return body, nil
+}
+
+func (u filmUsecase) GetUserByContext(ctx echo.Context) (model.User, *model.Error) {
+	return u.cookieRepo.GetUserByContext(ctx)
+}
+
+func (u *filmUsecase) GetUserLists(user model.User) ([]model.List, *model.Error) {
+	return u.listsRepo.GetByUserID(user.ID)
+}
+
+func (u *filmUsecase) GetActiveList(filmID model.ID, lists []model.List) string {
+	return u.listsRepo.GetActiveList(filmID, lists)
+}
+
+func (u *filmUsecase) GetStars(filmID model.ID, userID model.ID) model.Stars {
+	rating, err := u.ratingRepo.FindRatingByUserIDAndFilmID(userID, filmID)
+	if err != nil {
+		return -1
+	}
+	return rating.Stars
 }
