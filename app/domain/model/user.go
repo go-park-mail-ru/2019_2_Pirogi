@@ -7,6 +7,7 @@ import (
 )
 
 type UserNew struct {
+	Username string `json:"username" valid:"title"`
 	Email    string `json:"email" valid:"email"`
 	Password string `json:"password" valid:"password"`
 }

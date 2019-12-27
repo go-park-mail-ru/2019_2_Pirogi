@@ -19,6 +19,7 @@ deploy:
   script: 'ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p22 artbakulev@cinsear.ru
   "cd ~/backend &&
   git pull origin $TRAVIS_BRANCH &&
+  su - artbakulev &&
   easyjson --all -pkg app/domain/model &&
   scripts/runGo.sh"'
   on:
