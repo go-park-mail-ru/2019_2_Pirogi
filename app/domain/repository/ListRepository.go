@@ -8,4 +8,5 @@ type ListRepository interface {
 	Get(id model.ID) (model.List, *model.Error)
 	GetByUserID(userID model.ID) ([]model.List, *model.Error)
 	GetByUserIDAndTitle(userID model.ID, title string) (model.List, *model.Error)
+	GetActiveList(filmID model.ID, lists []model.List) string
 }

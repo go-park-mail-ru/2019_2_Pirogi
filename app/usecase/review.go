@@ -24,14 +24,16 @@ type reviewUsecase struct {
 	reviewRepo repository.ReviewRepository
 	cookieRepo repository.CookieRepository
 	userRepo   repository.UserRepository
+	filmRepo   repository.FilmRepository
 }
 
 func NewReviewUsecase(reviewRepo repository.ReviewRepository, cookieRepo repository.CookieRepository,
-	userRepo repository.UserRepository) *reviewUsecase {
+	userRepo repository.UserRepository, filmRepo repository.FilmRepository) *reviewUsecase {
 	return &reviewUsecase{
 		reviewRepo: reviewRepo,
 		cookieRepo: cookieRepo,
 		userRepo:   userRepo,
+		filmRepo:   filmRepo,
 	}
 }
 
@@ -44,6 +46,16 @@ func (u *reviewUsecase) GetUserReviewsJSONBlob(user model.User, limit, offset in
 	if err != nil {
 		return nil, err
 	}
+
+	// TODO: неэффективно, переписать на один запрос к бд
+	for i, review := range reviews {
+		film, err := u.filmRepo.Get(review.FilmID)
+		if err != nil {
+			return nil, model.NewError(500, err.Error)
+		}
+		reviews[i].FilmTitle = film.Title
+	}
+
 	body := modelWorker.MarshalReviews(reviews)
 	jsonBody := json.MakeJSONArray(body)
 	return jsonBody, nil

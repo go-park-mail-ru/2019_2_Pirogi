@@ -41,6 +41,17 @@ func (l listsRepository) GetByUserID(userID model.ID) ([]model.List, *model.Erro
 	return lists, nil
 }
 
+func (l listsRepository) GetActiveList(filmID model.ID, lists []model.List) string {
+	for _, list := range lists {
+		for _, listFilmID := range list.FilmsID {
+			if listFilmID == filmID {
+				return list.Title
+			}
+		}
+	}
+	return ""
+}
+
 func NewListsRepository(conn database.Database) *listsRepository {
 	return &listsRepository{
 		conn: conn,

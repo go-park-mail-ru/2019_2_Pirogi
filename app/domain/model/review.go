@@ -9,7 +9,7 @@ import (
 
 type ReviewNew struct {
 	Title  string `json:"title" valid:"title, stringlength(2|50)"`
-	Body   string `json:"body" valid:"description, stringlength(8|50)"`
+	Body   string `json:"body" valid:"description, stringlength(1|50)"`
 	FilmID ID     `json:"film_id, omitempty" valid:"numeric, optional"`
 	//TODO: убрать отсюда автор ID
 	AuthorID ID `json:"author_id, omitempty" valid:"numeric, optional"`
@@ -36,13 +36,14 @@ func (nr *ReviewNew) Make(body []byte) error {
 }
 
 type Review struct {
-	ID       ID        `json:"id, omitempty" bson:"_id" valid:"required"`
-	Title    string    `json:"title" valid:"title, stringlength(2|50)"`
-	Body     string    `json:"body" valid:"description"`
-	FilmID   ID        `json:"film_id" valid:"numeric"`
-	AuthorID ID        `json:"author_id, omitempty" valid:"numeric"`
-	Date     time.Time `json:"date" valid:"time"`
-	Mark     Mark      `json:"mark" valid:"float, optional"`
+	ID        ID        `json:"id, omitempty" bson:"_id" valid:"required"`
+	Title     string    `json:"title" valid:"title, stringlength(2|50)"`
+	Body      string    `json:"body" valid:"description"`
+	FilmID    ID        `json:"film_id" valid:"numeric"`
+	FilmTitle string    `json:"film_title" valid:"optional"`
+	AuthorID  ID        `json:"author_id, omitempty" valid:"numeric"`
+	Date      time.Time `json:"date" valid:"time"`
+	Mark      Mark      `json:"mark" valid:"float, optional"`
 }
 
 type ReviewFull struct {

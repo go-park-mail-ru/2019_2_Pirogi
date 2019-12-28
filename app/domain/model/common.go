@@ -15,6 +15,8 @@ func (id *ID) String() string {
 
 type Mark float32
 
+type Stars int
+
 func (fm Mark) String() string {
 	return fmt.Sprintf("%f", fm)
 }

@@ -60,6 +60,13 @@ func InitValidator() {
 			}
 			return subject >= 0.0 && subject <= 5.0
 		},
+		"stars": func(i interface{}, o interface{}) bool {
+			subject, ok := i.(model.Stars)
+			if !ok {
+				return false
+			}
+			return subject >= 1 && subject <= 5
+		},
 		"countries": func(i interface{}, o interface{}) bool {
 			subject, ok := i.([]string)
 			if !ok {

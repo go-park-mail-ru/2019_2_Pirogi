@@ -45,4 +45,6 @@ type Database interface {
 
 	FindSubscriptionByUserID(userID model.ID) (model.Subscription, *model.Error)
 	FindSubscriptionsOnPerson(personID model.ID) ([]model.Subscription, *model.Error)
+
+	FindRatingByUserIDAndFilmID(userID model.ID, filmID model.ID) (model.Rating, *model.Error)
 }

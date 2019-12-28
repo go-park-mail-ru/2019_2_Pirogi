@@ -149,14 +149,20 @@ func UpdateReview(conn *MongoConnection, in model.Review) *model.Error {
 	return nil
 }
 
-func InsertStars(conn *MongoConnection, in model.Stars) *model.Error {
-	filter := bson.M{"_id": in.FilmID}
-	// TODO: рассчитывать newMark
-	newMark := in.Mark
-	update := bson.M{"$set": bson.M{"mark": newMark}}
-	_, err := conn.films.UpdateOne(conn.context, filter, update)
+func InsertRating(conn *MongoConnection, in model.Rating) *model.Error {
+	_, err := conn.ratings.InsertOne(conn.context, in)
 	if err != nil {
-		return model.NewError(http.StatusNotFound, "film not found")
+		return model.NewError(http.StatusInternalServerError, "cannot insert rating in database")
+	}
+	return nil
+}
+
+func UpdateRating(conn *MongoConnection, in model.RatingUpdate) *model.Error {
+	filter := bson.M{"userid": in.UserID, "filmid": in.FilmID}
+	update := bson.M{"$set": bson.M{"mark": in.Stars}}
+	_, err := conn.ratings.UpdateOne(conn.context, filter, update)
+	if err != nil {
+		return model.NewError(http.StatusNotFound, "rating not found")
 	}
 	return nil
 }

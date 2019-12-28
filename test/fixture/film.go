@@ -10,6 +10,7 @@ var Genres = []model.Genre{"драма", "ужасы"}
 var PersonsID = []model.ID{1, 2, 3}
 var Trailer = "yXzVL_srdU0"
 var Mark = model.Mark(4.3)
+var Stars = model.Stars(3)
 var Films = []model.Film{Film, Film}
 
 var FilmNew = model.FilmNew{
