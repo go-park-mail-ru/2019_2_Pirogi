@@ -11,7 +11,7 @@ import (
 
 func TestValidation(t *testing.T) {
 	validation.InitValidator()
-	_, err := valid.ValidateStruct(fixture.Stars)
+	_, err := valid.ValidateStruct(fixture.Rating)
 	require.NoError(t, err)
 
 	_, err = valid.ValidateStruct(fixture.UserTrunc)

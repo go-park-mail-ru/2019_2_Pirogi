@@ -2,8 +2,8 @@ package fixture
 
 import "github.com/go-park-mail-ru/2019_2_Pirogi/app/domain/model"
 
-var Stars = model.Stars{
+var Rating = model.Rating{
 	UserID: UserID,
 	FilmID: FilmID,
-	Mark:   Mark,
+	Stars:  Stars,
 }

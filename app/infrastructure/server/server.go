@@ -65,17 +65,19 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	cookieRepo := interfaces.NewCookieRepository(conn)
 	reviewRepo := interfaces.NewReviewRepository(conn)
 	subscriptionRepo := interfaces.NewSubscriptionRepository(conn)
+	ratingsRepo := interfaces.NewRatingRepository(conn)
 	listsRepo := interfaces.NewListsRepository(conn)
 
-	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo)
+	filmUsecase := usecase.NewFilmUsecase(filmRepo, personRepo, subscriptionRepo, cookieRepo, listsRepo, ratingsRepo)
 	searchUsecase := usecase.NewSearchUsecase(filmRepo, personRepo)
 	authUsecase := usecase.NewAuthUsecase(subscriptionRepo, sessionsClient)
 	userUsecase := usecase.NewUserUsecase(usersClient, sessionsClient)
 	personUsecase := usecase.NewPersonUsecase(personRepo, filmRepo, cookieRepo, subscriptionRepo)
-	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo)
+	reviewUsecase := usecase.NewReviewUsecase(reviewRepo, cookieRepo, userRepo, filmRepo)
 	pagesUsecase := usecase.NewPagesUsecase(filmRepo, personRepo)
 	imageUsecase := usecase.NewImageUsecase(cookieRepo, userRepo)
 	subscriptionUsecase := usecase.NewSubscriptionUsecase(subscriptionRepo, cookieRepo, personRepo, userRepo)
+	ratingUsecase := usecase.NewRatingUsecase(ratingsRepo, cookieRepo, filmRepo)
 	listsUsecase := usecase.NewListsUsecase(cookieRepo, listsRepo, filmRepo)
 
 	e.GET("/metrics/", echo.WrapHandler(promhttp.Handler()))
@@ -116,12 +118,9 @@ func CreateAPIServer(conn database.Database) (*echo.Echo, error) {
 	subscriptions.POST("/", handlers.GetHandlerSubscribe(subscriptionUsecase))
 	subscriptions.DELETE("/", handlers.GetHandlerUnsubscribe(subscriptionUsecase))
 
-	//likes := api.Group("/likes")
-	//likes.POST("/", handlers.GetHandlerLikesCreate(conn))
-	//
-	//marks := api.Group("/marks")
-	//marks.POST("/", handlers.GetHandlerRatingsCreate(conn))
-	//
+	ratings := api.Group("/ratings")
+	ratings.POST("/", handlers.GetHandlerRatingsCreateOrUpdate(ratingUsecase))
+
 	lists := api.Group("/lists")
 	lists.GET("/", handlers.GetHandlerLists(listsUsecase))
 	lists.PUT("/", handlers.GetHandlerCreateOrUpdateList(listsUsecase))

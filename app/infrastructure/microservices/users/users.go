@@ -40,10 +40,9 @@ func (u *usersManager) GetByID(ctx context.Context, req *v1.ID) (*v1.User, error
 
 func (u *usersManager) Create(ctx context.Context, user *v1.UserNew) (*v1.Nothing, error) {
 	var userNewModel model.UserNew
-	zap.S().Debug("creating new user with email: ", user.Email)
 	userNewModel.FromProtobuf(*user)
+	zap.S().Warn("ms create: ", userNewModel.Username)
 	err := u.userRepo.Insert(userNewModel)
-	zap.S().Debug(err)
 	return &v1.Nothing{}, err.Common()
 }
 

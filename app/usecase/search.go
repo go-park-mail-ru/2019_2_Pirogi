@@ -29,6 +29,9 @@ type searchUsecase struct {
 
 func (u *searchUsecase) GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error) {
 	pipeline := queryWorker.GetPipelineForMongoByContext(ctx, configs.Default.FilmTargetName)
+	if pipeline == nil {
+		return json.MakeJSONArray([][]byte{}), nil
+	}
 	films, err := u.filmRepo.GetByPipeline(pipeline)
 	if err != nil {
 		return nil, err
@@ -45,6 +48,9 @@ func (u *searchUsecase) GetFilmsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *
 
 func (u *searchUsecase) GetPersonsByGetParamsJSONBlob(ctx echo.Context) ([]byte, *model.Error) {
 	pipeline := queryWorker.GetPipelineForMongoByContext(ctx, configs.Default.PersonTargetName)
+	if pipeline == nil {
+		return json.MakeJSONArray([][]byte{}), nil
+	}
 	persons, err := u.personRepo.GetByPipeline(pipeline)
 	if err != nil {
 		return nil, err

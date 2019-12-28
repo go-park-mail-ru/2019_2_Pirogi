@@ -37,7 +37,7 @@ func (fn *FilmNew) Make(body []byte) error {
 }
 
 type Film struct {
-	ID          ID       `json:"id" bson:"_id" valid:"numeric,optional"`
+	ID          ID       `json:"id" bson:"_id" valid:"numeric, optional"`
 	Title       string   `json:"title" valid:"text, stringlength(1|50)"`
 	Year        int      `json:"year" valid:"year"`
 	Genres      []Genre  `json:"genres" valid:"genres"`
@@ -48,6 +48,9 @@ type Film struct {
 	Images      []Image  `json:"images" valid:"images, optional"`
 	ReviewsNum  int      `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string   `json:"trailer" valid:"text, optional"`
+	RatingSum   int      `json:"-" valid:"numeric, optional"`
+	VotersNum   int      `json:"-" valid:"numeric, optional"`
+	TicketLink  string   `json:"ticket_link" valid:"text, optional"`
 }
 
 type FilmTrunc struct {
@@ -74,10 +77,11 @@ type FilmFull struct {
 	ReviewsNum  int           `json:"reviews_num" valid:"numeric, optional"`
 	Trailer     string        `json:"trailer" valid:"text, optional"`
 	Related     []FilmTrunc   `json:"related,omitempty" valid:"optional"`
+	TicketLink  string        `json:"ticket_link" valid:"text, optional"`
 }
 
-func (f *Film) SetMark(mark Mark) {
-	f.Mark = mark
+func (f *Film) CountAndSetMark() {
+	f.Mark = Mark(f.RatingSum) / Mark(f.VotersNum)
 }
 
 func (f *Film) Trunc() FilmTrunc {
@@ -109,5 +113,6 @@ func (f *Film) Full(persons []Person) FilmFull {
 		Images:      f.Images,
 		ReviewsNum:  f.ReviewsNum,
 		Trailer:     f.Trailer,
+		TicketLink:  f.TicketLink,
 	}
 }

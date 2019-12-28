@@ -44,7 +44,6 @@ var FileTargetMap = map[string]string{
 	"review":      "reviews_data.json",
 	"star":        "stars_data.json",
 	"film":        "films_data.json",
-	"like":        "likes_data.json",
 	"filmimage":   "films_data_images.json",
 	"personimage": "persons_data_images.json",
 }

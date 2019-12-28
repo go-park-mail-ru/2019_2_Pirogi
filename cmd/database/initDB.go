@@ -82,17 +82,17 @@ func parse(target string) ([]interface{}, error) {
 		}
 		return interfaces, nil
 	case configs.Default.StarTargetName:
-		var newStars []model.Stars
+		var newRatings []model.Rating
 		for dec.More() {
-			var newStar model.Stars
-			err = dec.Decode(&newStar)
+			var newRating model.Rating
+			err = dec.Decode(&newRating)
 			if err != nil {
 				return nil, err
 			}
-			newStars = append(newStars, newStar)
+			newRatings = append(newRatings, newRating)
 		}
-		interfaces := make([]interface{}, len(newStars))
-		for i, val := range newStars {
+		interfaces := make([]interface{}, len(newRatings))
+		for i, val := range newRatings {
 			interfaces[i] = val
 		}
 		return interfaces, nil
@@ -168,14 +168,14 @@ func uploadAndSaveImage(url string, baseFolder string) (string, error) {
 }
 
 func FakeFillDB(conn *database.MongoConnection) {
-	persons, err := parse(configs.Default.PersonTargetName)
+	/*persons, err := parse(configs.Default.PersonTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
 	for i, person := range persons {
 		fmt.Printf("inserting %d person from %d\n", i, len(persons))
 		conn.Upsert(person)
-	}
+	}*/
 
 	films, err := parse(configs.Default.FilmTargetName)
 	if err != nil {
@@ -215,7 +215,7 @@ func FakeFillDB(conn *database.MongoConnection) {
 		conn.Upsert(f)
 	}
 
-	personImages, err := parse(configs.Default.PersonImageTargetName)
+	/*personImages, err := parse(configs.Default.PersonImageTargetName)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -223,16 +223,16 @@ func FakeFillDB(conn *database.MongoConnection) {
 		fmt.Printf("inserting %d person image from %d\n", i, len(personImages))
 		person, e := conn.Get(model.ID(i), configs.Default.PersonTargetName)
 		if e != nil {
-			continue
+			log.Fatal(e)
 		}
 		imagePath, err := uploadAndSaveImage(string(personImage.(model.Image)), configs.Default.PersonsImageUploadPath)
 		if err != nil {
-			continue
+			log.Fatal(err)
 		}
 		p := person.(model.Person)
 		p.Images = []model.Image{model.Image(imagePath)}
 		conn.Upsert(p)
-	}
+	}*/
 }
 
 func main() {
@@ -249,10 +249,10 @@ func main() {
 		log.Fatal(err)
 	}
 
-	conn.ClearDB()
+	/*conn.ClearDB()
 	err = conn.InitCounters()
 	if err != nil {
 		log.Fatal(err)
-	}
+	}*/
 	FakeFillDB(conn)
 }

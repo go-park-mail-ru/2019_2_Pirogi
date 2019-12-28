@@ -9,7 +9,8 @@ import (
 func GetHandlerSearch(usecase usecase2.SearchUsecase) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
 		jsonBody, e := usecase.GetFilmsByGetParamsJSONBlob(ctx)
-		if e == nil {
+		// Проверяем, что jsonBody вернулся не пустой, т.е. не []
+		if e == nil && len(jsonBody) > 2 {
 			network.WriteJSONToResponse(ctx, 200, jsonBody)
 			return nil
 		}
