@@ -28,13 +28,13 @@ type pagesUsecase struct {
 func (u *pagesUsecase) GetIndexPageJSONBlob() ([]byte, *model.Error) {
 	//TODO: добавить бы логики тута
 	pipeline := queryWorker.GetCustomPipelineForMongo(configs.Default.DefaultEntriesLimit+5,
-		0, configs.Default.FilmTargetName)
+		0, "year", configs.Default.FilmTargetName)
 	filmsNew, err := u.filmRepo.GetByPipeline(pipeline)
 	if err != nil {
 		return nil, err
 	}
 	pipeline = queryWorker.GetCustomPipelineForMongo(configs.Default.DefaultEntriesLimit+20,
-		0, configs.Default.FilmTargetName)
+		0, "mark", configs.Default.FilmTargetName)
 	filmsForUser, err := u.filmRepo.GetByPipeline(pipeline)
 	if err != nil {
 		return nil, err

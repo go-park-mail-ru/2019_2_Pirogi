@@ -169,9 +169,10 @@ func GetPipelineForMongoByContext(ctx echo.Context, target string) []bson.M {
 	return qp.GeneratePipeline(target)
 }
 
-func GetCustomPipelineForMongo(limit, offset int, target string) []bson.M {
+func GetCustomPipelineForMongo(limit, offset int, orderBy, target string) []bson.M {
 	qp := querySearchParams{}
 	qp.Limit = limit
 	qp.Offset = offset
+	qp.OrderBy = orderBy
 	return qp.GeneratePipeline(target)
 }
