@@ -44,7 +44,7 @@ services:
   mongo:
     image: mongo
     ports:
-      - "27017:27017"
+      - "27017"
     volumes:
       - db:/data/db
       - ./mongoInit.js:/docker-entrypoint-initdb.d/mongoInit.js:ro
